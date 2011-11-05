@@ -3,6 +3,11 @@
   (if (equal style "space")
       (setq indent-tabs-mode nil
             tab-width (string-to-number width)
+            c-basic-offset tab-width
+            python-indent tab-width
+            py-indent-offset tab-width
+            perl-indent-level tab-width
+            cperl-indent-level tab-width
             tab-stop-list (let ((stops (cons tab-width ())))
                             (while (< (car stops) 120)
                               (setq stops (cons
