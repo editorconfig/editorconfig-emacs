@@ -2,20 +2,19 @@
   "Set indentation type from given style and size"
   (if (equal style "space")
       (setq indent-tabs-mode nil
-            size (string-to-number size)
-            c-basic-offset size
-            python-indent size
-            py-indent-offset size
-            perl-indent-level size
-            cperl-indent-level size
-            tab-stop-list (let ((stops (cons size ())))
-                            (while (< (car stops) 120)
-                              (setq stops (cons
+	    size (string-to-number size)
+	    c-basic-offset size
+	    python-indent size
+	    py-indent-offset size
+	    perl-indent-level size
+	    cperl-indent-level size
+	    tab-stop-list (let ((stops (cons size ())))
+			    (while (< (car stops) 120)
+			      (setq stops (cons
 					   (+ size (car stops))
 					   stops)))
-                            (nreverse stops)))
-    (setq indent-tabs-mode t))
-  )
+			    (nreverse stops)))
+    (setq indent-tabs-mode t)))
 
 (defun get-properties ()
   "Call EditorConfig core and return output"
@@ -38,7 +37,7 @@
 	    (let (key val)
 	      (setq key (car key-val)
 		    val (mapconcat 'identity (cdr key-val) ""))
-	    (puthash key val properties)))))))
+	      (puthash key val properties)))))))
 
 (add-hook 'find-file-hook
 	  (function (lambda ()
