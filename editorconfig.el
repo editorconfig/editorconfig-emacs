@@ -1,17 +1,17 @@
-(defun set-indentation (style &optional width)
-  "Set indentation type from given style and tab width"
+(defun set-indentation (style &optional size)
+  "Set indentation type from given style and size"
   (if (equal style "space")
       (setq indent-tabs-mode nil
-            tab-width (string-to-number width)
-            c-basic-offset tab-width
-            python-indent tab-width
-            py-indent-offset tab-width
-            perl-indent-level tab-width
-            cperl-indent-level tab-width
-            tab-stop-list (let ((stops (cons tab-width ())))
+            size (string-to-number size)
+            c-basic-offset size
+            python-indent size
+            py-indent-offset size
+            perl-indent-level size
+            cperl-indent-level size
+            tab-stop-list (let ((stops (cons size ())))
                             (while (< (car stops) 120)
                               (setq stops (cons
-					   (+ tab-width (car stops))
+					   (+ size (car stops))
 					   stops)))
                             (nreverse stops)))
     (setq indent-tabs-mode t))
@@ -42,8 +42,8 @@
 
 (add-hook 'find-file-hook
 	  (function (lambda ()
-		      (let (props indent_style tab_width)
+		      (let (props indent_style indent_size)
 			(setq props (parse-properties (get-properties))
 			      indent_style (gethash "indent_style" props)
-			      tab_width (gethash "tab_width" props))
-			(set-indentation indent_style tab_width)))))
+			      indent_size (gethash "indent_size" props))
+			(set-indentation indent_style indent_size)))))
