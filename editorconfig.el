@@ -1,20 +1,23 @@
-(defun set-indentation (style &optional size)
+(defun set-indentation (style &optional size tab_width)
   "Set indentation type from given style and size"
-  (if (equal style "space")
-      (setq indent-tabs-mode nil
-	    size (string-to-number size)
-	    c-basic-offset size
-	    python-indent size
-	    py-indent-offset size
-	    perl-indent-level size
-	    cperl-indent-level size
-	    tab-stop-list (let ((stops (cons size ())))
-			    (while (< (car stops) 120)
-			      (setq stops (cons
-					   (+ size (car stops))
-					   stops)))
-			    (nreverse stops)))
-    (setq indent-tabs-mode t)))
+  (progn
+    (if (equal style "space")
+	(setq indent-tabs-mode nil
+	      size (string-to-number size)
+	      c-basic-offset size
+	      python-indent size
+	      py-indent-offset size
+	      perl-indent-level size
+	      cperl-indent-level size
+	      tab-stop-list (let ((stops (cons size ())))
+			      (while (< (car stops) 120)
+				(setq stops (cons
+					     (+ size (car stops))
+					     stops)))
+			      (nreverse stops)))
+      (setq indent-tabs-mode t))
+    (if tab_width
+	(setq tab-width (string-to-number tab_width)))))
 
 (defun get-properties ()
   "Call EditorConfig core and return output"
@@ -41,8 +44,9 @@
 
 (add-hook 'find-file-hook
 	  (function (lambda ()
-		      (let (props indent_style indent_size)
+		      (let (props indent_style indent_size tab_width)
 			(setq props (parse-properties (get-properties))
 			      indent_style (gethash "indent_style" props)
-			      indent_size (gethash "indent_size" props))
-			(set-indentation indent_style indent_size)))))
+			      indent_size (gethash "indent_size" props)
+			      tab_width (gethash "tab_width" props))
+			(set-indentation indent_style indent_size tab_width)))))
