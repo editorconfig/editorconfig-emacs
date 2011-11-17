@@ -1,23 +1,22 @@
 (defun set-indentation (style &optional size tab_width)
   "Set indentation type from given style and size"
-  (progn
-    (if (equal style "space")
-	(setq indent-tabs-mode nil
-	      size (string-to-number size)
-	      c-basic-offset size
-	      python-indent size
-	      py-indent-offset size
-	      perl-indent-level size
-	      cperl-indent-level size
-	      tab-stop-list (let ((stops (cons size ())))
-			      (while (< (car stops) 120)
-				(setq stops (cons
-					     (+ size (car stops))
-					     stops)))
-			      (nreverse stops)))
-      (setq indent-tabs-mode t))
-    (if tab_width
-	(setq tab-width (string-to-number tab_width)))))
+  (if (equal style "space")
+      (setq indent-tabs-mode nil
+	    size (string-to-number size)
+	    c-basic-offset size
+	    python-indent size
+	    py-indent-offset size
+	    perl-indent-level size
+	    cperl-indent-level size
+	    tab-stop-list (let ((stops (cons size ())))
+			    (while (< (car stops) 120)
+			      (setq stops (cons
+					   (+ size (car stops))
+					   stops)))
+			    (nreverse stops)))
+    (setq indent-tabs-mode t))
+  (if tab_width
+      (setq tab-width (string-to-number tab_width))))
 
 (defun get-properties ()
   "Call EditorConfig core and return output"
