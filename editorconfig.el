@@ -26,6 +26,7 @@
     (let (props-string)
       (setq props-string (buffer-string))
       (set-buffer oldbuf)
+      (kill-buffer (get-buffer "ecbuffer"))
       props-string)))
 
 (defun parse-properties (props-string)
