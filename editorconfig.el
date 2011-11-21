@@ -18,6 +18,14 @@
   (if tab_width
       (setq tab-width (string-to-number tab_width))))
 
+(defun set-line-ending (end-of-line)
+  "Set line ending style to CR, LF, or CRLF"
+  (set-buffer-file-coding-system
+   (cond
+    ((equal end-of-line "lf") 'undecided-unix)
+    ((equal end-of-line "cr") 'undecided-mac)
+    ((equal end-of-line "crlf") 'undecided-dos))))
+
 (defun get-properties ()
   "Call EditorConfig core and return output"
   (let ((oldbuf (current-buffer)))
@@ -48,5 +56,7 @@
 			(setq props (parse-properties (get-properties))
 			      indent_style (gethash "indent_style" props)
 			      indent_size (gethash "indent_size" props)
-			      tab_width (gethash "tab_width" props))
-			(set-indentation indent_style indent_size tab_width)))))
+			      tab_width (gethash "tab_width" props)
+			      end_of_line (gethash "end_of_line" props))
+			(set-indentation indent_style indent_size tab_width)
+			(set-line-ending end_of_line)))))
