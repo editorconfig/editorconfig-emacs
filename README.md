@@ -13,5 +13,5 @@ and add the following to your `~/.emacs` file:
     (add-to-list 'load-path "~/.emacs.d/")
     (load "editorconfig")
 
-[EditorConfig]: http://editorconfig.github.com/
+[EditorConfig]: http://editorconfig.org
 [EditorConfig core]: https://github.com/editorconfig/editorconfig
