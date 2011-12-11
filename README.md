@@ -13,5 +13,15 @@ and add the following to your `~/.emacs` file:
     (add-to-list 'load-path "~/.emacs.d/")
     (load "editorconfig")
 
+## Supported properties
+
+The EditorConfig Emacs plugin supports the following EditorConfig [properties][]:
+
+* indent_style
+* indent_size
+* tab_width
+* end_of_line
+* root (only used by EditorConfig core)
+
 [EditorConfig]: http://editorconfig.org
 [EditorConfig core]: https://github.com/editorconfig/editorconfig
