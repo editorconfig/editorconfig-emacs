@@ -25,3 +25,4 @@ The EditorConfig Emacs plugin supports the following EditorConfig [properties][]
 
 [EditorConfig]: http://editorconfig.org
 [EditorConfig core]: https://github.com/editorconfig/editorconfig
+[properties]: http://editorconfig.org/#supported-properties
