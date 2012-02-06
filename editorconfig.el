@@ -27,6 +27,7 @@
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;; POSSIBILITY OF SUCH DAMAGE.
 
+(defvar editorconfig-exec-path "")
 (defun set-indentation (style &optional size tab_width)
   "Set indentation type from given style and size"
   (if (equal style "space")
@@ -58,7 +59,7 @@
 (defun get-properties ()
   "Call EditorConfig core and return output"
   (let ((oldbuf (current-buffer)))
-    (call-process "editorconfig" nil "ecbuffer" nil (buffer-file-name oldbuf))
+    (call-process (concat editorconfig-exec-path "editorconfig") nil "ecbuffer" nil (buffer-file-name oldbuf))
     (set-buffer (get-buffer "ecbuffer"))
     (let (props-string)
       (setq props-string (buffer-string))
