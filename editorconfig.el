@@ -1,10 +1,10 @@
-;;; editorconfig.el --- EditorConfig <http://editorconfig.org> Emacs extension
+;;; editorconfig.el --- EditorConfig Emacs extension
 
 ;; Copyright (C) 2011-2012 EditorConfig Team
 
 ;; Author: Trey Hunner
 ;; Version: 0.1
-;; URL: http://editorconfig.org
+;; Homepage: http://editorconfig.org
 
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
@@ -27,8 +27,22 @@
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;; POSSIBILITY OF SUCH DAMAGE.
 
-(defvar editorconfig-exec-path "editorconfig")
-(defun set-indentation (style &optional size tab_width)
+;;; Commentary:
+
+;; EditorConfig helps developers define and maintain consistent
+;; coding styles between different editors and IDEs.
+
+;; The EditorConfig project consists of a file format for defining
+;; coding styles and a collection of text editor plugins that enable
+;; editors to read the file format and adhere to defined styles.
+;; EditorConfig files are easily readable and they work nicely with
+;; version control systems.
+
+;;; Code:
+
+(defvar edconf-exec-path "editorconfig")
+
+(defun edconf-set-indentation (style &optional size tab_width)
   "Set indentation type from given style and size"
   (if (equal style "space")
       (setq indent-tabs-mode nil
@@ -48,7 +62,7 @@
   (if tab_width
       (setq tab-width (string-to-number tab_width))))
 
-(defun set-line-ending (end-of-line)
+(defun edconf-set-line-ending (end-of-line)
   "Set line ending style to CR, LF, or CRLF"
   (set-buffer-file-coding-system
    (cond
@@ -56,10 +70,10 @@
     ((equal end-of-line "cr") 'undecided-mac)
     ((equal end-of-line "crlf") 'undecided-dos))))
 
-(defun get-properties ()
+(defun edconf-get-properties ()
   "Call EditorConfig core and return output"
   (let ((oldbuf (current-buffer)))
-    (call-process editorconfig-exec-path nil "ecbuffer" nil (buffer-file-name oldbuf))
+    (call-process edconf-exec-path nil "ecbuffer" nil (buffer-file-name oldbuf))
     (set-buffer (get-buffer "ecbuffer"))
     (let (props-string)
       (setq props-string (buffer-string))
@@ -67,7 +81,7 @@
       (kill-buffer (get-buffer "ecbuffer"))
       props-string)))
 
-(defun parse-properties (props-string)
+(defun edconf-parse-properties (props-string)
   "Create properties hash table from string of properties"
   (let (props-list properties)
     (setq props-list (split-string props-string "\n")
@@ -83,10 +97,12 @@
 (add-hook 'find-file-hook
 	  (function (lambda ()
 		      (let (props indent_style indent_size tab_width)
-			(setq props (parse-properties (get-properties))
+			(setq props (edconf-parse-properties (edconf-get-properties))
 			      indent_style (gethash "indent_style" props)
 			      indent_size (gethash "indent_size" props)
 			      tab_width (gethash "tab_width" props)
 			      end_of_line (gethash "end_of_line" props))
-			(set-indentation indent_style indent_size tab_width)
-			(set-line-ending end_of_line)))))
+			(edconf-set-indentation indent_style indent_size tab_width)
+			(edconf-set-line-ending end_of_line)))))
+
+(provide 'editorconfig)
