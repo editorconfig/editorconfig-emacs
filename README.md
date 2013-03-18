@@ -7,7 +7,7 @@ This is an [EditorConfig][] plugin for Emacs.
 Download the [EditorConfig core][] and follow the instructions in the README
 and INSTALL files to install it.
 
-Once EditorConfig core is installed, copy `editorconfig.el` to `~/.emacs.d/`
+Once EditorConfig core is installed, copy [`editorconfig.el`][] to `~/.emacs.d/`
 and add the following to your `~/.emacs` file:
 
     (add-to-list 'load-path "~/.emacs.d/")
@@ -26,3 +26,4 @@ The EditorConfig Emacs plugin supports the following EditorConfig [properties][]
 [EditorConfig]: http://editorconfig.org
 [EditorConfig core]: https://github.com/editorconfig/editorconfig-core
 [properties]: http://editorconfig.org/#supported-properties
+[`editorconfig.el`]: https://github.com/editorconfig/editorconfig-emacs/raw/master/editorconfig.el
