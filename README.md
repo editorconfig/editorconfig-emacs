@@ -23,6 +23,11 @@ The EditorConfig Emacs plugin supports the following EditorConfig [properties][]
 * end_of_line
 * root (only used by EditorConfig core)
 
+## Submitting Bugs and Feature Requests
+
+Bugs, feature requests, and other issues should be submitted to the main
+EditorConfig issue tracker: https://github.com/editorconfig/editorconfig/issues
+
 [EditorConfig]: http://editorconfig.org
 [EditorConfig core]: https://github.com/editorconfig/editorconfig-core
 [properties]: http://editorconfig.org/#supported-properties
