@@ -4,6 +4,7 @@
 
 ;; Author: Trey Hunner
 ;; Version: 0.1
+;; Status: disfunctional
 ;; Homepage: http://editorconfig.org
 
 ;; Redistribution and use in source and binary forms, with or without
@@ -42,9 +43,15 @@
 
 (defvar edconf-exec-path "editorconfig")
 
-(defun edconf-set-indentation (style &optional size tab_width)
-  "Set indentation type from given style and size"
+(defun edconf-set-indentation (style &optional size tabwidth)
+  "Set indentation type from given STYLE, SIZE and TABWIDTH."
   (if (equal style "space")
+      ;; TODO Don't just set all these variables
+      ;;      ie just those relevant for (derived-mode-p ...)
+      ;; XXX  what if size isn't set?
+      ;; XXX  I would *think* these variables automatically
+      ;;      become buffer local when set "in any fashion",
+      ;;      but you have to make sure
       (setq indent-tabs-mode nil
 	    size (string-to-number size)
 	    c-basic-offset size
@@ -52,57 +59,61 @@
 	    py-indent-offset size
 	    perl-indent-level size
 	    cperl-indent-level size
-	    tab-stop-list (let ((stops (cons size ())))
+	    tab-stop-list (let ((stops (list size)))
 			    (while (< (car stops) 120)
-			      (setq stops (cons
-					   (+ size (car stops))
-					   stops)))
+			      (push (+ size (car stops)) stops))
 			    (nreverse stops)))
     (setq indent-tabs-mode t))
-  (if tab_width
-      (setq tab-width (string-to-number tab_width))))
+  (when tabwidth
+    (setq tab-width (string-to-number tabwidth))))
 
+;; XXX  I *think* there are special variables for that.
+;;      Also Emacs itself should detect what is actually used in
+;;      the file and then *convert* to what we want if necessary.
 (defun edconf-set-line-ending (end-of-line)
-  "Set line ending style to CR, LF, or CRLF"
+  "Set line ending style to CR, LF, or CRLF." ; all-caps here is for variables
   (set-buffer-file-coding-system
-   (cond
-    ((equal end-of-line "lf") 'undecided-unix)
-    ((equal end-of-line "cr") 'undecided-mac)
-    ((equal end-of-line "crlf") 'undecided-dos))))
+   (cond ((equal end-of-line "lf") 'undecided-unix)
+	 ((equal end-of-line "cr") 'undecided-mac)
+	 ((equal end-of-line "crlf") 'undecided-dos))))
 
-(defun edconf-get-properties ()
-  "Call EditorConfig core and return output"
-  (let ((oldbuf (current-buffer)))
-    (call-process edconf-exec-path nil "ecbuffer" nil (buffer-file-name oldbuf))
-    (set-buffer (get-buffer "ecbuffer"))
-    (let (props-string)
-      (setq props-string (buffer-string))
-      (set-buffer oldbuf)
-      (kill-buffer (get-buffer "ecbuffer"))
-      props-string)))
+;; XXX  Is the file relevant or would the directory do?
+;;      If the latter is the case drop the argument and use
+;;      the special default-directory variable.
+;; NOTE hash-table? seriously? this is lisp use lists. :-)
+;;      Performance won't matter here (and hash-table
+;;      actually performs worse for so few items).
+(defun edconf-get-properties (file)
+  "Call EditorConfig core and return output as alist."
+  (with-temp-buffer
+    ;; XXX  How does this tell me that there is actually an
+    ;;      editorconfig config file? (so that I can stop if
+    ;;      there is not)?
+    (call-process edconf-exec-path nil t nil file)
+    (goto-char (point-min))
+    (let (props)
+      (while (re-search-forward "^\\([^ ]+\\) *= *\\([^ ]+\\)$")
+	;; XXX  does editorconfig filter out garbage?
+	(push (cons (match-string 1)
+		    (match-string 2)) props))
+      ;; XXX  what about duplicates? since this is an alist with
+      ;;      new elements pushed to the front, later settings
+      ;;      win here.
+      props)))
 
-(defun edconf-parse-properties (props-string)
-  "Create properties hash table from string of properties"
-  (let (props-list properties)
-    (setq props-list (split-string props-string "\n")
-	  properties (make-hash-table :test 'equal))
-    (dolist (prop props-list properties)
-      (let ((key-val (split-string prop " *= *")))
-	(if (> (length key-val) 1)
-	    (let (key val)
-	      (setq key (car key-val)
-		    val (mapconcat 'identity (cdr key-val) ""))
-	      (puthash key val properties)))))))
+;; NOTE Don't use let, set variables using setq and then only
+;;      use once; it makes the code a bit longer than needed.
+(defun edconf-setup ()
+  (let ((props (edconf-get-properties
+		(buffer-file-name (current-buffer)))))
+    (edconf-set-indentation (cdr (assoc "indent_style" props))
+			    (cdr (assoc "indent_size"  props))
+			    (cdr (assoc "tab_width"    props)))
+    (edconf-set-line-ending (cdr (assoc "end_of_line"  props)))))
 
-(add-hook 'find-file-hook
-	  (function (lambda ()
-		      (let (props indent_style indent_size tab_width)
-			(setq props (edconf-parse-properties (edconf-get-properties))
-			      indent_style (gethash "indent_style" props)
-			      indent_size (gethash "indent_size" props)
-			      tab_width (gethash "tab_width" props)
-			      end_of_line (gethash "end_of_line" props))
-			(edconf-set-indentation indent_style indent_size tab_width)
-			(edconf-set-line-ending end_of_line)))))
+;; TODO Control using a minor mode which activates only if a
+;;      editorconfig config file is found up the directory tree.
+(add-hook 'find-file-hook 'edconf-setup)
 
 (provide 'editorconfig)
+;;; editorconfig.el ends here
