@@ -30,7 +30,7 @@
 (defvar editorconfig-exec-path "editorconfig")
 (defun set-indentation (style &optional size tab_width)
   "Set indentation type from given style and size"
-  (if (equal style "space")
+  (when (equal style "space")
       (setq indent-tabs-mode nil
 	    size (string-to-number size)
 	    c-basic-offset size
@@ -43,7 +43,8 @@
 			      (setq stops (cons
 					   (+ size (car stops))
 					   stops)))
-			    (nreverse stops)))
+                            (nreverse stops))))
+  (when (equal style "tab")
     (setq indent-tabs-mode t))
   (if tab_width
       (setq tab-width (string-to-number tab_width))))
