@@ -23,11 +23,11 @@ Current Emacs plugin coverage for EditorConfig's [properties][]:
 * `end_of_line`
 * <del>`charset`</del>
 * <del>`trim_trailing_whitespace`</del>
-* `insert_final_newline = true` supported
-  (`insert_final_newline = false` is not enforced,
-  as in trailing newlines actually being removed automagically,
+* `insert_final_newline = true` is supported
+* <del>`insert_final_newline = false`</del> is not enforced
+  (as in trailing newlines actually being removed automagically),
   we just buffer-locally override preferences that would auto-add them
-  to files noted as trailing newline free via `.editorconfig`)
+  to files noted as trailing newline free via `.editorconfig`
 * `root` (only used by EditorConfig core)
 
 Not yet covered properties marked with <del>over-strike</del>
