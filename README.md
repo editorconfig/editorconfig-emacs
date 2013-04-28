@@ -21,6 +21,7 @@ Current Emacs plugin coverage for EditorConfig's [properties][]:
 * `indent_size`
 * `tab_width`
 * `end_of_line`
+* <del>`charset`</del>
 * <del>`trim_trailing_whitespace`</del>
 * <del>`insert_final_newline`</del>
 * `root` (only used by EditorConfig core)
