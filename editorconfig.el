@@ -95,15 +95,16 @@
 		    val (mapconcat 'identity (cdr key-val) ""))
 	      (puthash key val properties)))))))
 
-(add-hook 'find-file-hook
-	  (function (lambda ()
-		      (let (props indent_style indent_size tab_width)
-			(setq props (edconf-parse-properties (edconf-get-properties))
-			      indent_style (gethash "indent_style" props)
-			      indent_size (gethash "indent_size" props)
-			      tab_width (gethash "tab_width" props)
-			      end_of_line (gethash "end_of_line" props))
-			(edconf-set-indentation indent_style indent_size tab_width)
-			(edconf-set-line-ending end_of_line)))))
+(defun edconf-find-file-hook ()
+  (let (props indent_style indent_size tab_width)
+    (setq props (edconf-parse-properties (edconf-get-properties))
+          indent_style (gethash "indent_style" props)
+          indent_size (gethash "indent_size" props)
+          tab_width (gethash "tab_width" props)
+          end_of_line (gethash "end_of_line" props))
+    (edconf-set-indentation indent_style indent_size tab_width)
+    (edconf-set-line-ending end_of_line)))
+
+(add-hook 'find-file-hook 'edconf-find-file-hook)
 
 (provide 'editorconfig)
