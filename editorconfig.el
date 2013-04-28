@@ -71,6 +71,18 @@
     ((equal end-of-line "cr") 'undecided-mac)
     ((equal end-of-line "crlf") 'undecided-dos))))
 
+(defun edconf-set-trailing-nl (final-newline)
+  (cond
+   ((equal final-newline "true")
+    ; keep prefs around how/when the nl is added, if set - otherwise add on save
+    (setq      require-final-newline      (or require-final-newline t)
+          mode-require-final-newline (or mode-require-final-newline t)))
+   ((equal final-newline "false")
+    ; FIXME: Add functionality for actually REMOVING any trailing newlines here!
+    ;        (rather than just making sure we don't automagically ADD a new one)
+    (setq      require-final-newline nil
+          mode-require-final-newline nil))))
+
 (defun edconf-get-properties ()
   "Call EditorConfig core and return output"
   (let ((oldbuf (current-buffer)))
@@ -99,7 +111,8 @@
     (edconf-set-indentation (gethash 'indent_style props)
                             (gethash 'indent_size props)
                             (gethash 'tab_width props))
-    (edconf-set-line-ending (gethash 'end_of_line props))))
+    (edconf-set-line-ending (gethash 'end_of_line props))
+    (edconf-set-trailing-nl (gethash 'insert_final_newline props))))
 
 (add-hook 'find-file-hook 'edconf-find-file-hook)
 
