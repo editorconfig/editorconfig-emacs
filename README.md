@@ -15,13 +15,20 @@ and add the following to your `~/.emacs` file:
 
 ## Supported properties
 
-The EditorConfig Emacs plugin supports the following EditorConfig [properties][]:
+Current Emacs plugin coverage for EditorConfig's [properties][]:
 
-* indent_style
-* indent_size
-* tab_width
-* end_of_line
-* root (only used by EditorConfig core)
+* `indent_style`
+* `indent_size`
+* `tab_width`
+* `end_of_line`
+* <del>`trim_trailing_whitespace`</del>
+* <del>`insert_final_newline`</del>
+* `root` (only used by EditorConfig core)
+
+Not yet covered properties marked with <del>over-strike</del>
+– pull requests implementin missing features warmly welcomed!
+(Typically, you will want to tie these to native functionality,
+or the configuration of existing packages handling the feature.)
 
 ## Submitting Bugs and Feature Requests
 
