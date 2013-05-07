@@ -69,7 +69,8 @@
    (cond
     ((equal end-of-line "lf") 'undecided-unix)
     ((equal end-of-line "cr") 'undecided-mac)
-    ((equal end-of-line "crlf") 'undecided-dos))))
+    ((equal end-of-line "crlf") 'undecided-dos)
+    (t 'undecided))))
 
 (defun edconf-set-trailing-nl (final-newline)
   (cond
