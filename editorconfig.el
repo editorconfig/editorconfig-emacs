@@ -69,7 +69,9 @@
    (cond
     ((equal end-of-line "lf") 'undecided-unix)
     ((equal end-of-line "cr") 'undecided-mac)
-    ((equal end-of-line "crlf") 'undecided-dos))))
+    ((equal end-of-line "crlf") 'undecided-dos)
+    (t 'undecided))
+   nil t))
 
 (defun edconf-set-trailing-nl (final-newline)
   (cond
@@ -107,12 +109,13 @@
             (puthash key val properties)))))))
 
 (defun edconf-find-file-hook ()
-  (let ((props (edconf-parse-properties (edconf-get-properties))))
-    (edconf-set-indentation (gethash 'indent_style props)
-                            (gethash 'indent_size props)
-                            (gethash 'tab_width props))
-    (edconf-set-line-ending (gethash 'end_of_line props))
-    (edconf-set-trailing-nl (gethash 'insert_final_newline props))))
+  (when (executable-find edconf-exec-path)
+    (let ((props (edconf-parse-properties (edconf-get-properties))))
+      (edconf-set-indentation (gethash 'indent_style props)
+			      (gethash 'indent_size props)
+			      (gethash 'tab_width props))
+      (edconf-set-line-ending (gethash 'end_of_line props))
+      (edconf-set-trailing-nl (gethash 'insert_final_newline props)))))
 
 (add-hook 'find-file-hook 'edconf-find-file-hook)
 
