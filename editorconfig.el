@@ -45,19 +45,19 @@
 (defun edconf-set-indentation (style &optional size tab_width)
   "Set indentation type from given style and size"
   (when (equal style "space")
-      (setq indent-tabs-mode nil
-	    size (string-to-number size)
-	    c-basic-offset size
-	    python-indent size
-	    py-indent-offset size
-	    perl-indent-level size
-	    cperl-indent-level size
-	    tab-stop-list (let ((stops (cons size ())))
-			    (while (< (car stops) 120)
-			      (setq stops (cons
-					   (+ size (car stops))
-					   stops)))
-                            (nreverse stops))))
+    (setq indent-tabs-mode nil
+	  size (string-to-number size)
+	  c-basic-offset size
+	  python-indent size
+	  py-indent-offset size
+	  perl-indent-level size
+	  cperl-indent-level size
+	  tab-stop-list (let ((stops (cons size ())))
+			  (while (< (car stops) 120)
+			    (setq stops (cons
+					 (+ size (car stops))
+					 stops)))
+			  (nreverse stops))))
   (when (equal style "tab")
     (setq indent-tabs-mode t))
   (if tab_width
@@ -76,14 +76,14 @@
 (defun edconf-set-trailing-nl (final-newline)
   (cond
    ((equal final-newline "true")
-    ; keep prefs around how/when the nl is added, if set - otherwise add on save
+    ;; keep prefs around how/when the nl is added, if set - otherwise add on save
     (setq      require-final-newline      (or require-final-newline t)
-          mode-require-final-newline (or mode-require-final-newline t)))
+	       mode-require-final-newline (or mode-require-final-newline t)))
    ((equal final-newline "false")
-    ; FIXME: Add functionality for actually REMOVING any trailing newlines here!
-    ;        (rather than just making sure we don't automagically ADD a new one)
+    ;; FIXME: Add functionality for actually REMOVING any trailing newlines here!
+    ;;        (rather than just making sure we don't automagically ADD a new one)
     (setq      require-final-newline nil
-          mode-require-final-newline nil))))
+	       mode-require-final-newline nil))))
 
 (defun edconf-get-properties ()
   "Call EditorConfig core and return output"
