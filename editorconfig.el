@@ -117,6 +117,9 @@
       (edconf-set-line-ending (gethash 'end_of_line props))
       (edconf-set-trailing-nl (gethash 'insert_final_newline props)))))
 
+;;;###autoload
 (add-hook 'find-file-hook 'edconf-find-file-hook)
 
 (provide 'editorconfig)
+
+;;; editorconfig.el ends here
