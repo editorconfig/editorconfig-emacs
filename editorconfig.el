@@ -52,6 +52,8 @@
 	  py-indent-offset size
 	  perl-indent-level size
 	  cperl-indent-level size
+	  lisp-indent-offset size
+	  ruby-indent-level size
 	  tab-stop-list (let ((stops (cons size ())))
 			  (while (< (car stops) 120)
 			    (setq stops (cons
