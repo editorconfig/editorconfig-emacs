@@ -1,10 +1,14 @@
 ;;; editorconfig.el --- EditorConfig Emacs extension
 
-;; Copyright (C) 2011-2012 EditorConfig Team
+;; Copyright (C) 2011-2013 EditorConfig Team
 
-;; Author: Trey Hunner
+;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.1
-;; Homepage: http://editorconfig.org
+;; URL: http://editorconfig.org
+
+;; See
+;; http://github.com/editorconfig/editorconfig-emacs/graphs/contributors
+;; or the CONTRIBUTORS file for the list of contributors.
 
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions are met:
