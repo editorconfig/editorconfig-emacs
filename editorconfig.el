@@ -50,20 +50,20 @@
   "Set indentation type from given style and size"
   (when (equal style "space")
     (setq indent-tabs-mode nil
-	  size (string-to-number size)
-	  c-basic-offset size
-	  python-indent size
-	  py-indent-offset size
-	  perl-indent-level size
-	  cperl-indent-level size
-	  lisp-indent-offset size
-	  ruby-indent-level size
-	  tab-stop-list (let ((stops (cons size ())))
-			  (while (< (car stops) 120)
-			    (setq stops (cons
-					 (+ size (car stops))
-					 stops)))
-			  (nreverse stops))))
+          size (string-to-number size)
+          c-basic-offset size
+          python-indent size
+          py-indent-offset size
+          perl-indent-level size
+          cperl-indent-level size
+          lisp-indent-offset size
+          ruby-indent-level size
+          tab-stop-list (let ((stops (cons size ())))
+                          (while (< (car stops) 120)
+                            (setq stops (cons
+                                         (+ size (car stops))
+                                         stops)))
+                          (nreverse stops))))
   (when (equal style "tab")
     (setq indent-tabs-mode t))
   (if tab_width
@@ -84,12 +84,12 @@
    ((equal final-newline "true")
     ;; keep prefs around how/when the nl is added, if set - otherwise add on save
     (setq      require-final-newline      (or require-final-newline t)
-	       mode-require-final-newline (or mode-require-final-newline t)))
+               mode-require-final-newline (or mode-require-final-newline t)))
    ((equal final-newline "false")
     ;; FIXME: Add functionality for actually REMOVING any trailing newlines here!
     ;;        (rather than just making sure we don't automagically ADD a new one)
     (setq      require-final-newline nil
-	       mode-require-final-newline nil))))
+               mode-require-final-newline nil))))
 
 (defun edconf-get-properties ()
   "Call EditorConfig core and return output"
@@ -106,7 +106,7 @@
   "Create properties hash table from string of properties"
   (let (props-list properties)
     (setq props-list (split-string props-string "\n")
-	  properties (make-hash-table :test 'equal))
+          properties (make-hash-table :test 'equal))
     (dolist (prop props-list properties)
       (let ((key-val (split-string prop " *= *")))
         (when (> (length key-val) 1)
@@ -118,8 +118,8 @@
   (when (executable-find edconf-exec-path)
     (let ((props (edconf-parse-properties (edconf-get-properties))))
       (edconf-set-indentation (gethash 'indent_style props)
-			      (gethash 'indent_size props)
-			      (gethash 'tab_width props))
+                              (gethash 'indent_size props)
+                              (gethash 'tab_width props))
       (edconf-set-line-ending (gethash 'end_of_line props))
       (edconf-set-trailing-nl (gethash 'insert_final_newline props)))))
 

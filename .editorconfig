@@ -2,7 +2,6 @@
 root = true
 
 [*.el]
-indent_style = tab
+indent_style = space
 indent_size = 2
-tab_width = 8
 insert_final_newline = true
