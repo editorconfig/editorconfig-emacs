@@ -105,7 +105,7 @@
     ;; from write-file-functions
     (setq
      write-file-functions
-     (delete*
+     (delete
       'delete-trailing-whitespace
       write-file-functions))))
 
