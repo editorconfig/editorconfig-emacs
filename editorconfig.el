@@ -91,16 +91,16 @@
     (setq      require-final-newline nil
                mode-require-final-newline nil))))
 
-(defun edconf-set-trailing-ws (set-trailing-ws)
+(defun edconf-set-trailing-ws (trim-trailing-ws)
   "set up trimming of trailing whitespace at end of lines"
   (make-local-variable 'write-file-functions) ;; just current buffer
-  (when (equal set-trailing-ws "true")
+  (when (equal trim-trailing-ws "true")
     ;; when true we push delete-trailing-whitespace (emacs > 21)
     ;; to write-file-functions
     (add-to-list
      'write-file-functions
      'delete-trailing-whitespace))
-  (when (equal set-trailing-ws "false")
+  (when (equal trim-trailing-ws "false")
     ;; when false we remove every delete-trailing-whitespace
     ;; from write-file-functions
     (setq
