@@ -22,7 +22,7 @@ Current Emacs plugin coverage for EditorConfig's [properties][]:
 * `tab_width`
 * `end_of_line`
 * <del>`charset`</del>
-* <del>`trim_trailing_whitespace`</del>
+* `trim_trailing_whitespace`
 * `insert_final_newline = true` is supported
 * <del>`insert_final_newline = false`</del> is not enforced
   (as in trailing newlines actually being removed automagically),

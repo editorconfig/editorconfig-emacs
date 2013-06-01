@@ -91,6 +91,24 @@
     (setq      require-final-newline nil
                mode-require-final-newline nil))))
 
+(defun edconf-set-trailing-ws (trim-trailing-ws)
+  "set up trimming of trailing whitespace at end of lines"
+  (make-local-variable 'write-file-functions) ;; just current buffer
+  (when (equal trim-trailing-ws "true")
+    ;; when true we push delete-trailing-whitespace (emacs > 21)
+    ;; to write-file-functions
+    (add-to-list
+     'write-file-functions
+     'delete-trailing-whitespace))
+  (when (equal trim-trailing-ws "false")
+    ;; when false we remove every delete-trailing-whitespace
+    ;; from write-file-functions
+    (setq
+     write-file-functions
+     (delete
+      'delete-trailing-whitespace
+      write-file-functions))))
+
 (defun edconf-get-properties ()
   "Call EditorConfig core and return output"
   (let ((oldbuf (current-buffer)))
@@ -121,7 +139,8 @@
                               (gethash 'indent_size props)
                               (gethash 'tab_width props))
       (edconf-set-line-ending (gethash 'end_of_line props))
-      (edconf-set-trailing-nl (gethash 'insert_final_newline props)))))
+      (edconf-set-trailing-nl (gethash 'insert_final_newline props))
+      (edconf-set-trailing-ws (gethash 'trim_trailing_whitespace props)))))
 
 ;;;###autoload
 (add-hook 'find-file-hook 'edconf-find-file-hook)
