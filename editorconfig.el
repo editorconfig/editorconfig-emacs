@@ -58,6 +58,9 @@
           cperl-indent-level size
           lisp-indent-offset size
           ruby-indent-level size
+      		LaTeX-indent-level size
+      		LaTeX-item-indent size
+      		TeX-brace-indent-level size
           tab-stop-list (let ((stops (cons size ())))
                           (while (< (car stops) 120)
                             (setq stops (cons
