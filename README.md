@@ -32,8 +32,15 @@ Current Emacs plugin coverage for EditorConfig's [properties][]:
 
 Not yet covered properties marked with <del>over-strike</del>
 – pull requests implementin missing features warmly welcomed!
-(Typically, you will want to tie these to native functionality,
-or the configuration of existing packages handling the feature.)
+Typically, you will want to tie these to native functionality,
+or the configuration of existing packages handling the feature.
+
+As several packages have their own handling of, say, indention,
+we might not yet cover some mode you use, but we try to add the
+ones that show up on our radar. Similarly, we don't yet hook
+in to all different packages for whitespace trimming to inform
+them about editorconfig settings, but aim for better coverage
+of things like [ws-trim](ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el).
 
 ## Submitting Bugs and Feature Requests
 
