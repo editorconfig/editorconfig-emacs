@@ -51,16 +51,18 @@
   (when (equal style "space")
     (setq indent-tabs-mode nil
           size (string-to-number size)
-          c-basic-offset size
-          python-indent size
-          py-indent-offset size
-          perl-indent-level size
-          cperl-indent-level size
-          lisp-indent-offset size
-          ruby-indent-level size
           LaTeX-indent-level size
           LaTeX-item-indent size
           TeX-brace-indent-level size
+          c-basic-offset size
+          cperl-indent-level size
+          js-indent-level size
+          lisp-indent-offset size
+          perl-indent-level size
+          py-indent-offset size
+          python-indent size
+          ruby-indent-level size
+          (make-local-variable 'sgml-basic-offset) size
           tab-stop-list (let ((stops (cons size ())))
                           (while (< (car stops) 120)
                             (setq stops (cons
