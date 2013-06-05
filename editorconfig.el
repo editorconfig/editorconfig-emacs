@@ -62,7 +62,7 @@
           py-indent-offset size
           python-indent size
           ruby-indent-level size
-          (make-local-variable 'sgml-basic-offset) size
+          ;(make-local-variable 'sgml-basic-offset) size
           tab-stop-list (let ((stops (cons size ())))
                           (while (< (car stops) 120)
                             (setq stops (cons
