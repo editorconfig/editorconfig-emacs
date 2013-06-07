@@ -3,8 +3,8 @@
 ;; Copyright (C) 2011-2013 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-;; Version: 0.1
-;; URL: http://editorconfig.org
+;; Version: 0.2
+;; URL: http://github.com/editorconfig/editorconfig-emacs#readme
 
 ;; See
 ;; http://github.com/editorconfig/editorconfig-emacs/graphs/contributors
