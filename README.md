@@ -13,6 +13,8 @@ and add the following to your `~/.emacs` file:
     (add-to-list 'load-path "~/.emacs.d/")
     (load "editorconfig")
 
+Alternatively, you can find the package available on [Marmalade](http://marmalade-repo.org/packages/editorconfig).
+
 ## Supported properties
 
 Current Emacs plugin coverage for EditorConfig's [properties][]:
