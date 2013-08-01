@@ -137,6 +137,7 @@
                 (val (mapconcat 'identity (cdr key-val) "")))
             (puthash key val properties)))))))
 
+;;;###autoload
 (defun edconf-find-file-hook ()
   (when (executable-find edconf-exec-path)
     (let ((props (edconf-parse-properties (edconf-get-properties))))
