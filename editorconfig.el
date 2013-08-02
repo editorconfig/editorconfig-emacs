@@ -57,6 +57,7 @@
           c-basic-offset size
           cperl-indent-level size
           js-indent-level size
+          js2-basic-offset size
           lisp-indent-offset size
           perl-indent-level size
           py-indent-offset size
