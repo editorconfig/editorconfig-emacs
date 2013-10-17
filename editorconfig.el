@@ -47,6 +47,7 @@
 (defvar edconf-exec-path "editorconfig")
 
 (defun edconf-set-indentation (style &optional size tab_width)
+  (setq web-mode-indent-style 2)
   "Set indentation type from given style and size"
   (when (equal style "space")
     (setq indent-tabs-mode nil
@@ -63,6 +64,9 @@
           py-indent-offset size
           python-indent size
           ruby-indent-level size
+      		web-mode-markup-indent-offset size
+          web-mode-css-indent-offset size
+          web-mode-code-indent-offset size
           ;(make-local-variable 'sgml-basic-offset) size
           tab-stop-list (let ((stops (cons size ())))
                           (while (< (car stops) 120)
