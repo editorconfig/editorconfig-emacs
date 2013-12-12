@@ -48,45 +48,45 @@
 
 (defun edconf-set-indentation (style &optional size tab_width)
   "Set indentation type from given style and size"
-  (setq web-mode-indent-style 2)
+  (set (make-local-variable 'web-mode-indent-style) 2)
   (when (equal style "space")
-    (setq indent-tabs-mode nil)
-    (if size
-      (setq size (string-to-number size)
-            LaTeX-indent-level size
-            LaTeX-item-indent size
-            TeX-brace-indent-level size
-            c-basic-offset size
-            cmake-tab-width size
-            coffee-tab-width size
-            cperl-indent-level size
-            css-indent-offset size
-            haskell-indent-offset size
-            shm-indent-spaces size
-            js-indent-level size
-            js2-basic-offset size
-            js3-indent-level size
-            lisp-indent-offset size
-            perl-indent-level size
-            py-indent-offset size
-            python-indent size
-            ruby-indent-level size
-            sh-basic-offset size
-            sh-indentation size
-            web-mode-markup-indent-offset size
-            web-mode-css-indent-offset size
-            web-mode-code-indent-offset size
-            ;(make-local-variable 'sgml-basic-offset) size
-            tab-stop-list (let ((stops (cons size ())))
-                            (while (< (car stops) 120)
-                              (setq stops (cons
-                                           (+ size (car stops))
-                                           stops)))
-                            (nreverse stops)))))
+    (set (make-local-variable 'indent-tabs-mode) nil)
+    (when size
+      (setq size (string-to-number size))
+      (set (make-local-variable 'LaTeX-indent-level) size)
+      (set (make-local-variable 'LaTeX-item-indent) size)
+      (set (make-local-variable 'TeX-brace-indent-level) size)
+      (set (make-local-variable 'c-basic-offset) size)
+      (set (make-local-variable 'cmake-tab-width) size)
+      (set (make-local-variable 'coffee-tab-width) size)
+      (set (make-local-variable 'cperl-indent-level) size)
+      (set (make-local-variable 'css-indent-offset) size)
+      (set (make-local-variable 'haskell-indent-offset) size)
+      (set (make-local-variable 'shm-indent-spaces) size)
+      (set (make-local-variable 'js-indent-level) size)
+      (set (make-local-variable 'js2-basic-offset) size)
+      (set (make-local-variable 'js3-indent-level) size)
+      (set (make-local-variable 'lisp-indent-offset) size)
+      (set (make-local-variable 'perl-indent-level) size)
+      (set (make-local-variable 'py-indent-offset) size)
+      (set (make-local-variable 'python-indent) size)
+      (set (make-local-variable 'ruby-indent-level) size)
+      (set (make-local-variable 'sh-basic-offset) size)
+      (set (make-local-variable 'sh-indentation) size)
+      (set (make-local-variable 'web-mode-markup-indent-offset) size)
+      (set (make-local-variable 'web-mode-css-indent-offset) size)
+      (set (make-local-variable 'web-mode-code-indent-offset) size)
+      ;(set (make-local-variable 'sgml-basic-offset) size)
+      (set (make-local-variable 'tab-stop-list) (let ((stops (cons size ())))
+                                                  (while (< (car stops) 120)
+                                                    (setq stops (cons
+                                                                 (+ size (car stops))
+                                                                 stops)))
+                                                  (nreverse stops)))))
   (when (equal style "tab")
-    (setq indent-tabs-mode t))
+    (set (make-local-variable 'indent-tabs-mode) t))
   (if tab_width
-      (setq tab-width (string-to-number tab_width))))
+      (set (make-local-variable 'tab-width) (string-to-number tab_width))))
 
 (defun edconf-set-line-ending (end-of-line)
   "Set line ending style to CR, LF, or CRLF"
@@ -102,13 +102,13 @@
   (cond
    ((equal final-newline "true")
     ;; keep prefs around how/when the nl is added, if set - otherwise add on save
-    (setq      require-final-newline      (or require-final-newline t)
-               mode-require-final-newline (or mode-require-final-newline t)))
+    (set      (make-local-variable 'require-final-newline)      (or require-final-newline t))
+    (set      (make-local-variable 'mode-require-final-newline) (or mode-require-final-newline t)))
    ((equal final-newline "false")
     ;; FIXME: Add functionality for actually REMOVING any trailing newlines here!
     ;;        (rather than just making sure we don't automagically ADD a new one)
-    (setq      require-final-newline nil
-               mode-require-final-newline nil))))
+    (set      (make-local-variable 'require-final-newline) nil)
+    (set      (make-local-variable 'mode-require-final-newline) nil))))
 
 (defun edconf-set-trailing-ws (trim-trailing-ws)
   "set up trimming of trailing whitespace at end of lines"
