@@ -46,47 +46,98 @@
 
 (defvar edconf-exec-path "editorconfig")
 
+(defcustom edconf-indentation-alist
+  '((emacs-lisp-mode lisp-indent-offset)
+    (lisp-mode lisp-indent-offset)
+    (c-mode c-basic-offset)
+    (c++-mode c-basic-offset)
+    (objc-mode c-basic-offset)
+    (java-mode c-basic-offset)
+    (idl-mode c-basic-offset)
+    (pike-mode c-basic-offset)
+    (awk-mode c-basic-offset)
+    (cmake-mode cmake-tab-width)
+    (coffee-mode coffee-tab-width)
+    (cperl-mode cperl-indent-level)
+    (css-mode css-indent-offset)
+    (haskell-mode haskell-indent-spaces
+                  haskell-indent-offset
+                  shm-indent-spaces)
+    (js-mode js-indent-level)
+    (json-mode js-indent-level)
+    (js2-mode js2-basic-offset)
+    (js3-mode js3-indent-level)
+    (perl-mode perl-indent-level)
+    (python-mode python-indent-offset)
+    (ruby-mode ruby-indent-level)
+    (sh-mode sh-basic-offset sh-indentation)
+    (nxml-mode nxml-child-indent (nxml-attribute-indent . 2))
+    (livescript-mode livescript-tab-width)
+    (mustache-mode mustache-basic-offset)
+    (scala-mode scala-indent:step)
+    (groovy-mode c-basic-offset))
+  "Alist of indentation setting methods by modes.
+
+Each element looks like (MODE . FUNCTION) or (MODE . INDENT-SPEC-LIST).
+
+If FUNCTION is provided, it will be called when setting the indentation.  The
+indent size will be passed.
+
+If INDENT-SPEC-LIST is provided, each element of it must have one of the
+following forms:
+
+ 1. VARIABLE
+
+    It means (VARIABLE . 1).
+
+ 2. (VARIABLE . SPEC)
+
+    Setting VARIABLE according to the type of SPEC:
+
+      - Integer
+
+        The value is (* SPEC INDENT-SIZE);
+
+      - Function
+
+        The value is (funcall SPEC INDENT-SIZE);
+
+      - Any other type.
+
+        The value is SPEC.
+
+NOTE: Only the **buffer local** value of VARIABLE will be set."
+  :type '(alist :key-type symbol :value-type sexp)
+  :risky t
+  :group 'editorconfig)
+
 (defun edconf-set-indentation (style &optional size tab_width)
   "Set indentation type from given style and size"
-  (set (make-local-variable 'web-mode-indent-style) 2)
-  (when (equal style "space")
-    (set (make-local-variable 'indent-tabs-mode) nil)
-    (when size
-      (setq size (string-to-number size))
-      (set (make-local-variable 'LaTeX-indent-level) size)
-      (set (make-local-variable 'LaTeX-item-indent) size)
-      (set (make-local-variable 'TeX-brace-indent-level) size)
-      (set (make-local-variable 'c-basic-offset) size)
-      (set (make-local-variable 'cmake-tab-width) size)
-      (set (make-local-variable 'coffee-tab-width) size)
-      (set (make-local-variable 'cperl-indent-level) size)
-      (set (make-local-variable 'css-indent-offset) size)
-      (set (make-local-variable 'haskell-indent-offset) size)
-      (set (make-local-variable 'shm-indent-spaces) size)
-      (set (make-local-variable 'js-indent-level) size)
-      (set (make-local-variable 'js2-basic-offset) size)
-      (set (make-local-variable 'js3-indent-level) size)
-      (set (make-local-variable 'lisp-indent-offset) size)
-      (set (make-local-variable 'perl-indent-level) size)
-      (set (make-local-variable 'py-indent-offset) size)
-      (set (make-local-variable 'python-indent) size)
-      (set (make-local-variable 'ruby-indent-level) size)
-      (set (make-local-variable 'sh-basic-offset) size)
-      (set (make-local-variable 'sh-indentation) size)
-      (set (make-local-variable 'web-mode-markup-indent-offset) size)
-      (set (make-local-variable 'web-mode-css-indent-offset) size)
-      (set (make-local-variable 'web-mode-code-indent-offset) size)
-      ;(set (make-local-variable 'sgml-basic-offset) size)
-      (set (make-local-variable 'tab-stop-list) (let ((stops (cons size ())))
-                                                  (while (< (car stops) 120)
-                                                    (setq stops (cons
-                                                                 (+ size (car stops))
-                                                                 stops)))
-                                                  (nreverse stops)))))
-  (when (equal style "tab")
-    (set (make-local-variable 'indent-tabs-mode) t))
-  (if tab_width
-      (set (make-local-variable 'tab-width) (string-to-number tab_width))))
+  (make-local-variable 'indent-tabs-mode)
+  (make-local-variable 'tab-width)
+  (when (and size (not (equal size "tab")))
+    (setq size (string-to-number size)))
+  (setq tab-width (cond (tab_width (string-to-number tab_width))
+                        ((numberp size) size)
+                        (t tab-width)))
+  (when (equal size "tab")
+    (setq size tab-width))
+  (cond ((equal style "space")
+         (setq indent-tabs-mode nil))
+        ((equal style "tab")
+         (setq indent-tabs-mode t)))
+  (when size
+    (let ((fn-or-list (cdr (assoc major-mode edconf-indentation-alist))))
+      (cond ((functionp fn-or-list) (funcall fn-or-list size))
+            ((listp fn-or-list)
+             (dolist (elem fn-or-list)
+               (cond ((symbolp elem) (set (make-local-variable elem) size))
+                     ((consp elem)
+                      (let ((spec (cdr elem)))
+                        (set (make-local-variable (car elem))
+                             (cond ((functionp spec) (funcall spec size))
+                                   ((integerp spec) (* spec size))
+                                   (t spec))))))))))))
 
 (defun edconf-set-line-ending (end-of-line)
   "Set line ending style to CR, LF, or CRLF"
