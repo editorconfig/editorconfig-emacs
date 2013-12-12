@@ -47,8 +47,8 @@
 (defvar edconf-exec-path "editorconfig")
 
 (defun edconf-set-indentation (style &optional size tab_width)
-  (setq web-mode-indent-style 2)
   "Set indentation type from given style and size"
+  (setq web-mode-indent-style 2)
   (when (equal style "space")
     (setq indent-tabs-mode nil)
     (if size
