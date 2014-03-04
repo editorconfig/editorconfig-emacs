@@ -156,17 +156,24 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
         ((equal style "tab")
          (setq indent-tabs-mode t)))
   (when size
-    (let ((fn-or-list (cdr (assoc major-mode edconf-indentation-alist))))
-      (cond ((functionp fn-or-list) (funcall fn-or-list size))
-            ((listp fn-or-list)
-             (dolist (elem fn-or-list)
-               (cond ((symbolp elem) (set (make-local-variable elem) size))
-                     ((consp elem)
-                      (let ((spec (cdr elem)))
-                        (set (make-local-variable (car elem))
-                             (cond ((functionp spec) (funcall spec size))
-                                   ((integerp spec) (* spec size))
-                                   (t spec))))))))))))
+    (let ((parent major-mode)
+          entry)
+      ;; Find the closet parent mode of `major-mode' in
+      ;; `edconf-indentation-alist'.
+      (while (and (not (setq entry (assoc parent edconf-indentation-alist)))
+                  (setq parent (get parent 'derived-mode-parent))))
+      (when entry
+        (let ((fn-or-list (cdr entry)))
+          (cond ((functionp fn-or-list) (funcall fn-or-list size))
+                ((listp fn-or-list)
+                 (dolist (elem fn-or-list)
+                   (cond ((symbolp elem) (set (make-local-variable elem) size))
+                         ((consp elem)
+                          (let ((spec (cdr elem)))
+                            (set (make-local-variable (car elem))
+                                 (cond ((functionp spec) (funcall spec size))
+                                       ((integerp spec) (* spec size))
+                                       (t spec))))))))))))))
 
 (defun edconf-set-line-ending (end-of-line)
   "Set line ending style to CR, LF, or CRLF"
