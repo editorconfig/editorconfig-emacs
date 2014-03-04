@@ -68,14 +68,20 @@
     (js2-mode js2-basic-offset)
     (js3-mode js3-indent-level)
     (perl-mode perl-indent-level)
-    (python-mode python-indent-offset)
+    (python-mode . edconf-set-indentation/python-mode)
     (ruby-mode ruby-indent-level)
     (sh-mode sh-basic-offset sh-indentation)
     (nxml-mode nxml-child-indent (nxml-attribute-indent . 2))
+    (sgml-mode sgml-basic-offset)
     (livescript-mode livescript-tab-width)
     (mustache-mode mustache-basic-offset)
     (scala-mode scala-indent:step)
-    (groovy-mode c-basic-offset))
+    (groovy-mode c-basic-offset)
+    (latex-mode . edconf-set-indentation/latex-mode)
+    (web-mode (web-mode-indent-style . (lambda (size) 2))
+              web-mode-markup-indent-offset
+              web-mode-css-indent-offset
+              web-mode-code-indent-offset))
   "Alist of indentation setting methods by modes.
 
 Each element looks like (MODE . FUNCTION) or (MODE . INDENT-SPEC-LIST).
@@ -110,6 +116,29 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   :type '(alist :key-type symbol :value-type sexp)
   :risky t
   :group 'editorconfig)
+
+(defun edconf-set-indentation/python-mode (size)
+  (set (make-local-variable (if (or (> emacs-major-version 24)
+                                    (and (= emacs-major-version 24)
+                                         (>= emacs-minor-version 3)))
+                                'python-indent-offset
+                              'python-indent))
+       size)
+  ;; For https://launchpad.net/python-mode
+  (when (boundp 'py-indent-offset)
+    (set (make-local-variable 'py-indent-offset) size)))
+
+(defun edconf-set-indentation/latex-mode (size)
+  (set (make-local-variable 'tex-indent-basic) size)
+  (set (make-local-variable 'tex-indent-item) size)
+  (set (make-local-variable 'tex-indent-arg) (* 2 size))
+  ;; For AUCTeX
+  (when (boundp 'TeX-brace-indent-level)
+    (set (make-local-variable 'TeX-brace-indent-level) size))
+  (when (boundp 'LaTeX-indent-level)
+    (set (make-local-variable 'LaTeX-indent-level) size))
+  (when (boundp 'LaTeX-item-indent)
+    (set (make-local-variable 'LaTeX-item-indent) (- size))))
 
 (defun edconf-set-indentation (style &optional size tab_width)
   "Set indentation type from given style and size"
