@@ -57,6 +57,8 @@
           TeX-brace-indent-level size
           c-basic-offset size
           cperl-indent-level size
+          haskell-indent-offset size
+          shm-indent-spaces size
           js-indent-level size
           js2-basic-offset size
           lisp-indent-offset size
