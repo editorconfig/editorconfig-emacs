@@ -56,6 +56,7 @@
           LaTeX-item-indent size
           TeX-brace-indent-level size
           c-basic-offset size
+          cmake-tab-width size
           cperl-indent-level size
           haskell-indent-offset size
           shm-indent-spaces size
