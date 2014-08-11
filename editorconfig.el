@@ -70,6 +70,7 @@
             python-indent size
             ruby-indent-level size
             sh-basic-offset size
+            sh-indentation size
             web-mode-markup-indent-offset size
             web-mode-css-indent-offset size
             web-mode-code-indent-offset size
