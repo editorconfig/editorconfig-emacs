@@ -64,6 +64,7 @@
             shm-indent-spaces size
             js-indent-level size
             js2-basic-offset size
+            js3-indent-level size
             lisp-indent-offset size
             perl-indent-level size
             py-indent-offset size
