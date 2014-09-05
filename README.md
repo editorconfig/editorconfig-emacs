@@ -7,10 +7,10 @@ This is an [EditorConfig][] plugin for Emacs.
 Download the [EditorConfig core][] and follow the instructions in the README
 and INSTALL files to install it.
 
-Once EditorConfig core is installed, copy [`editorconfig.el`][] to `~/.emacs.d/`
+Once EditorConfig core is installed, copy [`editorconfig.el`][] to `~/.emacs.d/lisp`
 and add the following to your `~/.emacs` file:
 
-    (add-to-list 'load-path "~/.emacs.d/")
+    (add-to-list 'load-path "~/.emacs.d/lisp")
     (load "editorconfig")
 
 Alternatively, you can find the package available on [Marmalade](http://marmalade-repo.org/packages/editorconfig).
