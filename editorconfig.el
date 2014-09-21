@@ -60,6 +60,7 @@
             cmake-tab-width size
             coffee-tab-width size
             cperl-indent-level size
+            css-indent-offset size
             haskell-indent-offset size
             shm-indent-spaces size
             js-indent-level size
