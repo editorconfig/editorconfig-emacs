@@ -81,7 +81,8 @@
     (web-mode (web-mode-indent-style . (lambda (size) 2))
               web-mode-markup-indent-offset
               web-mode-css-indent-offset
-              web-mode-code-indent-offset))
+              web-mode-code-indent-offset)
+    (erlang-mode erlang-indent-level))
   "Alist of indentation setting methods by modes.
 
 Each element looks like (MODE . FUNCTION) or (MODE . INDENT-SPEC-LIST).
