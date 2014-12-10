@@ -33,7 +33,7 @@ Current Emacs plugin coverage for EditorConfig's [properties][]:
 * `root` (only used by EditorConfig core)
 
 Not yet covered properties marked with <del>over-strike</del>
-– pull requests implementin missing features warmly welcomed!
+– pull requests implementing missing features warmly welcomed!
 Typically, you will want to tie these to native functionality,
 or the configuration of existing packages handling the feature.
 
