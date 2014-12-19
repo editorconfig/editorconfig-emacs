@@ -30,6 +30,7 @@ Current Emacs plugin coverage for EditorConfig's [properties][]:
   (as in trailing newlines actually being removed automagically),
   we just buffer-locally override any preferences that would auto-add them
   to files `.editorconfig` marks as trailing-newline-free
+* `max_line_length`
 * `root` (only used by EditorConfig core)
 
 Not yet covered properties marked with <del>over-strike</del>

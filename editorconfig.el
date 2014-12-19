@@ -219,7 +219,8 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 
 (defun edconf-set-line-length (length)
   "set the max line length (fill-column)"
-  (set-fill-column (string-to-number length)))
+  (if length
+    (set-fill-column (string-to-number length))))
 
 (defun edconf-get-properties ()
   "Call EditorConfig core and return output"
