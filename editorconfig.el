@@ -44,7 +44,11 @@
 
 ;;; Code:
 
-(defvar edconf-exec-path "editorconfig")
+(defcustom edconf-exec-path
+  "editorconfig"
+  "EditorConfig command"
+  :type 'string
+  :group 'editorconfig)
 
 (defcustom edconf-indentation-alist
   '((emacs-lisp-mode lisp-indent-offset)
