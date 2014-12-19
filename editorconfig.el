@@ -119,6 +119,10 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   :risky t
   :group 'editorconfig)
 
+(defun edconf-string-integer-p (string)
+  "Whether a string representing integer"
+  (string-match-p "\\`[0-9]+\\'" string))
+
 (defun edconf-set-indentation/python-mode (size)
   (set (make-local-variable (if (or (> emacs-major-version 24)
                                     (and (= emacs-major-version 24)
@@ -146,8 +150,9 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   "Set indentation type from given style and size"
   (make-local-variable 'indent-tabs-mode)
   (make-local-variable 'tab-width)
-  (when (and size (not (equal size "tab")))
-    (setq size (string-to-number size)))
+  (if (and (edconf-string-integer-p size) (not (equal size "tab")))
+    (setq size (string-to-number size))
+    (setq size nil))
   (setq tab-width (cond (tab_width (string-to-number tab_width))
                         ((numberp size) size)
                         (t tab-width)))
@@ -219,7 +224,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 
 (defun edconf-set-line-length (length)
   "set the max line length (fill-column)"
-  (if length
+  (when (edconf-string-integer-p length)
     (set-fill-column (string-to-number length))))
 
 (defun edconf-get-properties ()
