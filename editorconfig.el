@@ -50,6 +50,27 @@
   :type 'string
   :group 'editorconfig)
 
+(defcustom edconf-custom-hooks ()
+  "A list of custom hooks after loading common EditorConfig settings
+
+Each element in this list is a hook function. This hook function takes one
+parameter, which is a property hash table. The value of properties can be
+obtained through gethash function.
+
+The hook does not have to be coding style related; you can add whatever
+functionality you want. For example, the following is an example to add a new
+property emacs_linum to decide whether to show line numbers on the left
+
+(add-to-list 'edconf-custom-hooks
+  '(lambda (props)
+     (let ((show-line-num (gethash 'emacs_linum props)))
+       (cond ((equal show-line-num \"true\") (linum-mode 1))
+         ((equal show-line-num \"false\") (linum-mode 0))))))
+
+"
+  :type '(lambda (properties) (body))
+  :group 'editorconfig)
+
 (defcustom edconf-indentation-alist
   '((emacs-lisp-mode lisp-indent-offset)
     (lisp-mode lisp-indent-offset)
@@ -266,7 +287,9 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
       (edconf-set-line-ending (gethash 'end_of_line props))
       (edconf-set-trailing-nl (gethash 'insert_final_newline props))
       (edconf-set-trailing-ws (gethash 'trim_trailing_whitespace props))
-      (edconf-set-line-length (gethash 'max_line_length props)))))
+      (edconf-set-line-length (gethash 'max_line_length props))
+      (dolist (hook edconf-custom-hooks)
+        (funcall hook props)))))
 
 ;;;###autoload
 (add-hook 'find-file-hook 'edconf-find-file-hook)
