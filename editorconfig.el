@@ -121,7 +121,9 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 
 (defun edconf-string-integer-p (string)
   "Whether a string representing integer"
-  (string-match-p "\\`[0-9]+\\'" string))
+  (if (stringp string)
+    (string-match-p "\\`[0-9]+\\'" string)
+    nil))
 
 (defun edconf-set-indentation/python-mode (size)
   (set (make-local-variable (if (or (> emacs-major-version 24)
@@ -150,9 +152,9 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   "Set indentation type from given style and size"
   (make-local-variable 'indent-tabs-mode)
   (make-local-variable 'tab-width)
-  (if (and (edconf-string-integer-p size) (not (equal size "tab")))
+  (if (edconf-string-integer-p size)
     (setq size (string-to-number size))
-    (setq size nil))
+    (when (not (equal size "tab")) (setq size nil)))
   (setq tab-width (cond (tab_width (string-to-number tab_width))
                         ((numberp size) size)
                         (t tab-width)))
