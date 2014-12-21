@@ -3,7 +3,7 @@
 ;; Copyright (C) 2011-2014 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-;; Version: 0.3
+;; Version: 0.4
 ;; URL: http://github.com/editorconfig/editorconfig-emacs#readme
 
 ;; See
