@@ -87,7 +87,8 @@
               web-mode-css-indent-offset
               web-mode-code-indent-offset
               web-mode-script-padding
-              web-mode-style-padding))
+              web-mode-style-padding)
+    (erlang-mode erlang-indent-level))
   "Alist of indentation setting methods by modes.
 
 Each element looks like (MODE . FUNCTION) or (MODE . INDENT-SPEC-LIST).
