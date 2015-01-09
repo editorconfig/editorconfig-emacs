@@ -99,6 +99,7 @@ property emacs_linum to decide whether to show line numbers on the left
     (objc-mode c-basic-offset)
     (perl-mode perl-indent-level)
     (pike-mode c-basic-offset)
+    (puppet-mode pupper-indent-level)
     (python-mode . edconf-set-indentation/python-mode)
     (ruby-mode ruby-indent-level)
     (scala-mode scala-indent:step)
