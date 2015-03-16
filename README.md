@@ -50,6 +50,21 @@ of things like [ws-trim](ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el).
 Bugs, feature requests, and other issues should be submitted to the issue
 tracker: https://github.com/editorconfig/editorconfig-emacs/issues
 
+## License
+
+EditorConfig Emacs Plugin is free software: you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 [EditorConfig]: http://editorconfig.org
 [EditorConfig C Core]: https://github.com/editorconfig/editorconfig-core-c
 [properties]: http://editorconfig.org/#supported-properties
