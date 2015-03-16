@@ -4,7 +4,7 @@ This is an [EditorConfig][] plugin for Emacs.
 
 ## Installation
 
-Download the [EditorConfig core][] and follow the instructions in the README
+Download the [EditorConfig C Core][] and follow the instructions in the README
 and INSTALL files to install it.
 
 Once EditorConfig core is installed, copy [`editorconfig.el`][] to `~/.emacs.d/lisp`
@@ -47,10 +47,10 @@ of things like [ws-trim](ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el).
 
 ## Submitting Bugs and Feature Requests
 
-Bugs, feature requests, and other issues should be submitted to the main
-EditorConfig issue tracker: https://github.com/editorconfig/editorconfig/issues
+Bugs, feature requests, and other issues should be submitted to the issue
+tracker: https://github.com/editorconfig/editorconfig-emacs/issues
 
 [EditorConfig]: http://editorconfig.org
-[EditorConfig core]: https://github.com/editorconfig/editorconfig-core
+[EditorConfig C Core]: https://github.com/editorconfig/editorconfig-core-c
 [properties]: http://editorconfig.org/#supported-properties
 [`editorconfig.el`]: https://github.com/editorconfig/editorconfig-emacs/raw/master/editorconfig.el
