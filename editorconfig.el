@@ -276,7 +276,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 
 ;;;###autoload
 (defun edconf-find-file-hook ()
-  (when (executable-find edconf-exec-path)
+  (if (executable-find edconf-exec-path)
     (let ((props (edconf-parse-properties (edconf-get-properties))))
       (edconf-set-indentation (gethash 'indent_style props)
                               (gethash 'indent_size props)
@@ -286,8 +286,8 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
       (edconf-set-trailing-ws (gethash 'trim_trailing_whitespace props))
       (edconf-set-line-length (gethash 'max_line_length props))
       (dolist (hook edconf-custom-hooks)
-        (funcall hook props)))))
-
+        (funcall hook props)))
+    (display-warning :error "Unable to find editorconfig executable.  Styles will not be applied.")))
 ;;;###autoload
 (add-hook 'find-file-hook 'edconf-find-file-hook)
 
