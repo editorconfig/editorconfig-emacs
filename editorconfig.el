@@ -291,6 +291,8 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 ;;;###autoload
 (add-hook 'find-file-hook 'edconf-find-file-hook)
 
+(add-to-list 'auto-mode-alist '("\\.editorconfig" . conf-unix-mode)
+
 (provide 'editorconfig)
 
 ;;; editorconfig.el ends here
