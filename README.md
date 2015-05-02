@@ -1,4 +1,4 @@
-# EditorConfig Emacs Plugin
+# EditorConfig Emacs Plugin [![Build Status](https://travis-ci.org/editorconfig/editorconfig-emacs.svg?branch=master)](https://travis-ci.org/editorconfig/editorconfig-emacs)
 
 This is an [EditorConfig][] plugin for Emacs.
 
