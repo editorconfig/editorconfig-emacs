@@ -187,7 +187,8 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
         ((equal style "tab")
          (setq indent-tabs-mode t)))
   (when size
-    (setq-local evil-shift-width size)
+    (when (featurep 'evil)
+      (setq-local evil-shift-width size))
     (let ((parent major-mode)
           entry)
       ;; Find the closet parent mode of `major-mode' in
