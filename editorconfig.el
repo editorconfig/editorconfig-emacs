@@ -289,7 +289,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
       (edconf-set-line-length (gethash 'max_line_length props))
       (dolist (hook edconf-custom-hooks)
         (funcall hook props)))
-    (display-warning :error "Unable to find editorconfig executable.  Styles will not be applied.")))
+    (message "Unable to find editorconfig executable.  Styles will not be applied.")))
 ;;;###autoload
 (add-hook 'find-file-hook 'edconf-find-file-hook)
 
