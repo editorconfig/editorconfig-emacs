@@ -4,10 +4,10 @@
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.4
-;; URL: http://github.com/editorconfig/editorconfig-emacs#readme
+;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
 
 ;; See
-;; http://github.com/editorconfig/editorconfig-emacs/graphs/contributors
+;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
 ;; or the CONTRIBUTORS file for the list of contributors.
 
 ;; This file is part of EditorConfig Emacs Plugin.
@@ -23,7 +23,7 @@
 ;; Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License along with
-;; EditorConfig Emacs Plugin. If not, see <http://www.gnu.org/licenses/>.
+;; EditorConfig Emacs Plugin. If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
