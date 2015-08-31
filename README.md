@@ -1,6 +1,6 @@
 # EditorConfig Emacs Plugin [![Build Status](https://travis-ci.org/editorconfig/editorconfig-emacs.svg?branch=master)](https://travis-ci.org/editorconfig/editorconfig-emacs)
 
-This is an [EditorConfig][] plugin for Emacs.
+This is an [EditorConfig][] plugin for [Emacs](https://www.gnu.org/software/emacs/).
 
 ## Installation
 
@@ -63,7 +63,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
-with this program.  If not, see <http://www.gnu.org/licenses/>.
+with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 [EditorConfig]: http://editorconfig.org
 [EditorConfig C Core]: https://github.com/editorconfig/editorconfig-core-c
