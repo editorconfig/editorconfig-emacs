@@ -47,7 +47,7 @@
 (defcustom edconf-get-properties-function
   'edconf-get-properties-from-exec
   "Function to get EditorConofig properties for current buffer.
-This function willl be called with no argument and should return a hash object
+This function will be called with no argument and should return a hash object
 containing properties, or nil if any core program is not available.
 The hash object should have symbols of property names as keys and strings of
 property values as values."
