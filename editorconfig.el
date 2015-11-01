@@ -3,7 +3,7 @@
 ;; Copyright (C) 2011-2015 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-;; Version: 0.4
+;; Version: 0.5
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
 
 ;; See
@@ -43,6 +43,10 @@
   "EditorConfig command"
   :type 'string
   :group 'editorconfig)
+(define-obsolete-variable-alias
+  'edconf-exec-path
+  'editorconfig-exec-path
+  "0.5")
 
 (defcustom editorconfig-get-properties-function
   'editorconfig-get-properties-from-exec
@@ -53,6 +57,10 @@ The hash object should have symbols of property names as keys and strings of
 property values as values."
   :type 'function
   :group 'editorconfig)
+(define-obsolete-variable-alias
+  'edconf-get-properties-function
+  'editorconfig-get-properties-function
+  "0.5")
 
 (defcustom editorconfig-custom-hooks ()
   "A list of custom hooks after loading common EditorConfig settings
@@ -74,6 +82,10 @@ property emacs_linum to decide whether to show line numbers on the left
 "
   :type '(lambda (properties) (body))
   :group 'editorconfig)
+(define-obsolete-variable-alias
+  'edconf-custom-hooks
+  'editorconfig-custom-hooks
+  "0.5")
 
 (defcustom editorconfig-indentation-alist
   '((awk-mode c-basic-offset)
@@ -150,6 +162,10 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   :type '(alist :key-type symbol :value-type sexp)
   :risky t
   :group 'editorconfig)
+(define-obsolete-variable-alias
+  'edconf-indentation-alist
+  'editorconfig-indentation-alist
+  "0.5")
 
 (defun editorconfig-string-integer-p (string)
   "Whether a string representing integer"
