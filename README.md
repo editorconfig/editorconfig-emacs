@@ -12,6 +12,7 @@ and add the following to your `~/.emacs` file:
 
     (add-to-list 'load-path "~/.emacs.d/lisp")
     (load "editorconfig")
+    (editorconfig-mode 1)
 
 Alternatively, you can find the package available on [Marmalade](http://marmalade-repo.org/packages/editorconfig).
 
