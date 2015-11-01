@@ -311,7 +311,15 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
           (funcall hook props)))
       (display-warning :error "EditorConfig core program is not available.  Styles will not be applied."))))
 ;;;###autoload
-(add-hook 'find-file-hook 'edconf-find-file-hook)
+(define-minor-mode edconf-mode
+  "Toggle EditorConfig feature."
+  :global t
+  :lighter ""
+  (if edconf-mode
+    (add-hook 'find-file-hook
+      'edconf-find-file-hook)
+    (remove-hook 'find-file-hook
+      'edconf-find-file-hook)))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("/\\.editorconfig\\'" . conf-unix-mode))
