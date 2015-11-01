@@ -38,14 +38,14 @@
 
 ;;; Code:
 
-(defcustom edconf-exec-path
+(defcustom editorconfig-exec-path
   "editorconfig"
   "EditorConfig command"
   :type 'string
   :group 'editorconfig)
 
-(defcustom edconf-get-properties-function
-  'edconf-get-properties-from-exec
+(defcustom editorconfig-get-properties-function
+  'editorconfig-get-properties-from-exec
   "Function to get EditorConofig properties for current buffer.
 This function will be called with no argument and should return a hash object
 containing properties, or nil if any core program is not available.
@@ -54,7 +54,7 @@ property values as values."
   :type 'function
   :group 'editorconfig)
 
-(defcustom edconf-custom-hooks ()
+(defcustom editorconfig-custom-hooks ()
   "A list of custom hooks after loading common EditorConfig settings
 
 Each element in this list is a hook function. This hook function takes one
@@ -65,7 +65,7 @@ The hook does not have to be coding style related; you can add whatever
 functionality you want. For example, the following is an example to add a new
 property emacs_linum to decide whether to show line numbers on the left
 
-(add-to-list 'edconf-custom-hooks
+(add-to-list 'editorconfig-custom-hooks
   '(lambda (props)
      (let ((show-line-num (gethash 'emacs_linum props)))
        (cond ((equal show-line-num \"true\") (linum-mode 1))
@@ -75,7 +75,7 @@ property emacs_linum to decide whether to show line numbers on the left
   :type '(lambda (properties) (body))
   :group 'editorconfig)
 
-(defcustom edconf-indentation-alist
+(defcustom editorconfig-indentation-alist
   '((awk-mode c-basic-offset)
     (c++-mode c-basic-offset)
     (c-mode c-basic-offset)
@@ -95,7 +95,7 @@ property emacs_linum to decide whether to show line numbers on the left
     (js2-mode js2-basic-offset)
     (js3-mode js3-indent-level)
     (json-mode js-indent-level)
-    (latex-mode . edconf-set-indentation/latex-mode)
+    (latex-mode . editorconfig-set-indentation/latex-mode)
     (lisp-mode lisp-indent-offset)
     (livescript-mode livescript-tab-width)
     (mustache-mode mustache-basic-offset)
@@ -104,7 +104,7 @@ property emacs_linum to decide whether to show line numbers on the left
     (perl-mode perl-indent-level)
     (pike-mode c-basic-offset)
     (puppet-mode puppet-indent-level)
-    (python-mode . edconf-set-indentation/python-mode)
+    (python-mode . editorconfig-set-indentation/python-mode)
     (ruby-mode ruby-indent-level)
     (scala-mode scala-indent:step)
     (sgml-mode sgml-basic-offset)
@@ -151,13 +151,13 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   :risky t
   :group 'editorconfig)
 
-(defun edconf-string-integer-p (string)
+(defun editorconfig-string-integer-p (string)
   "Whether a string representing integer"
   (if (stringp string)
     (string-match-p "\\`[0-9]+\\'" string)
     nil))
 
-(defun edconf-set-indentation/python-mode (size)
+(defun editorconfig-set-indentation/python-mode (size)
   (set (make-local-variable (if (or (> emacs-major-version 24)
                                     (and (= emacs-major-version 24)
                                          (>= emacs-minor-version 3)))
@@ -168,7 +168,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   (when (boundp 'py-indent-offset)
     (set (make-local-variable 'py-indent-offset) size)))
 
-(defun edconf-set-indentation/latex-mode (size)
+(defun editorconfig-set-indentation/latex-mode (size)
   (set (make-local-variable 'tex-indent-basic) size)
   (set (make-local-variable 'tex-indent-item) size)
   (set (make-local-variable 'tex-indent-arg) (* 2 size))
@@ -180,11 +180,11 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   (when (boundp 'LaTeX-item-indent)
     (set (make-local-variable 'LaTeX-item-indent) (- size))))
 
-(defun edconf-set-indentation (style &optional size tab_width)
+(defun editorconfig-set-indentation (style &optional size tab_width)
   "Set indentation type from given style and size"
   (make-local-variable 'indent-tabs-mode)
   (make-local-variable 'tab-width)
-  (if (edconf-string-integer-p size)
+  (if (editorconfig-string-integer-p size)
     (setq size (string-to-number size))
     (when (not (equal size "tab")) (setq size nil)))
   (setq tab-width (cond (tab_width (string-to-number tab_width))
@@ -202,8 +202,8 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
     (let ((parent major-mode)
           entry)
       ;; Find the closet parent mode of `major-mode' in
-      ;; `edconf-indentation-alist'.
-      (while (and (not (setq entry (assoc parent edconf-indentation-alist)))
+      ;; `editorconfig-indentation-alist'.
+      (while (and (not (setq entry (assoc parent editorconfig-indentation-alist)))
                   (setq parent (get parent 'derived-mode-parent))))
       (when entry
         (let ((fn-or-list (cdr entry)))
@@ -218,7 +218,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
                                        ((integerp spec) (* spec size))
                                        (t spec))))))))))))))
 
-(defun edconf-set-line-ending (end-of-line)
+(defun editorconfig-set-line-ending (end-of-line)
   "Set line ending style to CR, LF, or CRLF"
   (set-buffer-file-coding-system
    (cond
@@ -228,7 +228,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
     (t 'undecided))
    nil t))
 
-(defun edconf-set-trailing-nl (final-newline)
+(defun editorconfig-set-trailing-nl (final-newline)
   (cond
    ((equal final-newline "true")
     ;; keep prefs around how/when the nl is added, if set - otherwise add on save
@@ -240,7 +240,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
     (set      (make-local-variable 'require-final-newline) nil)
     (set      (make-local-variable 'mode-require-final-newline) nil))))
 
-(defun edconf-set-trailing-ws (trim-trailing-ws)
+(defun editorconfig-set-trailing-ws (trim-trailing-ws)
   "set up trimming of trailing whitespace at end of lines"
   (make-local-variable 'write-file-functions) ;; just current buffer
   (when (equal trim-trailing-ws "true")
@@ -258,15 +258,15 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
       'delete-trailing-whitespace
       write-file-functions))))
 
-(defun edconf-set-line-length (length)
+(defun editorconfig-set-line-length (length)
   "set the max line length (fill-column)"
-  (when (edconf-string-integer-p length)
+  (when (editorconfig-string-integer-p length)
     (set-fill-column (string-to-number length))))
 
-(defun edconf-get-properties ()
+(defun editorconfig-get-properties ()
   "Call EditorConfig core and return output"
   (let ((oldbuf (current-buffer)))
-    (call-process edconf-exec-path nil "ecbuffer" nil (buffer-file-name oldbuf))
+    (call-process editorconfig-exec-path nil "ecbuffer" nil (buffer-file-name oldbuf))
     (set-buffer (get-buffer "ecbuffer"))
     (let (props-string)
       (setq props-string (buffer-string))
@@ -274,7 +274,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
       (kill-buffer (get-buffer "ecbuffer"))
       props-string)))
 
-(defun edconf-parse-properties (props-string)
+(defun editorconfig-parse-properties (props-string)
   "Create properties hash table from string of properties"
   (let (props-list properties)
     (setq props-list (split-string props-string "\n")
@@ -286,40 +286,40 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
                 (val (mapconcat 'identity (cdr key-val) "")))
             (puthash key val properties)))))))
 
-(defun edconf-get-properties-from-exec ()
-  "Get EditorConfig properties of current buffer by calling `edconf-exec-path'."
-  (if (executable-find edconf-exec-path)
-    (edconf-parse-properties (edconf-get-properties))
+(defun editorconfig-get-properties-from-exec ()
+  "Get EditorConfig properties of current buffer by calling `editorconfig-exec-path'."
+  (if (executable-find editorconfig-exec-path)
+    (editorconfig-parse-properties (editorconfig-get-properties))
     (display-warning :error
       "Unable to find editorconfig executable.")
     nil))
 
 ;;;###autoload
-(defun edconf-find-file-hook ()
-  (let ((props (and (functionp edconf-get-properties-function)
-                 (funcall edconf-get-properties-function))))
+(defun editorconfig-find-file-hook ()
+  (let ((props (and (functionp editorconfig-get-properties-function)
+                 (funcall editorconfig-get-properties-function))))
     (if props
       (progn
-        (edconf-set-indentation (gethash 'indent_style props)
+        (editorconfig-set-indentation (gethash 'indent_style props)
           (gethash 'indent_size props)
           (gethash 'tab_width props))
-        (edconf-set-line-ending (gethash 'end_of_line props))
-        (edconf-set-trailing-nl (gethash 'insert_final_newline props))
-        (edconf-set-trailing-ws (gethash 'trim_trailing_whitespace props))
-        (edconf-set-line-length (gethash 'max_line_length props))
-        (dolist (hook edconf-custom-hooks)
+        (editorconfig-set-line-ending (gethash 'end_of_line props))
+        (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
+        (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
+        (editorconfig-set-line-length (gethash 'max_line_length props))
+        (dolist (hook editorconfig-custom-hooks)
           (funcall hook props)))
       (display-warning :error "EditorConfig core program is not available.  Styles will not be applied."))))
 ;;;###autoload
-(define-minor-mode edconf-mode
+(define-minor-mode editorconfig-mode
   "Toggle EditorConfig feature."
   :global t
   :lighter ""
-  (if edconf-mode
+  (if editorconfig-mode
     (add-hook 'find-file-hook
-      'edconf-find-file-hook)
+      'editorconfig-find-file-hook)
     (remove-hook 'find-file-hook
-      'edconf-find-file-hook)))
+      'editorconfig-find-file-hook)))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("/\\.editorconfig\\'" . conf-unix-mode))
