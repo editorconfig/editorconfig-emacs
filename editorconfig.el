@@ -311,7 +311,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
     nil))
 
 ;;;###autoload
-(defun editorconfig-find-file-hook ()
+(defun editorconfig-apply ()
   (let ((props (and (functionp editorconfig-get-properties-function)
                  (funcall editorconfig-get-properties-function))))
     (if props
@@ -333,9 +333,9 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   :lighter ""
   (if editorconfig-mode
     (add-hook 'find-file-hook
-      'editorconfig-find-file-hook)
+      'editorconfig-apply)
     (remove-hook 'find-file-hook
-      'editorconfig-find-file-hook)))
+      'editorconfig-apply)))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("/\\.editorconfig\\'" . conf-unix-mode))
