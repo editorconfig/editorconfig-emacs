@@ -312,20 +312,23 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 
 ;;;###autoload
 (defun editorconfig-apply ()
-  (let ((props (and (functionp editorconfig-get-properties-function)
-                 (funcall editorconfig-get-properties-function))))
-    (if props
-      (progn
-        (editorconfig-set-indentation (gethash 'indent_style props)
-          (gethash 'indent_size props)
-          (gethash 'tab_width props))
-        (editorconfig-set-line-ending (gethash 'end_of_line props))
-        (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
-        (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
-        (editorconfig-set-line-length (gethash 'max_line_length props))
-        (dolist (hook editorconfig-custom-hooks)
-          (funcall hook props)))
-      (display-warning :error "EditorConfig core program is not available.  Styles will not be applied."))))
+  (when buffer-file-name
+    (let ((props (and (functionp editorconfig-get-properties-function)
+                   (funcall editorconfig-get-properties-function))))
+      (if props
+        (progn
+          (editorconfig-set-indentation (gethash 'indent_style props)
+            (gethash 'indent_size props)
+            (gethash 'tab_width props))
+          (editorconfig-set-line-ending (gethash 'end_of_line props))
+          (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
+          (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
+          (editorconfig-set-line-length (gethash 'max_line_length props))
+          (dolist (hook editorconfig-custom-hooks)
+
+            (funcall hook props)))
+        (display-warning :error "EditorConfig core program is not available.  Styles will not be applied.")))))
+
 ;;;###autoload
 (define-minor-mode editorconfig-mode
   "Toggle EditorConfig feature."
