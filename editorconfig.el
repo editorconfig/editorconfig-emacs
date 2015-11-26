@@ -281,14 +281,11 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 
 (defun editorconfig-get-properties ()
   "Call EditorConfig core and return output"
-  (let ((oldbuf (current-buffer)))
-    (call-process editorconfig-exec-path nil "ecbuffer" nil (buffer-file-name oldbuf))
-    (set-buffer (get-buffer "ecbuffer"))
-    (let (props-string)
-      (setq props-string (buffer-string))
-      (set-buffer oldbuf)
-      (kill-buffer (get-buffer "ecbuffer"))
-      props-string)))
+  (let ((filename (buffer-file-name)))
+    (with-temp-buffer
+      (setq default-directory "/")
+      (call-process editorconfig-exec-path nil t nil filename)
+      (buffer-string))))
 
 (defun editorconfig-parse-properties (props-string)
   "Create properties hash table from string of properties"
