@@ -15,8 +15,8 @@
 (when (getenv "EDITORCONFIG_CORE_LIBRARY_PATH")
   (setq load-path
         (append (split-string (getenv "EDITORCONFIG_CORE_LIBRARY_PATH")
-                             ":")
-               load-path)))
+                              ":")
+                load-path)))
 
 (require 'cl-lib)
 (require 'editorconfig-core)
