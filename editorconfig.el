@@ -5,6 +5,7 @@
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.5
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
+;; Package-Requires: ((editorconfig-core "20151107.831"))
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
