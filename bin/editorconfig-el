@@ -5,6 +5,31 @@
 
 ;; editorconfig-el --- EditorConfig Core executable in Emacs Lisp
 
+;; Copyright (C) 2011-2015 EditorConfig Team
+
+;; Author: EditorConfig Team <editorconfig@googlegroups.com>
+;; Version: 0.6
+;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
+
+;; See
+;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
+;; or the CONTRIBUTORS file for the list of contributors.
+
+;; This file is part of EditorConfig Emacs Plugin.
+
+;; EditorConfig Emacs Plugin is free software: you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or (at your
+;; option) any later version.
+
+;; EditorConfig Emacs Plugin is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+;; Public License for more details.
+
+;; You should have received a copy of the GNU General Public License along with
+;; EditorConfig Emacs Plugin. If not, see <https://www.gnu.org/licenses/>.
+
 ;;; Commentary:
 
 ;; This executable is mainly for testing core feature, and not intended to be
