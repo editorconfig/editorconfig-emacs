@@ -45,7 +45,9 @@
 
 (defcustom editorconfig-exec-path
   "editorconfig"
-  "EditorConfig command"
+  "EditorConfig executable name.
+
+This executable is invoked by `editorconfig-call-editorconfig-exec'."
   :type 'string
   :group 'editorconfig)
 (define-obsolete-variable-alias
@@ -68,23 +70,21 @@ property values as values."
   "0.5")
 
 (defcustom editorconfig-custom-hooks ()
-  "A list of custom hooks after loading common EditorConfig settings
+  "A list of custom hooks after loading common EditorConfig settings.
 
-Each element in this list is a hook function. This hook function takes one
-parameter, which is a property hash table. The value of properties can be
+Each element in this list is a hook function.  This hook function takes one
+parameter, which is a property hash table.  The value of properties can be
 obtained through gethash function.
 
 The hook does not have to be coding style related; you can add whatever
-functionality you want. For example, the following is an example to add a new
+functionality you want.  For example, the following is an example to add a new
 property emacs_linum to decide whether to show line numbers on the left
 
-(add-to-list 'editorconfig-custom-hooks
-  '(lambda (props)
-     (let ((show-line-num (gethash 'emacs_linum props)))
-       (cond ((equal show-line-num \"true\") (linum-mode 1))
-         ((equal show-line-num \"false\") (linum-mode 0))))))
-
-"
+  (add-to-list 'editorconfig-custom-hooks
+    '(lambda (props)
+       (let ((show-line-num (gethash 'emacs_linum props)))
+         (cond ((equal show-line-num \"true\") (linum-mode 1))
+           ((equal show-line-num \"false\") (linum-mode 0))))))"
   :type '(lambda (properties) (body))
   :group 'editorconfig)
 (define-obsolete-variable-alias
@@ -173,12 +173,13 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   "0.5")
 
 (defun editorconfig-string-integer-p (string)
-  "Whether a string representing integer"
+  "Return non-nil if STRING represents integer."
   (if (stringp string)
     (string-match-p "\\`[0-9]+\\'" string)
     nil))
 
 (defun editorconfig-set-indentation/python-mode (size)
+  "Set `python-mode' indent size to SIZE."
   (set (make-local-variable (if (or (> emacs-major-version 24)
                                     (and (= emacs-major-version 24)
                                          (>= emacs-minor-version 3)))
@@ -190,6 +191,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
     (set (make-local-variable 'py-indent-offset) size)))
 
 (defun editorconfig-set-indentation/latex-mode (size)
+  "Set `latex-mode' indent size to SIZE."
   (set (make-local-variable 'tex-indent-basic) size)
   (set (make-local-variable 'tex-indent-item) size)
   (set (make-local-variable 'tex-indent-arg) (* 2 size))
@@ -202,7 +204,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
     (set (make-local-variable 'LaTeX-item-indent) (- size))))
 
 (defun editorconfig-set-indentation (style &optional size tab_width)
-  "Set indentation type from given style and size"
+  "Set indentation type from STYLE, SIZE and TAB_WIDTH."
   (make-local-variable 'indent-tabs-mode)
   (make-local-variable 'tab-width)
   (if (editorconfig-string-integer-p size)
@@ -240,7 +242,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
                                        (t spec))))))))))))))
 
 (defun editorconfig-set-line-ending (end-of-line)
-  "Set line ending style to CR, LF, or CRLF"
+  "Set line ending style to CR, LF, or CRLF by END-OF-LINE."
   (set-buffer-file-coding-system
    (cond
     ((equal end-of-line "lf") 'undecided-unix)
@@ -250,6 +252,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
    nil t))
 
 (defun editorconfig-set-trailing-nl (final-newline)
+  "Set up requiring final newline by FINAL-NEWLINE."
   (cond
    ((equal final-newline "true")
     ;; keep prefs around how/when the nl is added, if set - otherwise add on save
@@ -262,7 +265,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
     (set      (make-local-variable 'mode-require-final-newline) nil))))
 
 (defun editorconfig-set-trailing-ws (trim-trailing-ws)
-  "set up trimming of trailing whitespace at end of lines"
+  "Set up trimming of trailing whitespace at end of lines by TRIM-TRAILING-WS."
   (make-local-variable 'write-file-functions) ;; just current buffer
   (when (equal trim-trailing-ws "true")
     ;; when true we push delete-trailing-whitespace (emacs > 21)
@@ -280,12 +283,12 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
       write-file-functions))))
 
 (defun editorconfig-set-line-length (length)
-  "set the max line length (fill-column)"
+  "Set the max line length (fill-column) to LENGTH."
   (when (editorconfig-string-integer-p length)
     (set-fill-column (string-to-number length))))
 
 (defun editorconfig-call-editorconfig-exec ()
-  "Call EditorConfig core and return output"
+  "Call EditorConfig core and return output."
   (let ((filename (buffer-file-name)))
     (with-temp-buffer
       (setq default-directory "/")
@@ -293,7 +296,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
       (buffer-string))))
 
 (defun editorconfig-parse-properties (props-string)
-  "Create properties hash table from string of properties"
+  "Create properties hash table from PROPS-STRING."
   (let (props-list properties)
     (setq props-list (split-string props-string "\n")
           properties (make-hash-table :test 'equal))
@@ -324,6 +327,7 @@ It calls `editorconfig-get-properties-from-exec' if
 
 ;;;###autoload
 (defun editorconfig-apply ()
+  "Apply EditorConfig properties for current buffer."
   (when buffer-file-name
     (let ((props (and (functionp editorconfig-get-properties-function)
                    (funcall editorconfig-get-properties-function))))
