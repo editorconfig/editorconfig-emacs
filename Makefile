@@ -2,27 +2,73 @@
 
 EMACS = emacs
 
-TEST_DIR = ert-tests
+PROJECT_ROOT_DIR = $(PWD)
+ERT_TESTS = $(wildcard $(PROJECT_ROOT_DIR)/ert-tests/*.el)
 TRAVIS_FILE = .travis.yml
 
 # Compile with noninteractive and relatively clean environment.
-BATCHFLAGS = -batch -q --no-site-file
+BATCHFLAGS = -batch -q --no-site-file -L $(PROJECT_ROOT_DIR)
 
-SRCS = editorconfig.el
+SRCS = editorconfig.el editorconfig-core.el editorconfig-core-handle.el \
+	editorconfig-fnmatch.el
 OBJS = $(SRCS:.el=.elc)
 
-%.elc: %.el
-	${EMACS} $(BATCHFLAGS) -f batch-byte-compile $^
+$(OBJS): %.elc: %.el
+	$(EMACS) $(BATCHFLAGS) -f batch-byte-compile $^
 
-.PHONY: all clean test test-travis
+.PHONY: all clean test test-travis test-ert test-core test-metadata
 
 all: $(OBJS)
 
 clean:
 	-rm -f $(OBJS)
 
-test:
-	${EMACS} $(BATCHFLAGS) -l editorconfig.el
+test: test-ert test-core test-metadata $(OBJS)
+	$(EMACS) $(BATCHFLAGS) -l editorconfig.el
 
 test-travis:
 	@if test -z "$$TRAVIS" && test -e $(TRAVIS_FILE); then travis-lint $(TRAVIS_FILE); fi
+
+
+
+# ert test
+test-ert: $(ERT_TESTS) $(OBJS)
+	$(EMACS) $(BATCHFLAGS) \
+		--eval "(require 'ert) (setq debug-on-error t)" \
+		$(ERT_TESTS:%=-l "%") \
+		-f ert-run-tests-batch-and-exit
+
+
+
+# Core test
+core-test/CMakeLists.txt:
+	git submodule update --init
+
+test-core: core-test/CMakeLists.txt $(OBJS)
+	cd $(PROJECT_ROOT_DIR)/core-test && \
+		cmake -DEDITORCONFIG_CMD="$(PROJECT_ROOT_DIR)/bin/editorconfig-el" .
+	cd $(PROJECT_ROOT_DIR)/core-test && \
+		EMACS_BIN=$(EMACS) EDITORCONFIG_CORE_LIBRARY_PATH="$(PROJECT_ROOT_DIR)" \
+		ctest --output-on-failure .
+
+
+# Check package metadata
+
+ELISP_GET_FILE_PACKAGE_METADATA = \
+	(lambda (f) \
+		(with-temp-buffer \
+			(insert-file-contents-literally f) \
+			(package-buffer-info)))
+
+ELISP_PRINT_METADATA = \
+	(mapc \
+		(lambda (f) \
+			(message \"Loading info: %s\" f) \
+			(message \"%S\" (funcall $(ELISP_GET_FILE_PACKAGE_METADATA) f))) \
+		command-line-args-left)
+
+test-metadata: $(SRCS)
+	$(EMACS) -batch -Q \
+		--eval "(require 'package)" \
+		--eval "$(ELISP_PRINT_METADATA)" \
+		$^

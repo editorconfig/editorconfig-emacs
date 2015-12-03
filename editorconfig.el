@@ -3,8 +3,9 @@
 ;; Copyright (C) 2011-2015 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-;; Version: 0.5
+;; Version: 0.6
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
+;; Package-Requires: ((editorconfig-core "20151107.831"))
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
@@ -38,6 +39,10 @@
 
 ;;; Code:
 
+(declare-function editorconfig-core-get-properties-hash
+  "editorconfig-core"
+  nil)
+
 (defcustom editorconfig-exec-path
   "editorconfig"
   "EditorConfig command"
@@ -49,7 +54,7 @@
   "0.5")
 
 (defcustom editorconfig-get-properties-function
-  'editorconfig-get-properties-from-exec
+  'editorconfig-get-properties
   "Function to get EditorConofig properties for current buffer.
 This function will be called with no argument and should return a hash object
 containing properties, or nil if any core program is not available.
@@ -279,7 +284,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   (when (editorconfig-string-integer-p length)
     (set-fill-column (string-to-number length))))
 
-(defun editorconfig-get-properties ()
+(defun editorconfig-call-editorconfig-exec ()
   "Call EditorConfig core and return output"
   (let ((filename (buffer-file-name)))
     (with-temp-buffer
@@ -302,10 +307,20 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 (defun editorconfig-get-properties-from-exec ()
   "Get EditorConfig properties of current buffer by calling `editorconfig-exec-path'."
   (if (executable-find editorconfig-exec-path)
-    (editorconfig-parse-properties (editorconfig-get-properties))
+    (editorconfig-parse-properties (editorconfig-call-editorconfig-exec))
     (display-warning :error
       "Unable to find editorconfig executable.")
     nil))
+
+(defun editorconfig-get-properties ()
+  "Get EditorConfig properties of current buffer.
+
+It calls `editorconfig-get-properties-from-exec' if
+`editorconfig-exec-path` is found, otherwise
+`editorconfig-core-get-properties-hash'."
+  (if (executable-find editorconfig-exec-path)
+    (editorconfig-get-propergies-from-exec)
+    (editorconfig-core-get-properties-hash)))
 
 ;;;###autoload
 (defun editorconfig-apply ()

@@ -1,0 +1,127 @@
+#!/bin/sh
+:;#-*-Emacs-Lisp-*-
+:;test -n "$EMACS_BIN" || EMACS_BIN=emacs
+:;exec "$EMACS_BIN" -batch -Q --eval '(setq debug-on-error t)' -l "$0" -- "$@"
+
+;; editorconfig-el --- EditorConfig Core executable in Emacs Lisp
+
+;; Copyright (C) 2011-2015 EditorConfig Team
+
+;; Author: EditorConfig Team <editorconfig@googlegroups.com>
+;; Version: 0.6
+;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
+
+;; See
+;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
+;; or the CONTRIBUTORS file for the list of contributors.
+
+;; This file is part of EditorConfig Emacs Plugin.
+
+;; EditorConfig Emacs Plugin is free software: you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or (at your
+;; option) any later version.
+
+;; EditorConfig Emacs Plugin is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+;; Public License for more details.
+
+;; You should have received a copy of the GNU General Public License along with
+;; EditorConfig Emacs Plugin. If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This executable is mainly for testing core feature, and not intended to be
+;; used by users.
+
+;;; Code:
+
+(when (getenv "EDITORCONFIG_CORE_LIBRARY_PATH")
+  (setq load-path
+        (append (split-string (getenv "EDITORCONFIG_CORE_LIBRARY_PATH")
+                              ":")
+                load-path)))
+
+(require 'cl-lib)
+(require 'editorconfig-core)
+
+(defconst editorconfig-bin-help-message
+  "Usage: editorconfig [-f <configname>] [-b <configversion>] [-h|--help]
+                    [-v|--version] [<filepath> ...]
+
+Options:
+    -f <configname>     Specify config filename other than \".editorconfig\"
+    -b <configversion>  Specify config format version
+    -h|--help           Print this help message
+    -v|--version        Display version information
+    <filepath> ...      File paths to get EditorConfig properties"
+  "Help message of EditorConfig executable.")
+
+(defun editorconfig-bin-parse-args
+    (argv &optional confname version)
+  "Parse arguments and return list.
+
+List returned will be looked like (FILES CONFNAME VERSION).
+If either -v, --version, -h or --help option apprears, exit emacs immediately
+with required output."
+  (unless argv
+    (message editorconfig-bin-help-message)
+    (kill-emacs 0))
+  (cl-case (intern (car argv))
+    (-f
+     (editorconfig-bin-parse-args (cddr argv)
+                                  (cadr argv)
+                                  version))
+    (-b
+     (editorconfig-bin-parse-args (cddr argv)
+                                  confname
+                                  (cadr argv)))
+    ((-h --help)
+     (message editorconfig-bin-help-message)
+     (kill-emacs 0))
+    ((-v --version)
+     (message "EditorConfig-Core-EmacsLisp Version %s"
+              editorconfig-core-version)
+     (kill-emacs 0))
+
+    (otherwise
+     (when (and argv
+                (string-match-p "^-"
+                                (car argv)))
+       (error "Invalid option: %s"
+              (car argv)))
+     (list argv
+           confname
+           version))
+    ))
+
+(defun main (argv)
+  ;; TODO: Read file list from stdin if - is given as FILENAME
+  (let ((parsed (editorconfig-bin-parse-args argv)))
+    (cl-case (length (car parsed))
+      (0
+       nil)
+      (1
+       (dolist (p (editorconfig-core-get-properties (caar parsed)
+                                                    (nth 1 parsed)
+                                                    (nth 2 parsed)))
+         (message "%s=%s"
+                  (car p)
+                  (cdr p))))
+      (otherwise
+       (dolist (file (car parsed))
+         (message "[%s]"
+                  file)
+         (dolist (p (editorconfig-core-get-properties file
+                                                      (nth 1 parsed)
+                                                      (nth 2 parsed)))
+           (message "%s=%s"
+                    (car p)
+                    (cdr p)))))))
+  0)
+
+;; car of command-line-args-left is "--"
+(kill-emacs (main (cdr command-line-args-left)))
+
+;;; editorconfig-el ends here

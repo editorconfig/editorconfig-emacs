@@ -7,14 +7,19 @@ This is an [EditorConfig][] plugin for [Emacs](https://www.gnu.org/software/emac
 Download the [EditorConfig C Core][] and follow the instructions in the README
 and INSTALL files to install it.
 
-Once EditorConfig core is installed, copy [`editorconfig.el`][] to `~/.emacs.d/lisp`
+Or, when no Core executable is found, this plugin uses Emacs Lisp implemented
+Core as a fallback.
+
+In either case, copy `.el` files in this repository to `~/.emacs.d/lisp`
 and add the following to your `~/.emacs` file:
 
     (add-to-list 'load-path "~/.emacs.d/lisp")
     (load "editorconfig")
     (editorconfig-mode 1)
 
-Alternatively, you can find the package available on [Marmalade](http://marmalade-repo.org/packages/editorconfig).
+Alternatively, you can find the package available on
+[Marmalade](http://marmalade-repo.org/packages/editorconfig) and
+[MELPA](http://melpa.org/#/editorconfig).
 
 ## Supported properties
 
@@ -69,4 +74,3 @@ with this program.  If not, see <https://www.gnu.org/licenses/>.
 [EditorConfig]: http://editorconfig.org
 [EditorConfig C Core]: https://github.com/editorconfig/editorconfig-core-c
 [properties]: http://editorconfig.org/#supported-properties
-[`editorconfig.el`]: https://github.com/editorconfig/editorconfig-emacs/raw/master/editorconfig.el
