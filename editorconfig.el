@@ -94,45 +94,45 @@ property emacs_linum to decide whether to show line numbers on the left
 
 (defcustom editorconfig-indentation-alist
   '((awk-mode c-basic-offset)
-    (c++-mode c-basic-offset)
-    (c-mode c-basic-offset)
-    (cmake-mode cmake-tab-width)
-    (coffee-mode coffee-tab-width)
-    (cperl-mode cperl-indent-level)
-    (css-mode css-indent-offset)
-    (emacs-lisp-mode lisp-indent-offset)
-    (erlang-mode erlang-indent-level)
-    (groovy-mode c-basic-offset)
-    (haskell-mode haskell-indent-spaces
-                  haskell-indent-offset
-                  shm-indent-spaces)
-    (idl-mode c-basic-offset)
-    (java-mode c-basic-offset)
-    (js-mode js-indent-level)
-    (js2-mode js2-basic-offset)
-    (js3-mode js3-indent-level)
-    (json-mode js-indent-level)
-    (latex-mode . editorconfig-set-indentation/latex-mode)
-    (lisp-mode lisp-indent-offset)
-    (livescript-mode livescript-tab-width)
-    (mustache-mode mustache-basic-offset)
-    (nxml-mode nxml-child-indent (nxml-attribute-indent . 2))
-    (objc-mode c-basic-offset)
-    (perl-mode perl-indent-level)
-    (pike-mode c-basic-offset)
-    (puppet-mode puppet-indent-level)
-    (python-mode . editorconfig-set-indentation/python-mode)
-    (ruby-mode ruby-indent-level)
-    (scala-mode scala-indent:step)
-    (sgml-mode sgml-basic-offset)
-    (sh-mode sh-basic-offset sh-indentation)
-    (web-mode (web-mode-indent-style . (lambda (size) 2))
-              web-mode-markup-indent-offset
-              web-mode-css-indent-offset
-              web-mode-code-indent-offset
-              web-mode-script-padding
-              web-mode-style-padding)
-    (yaml-mode yaml-indent-offset))
+     (c++-mode c-basic-offset)
+     (c-mode c-basic-offset)
+     (cmake-mode cmake-tab-width)
+     (coffee-mode coffee-tab-width)
+     (cperl-mode cperl-indent-level)
+     (css-mode css-indent-offset)
+     (emacs-lisp-mode lisp-indent-offset)
+     (erlang-mode erlang-indent-level)
+     (groovy-mode c-basic-offset)
+     (haskell-mode haskell-indent-spaces
+       haskell-indent-offset
+       shm-indent-spaces)
+     (idl-mode c-basic-offset)
+     (java-mode c-basic-offset)
+     (js-mode js-indent-level)
+     (js2-mode js2-basic-offset)
+     (js3-mode js3-indent-level)
+     (json-mode js-indent-level)
+     (latex-mode . editorconfig-set-indentation/latex-mode)
+     (lisp-mode lisp-indent-offset)
+     (livescript-mode livescript-tab-width)
+     (mustache-mode mustache-basic-offset)
+     (nxml-mode nxml-child-indent (nxml-attribute-indent . 2))
+     (objc-mode c-basic-offset)
+     (perl-mode perl-indent-level)
+     (pike-mode c-basic-offset)
+     (puppet-mode puppet-indent-level)
+     (python-mode . editorconfig-set-indentation/python-mode)
+     (ruby-mode ruby-indent-level)
+     (scala-mode scala-indent:step)
+     (sgml-mode sgml-basic-offset)
+     (sh-mode sh-basic-offset sh-indentation)
+     (web-mode (web-mode-indent-style . (lambda (size) 2))
+       web-mode-markup-indent-offset
+       web-mode-css-indent-offset
+       web-mode-code-indent-offset
+       web-mode-script-padding
+       web-mode-style-padding)
+     (yaml-mode yaml-indent-offset))
   "Alist of indentation setting methods by modes.
 
 Each element looks like (MODE . FUNCTION) or (MODE . INDENT-SPEC-LIST).
@@ -181,11 +181,11 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 (defun editorconfig-set-indentation/python-mode (size)
   "Set `python-mode' indent size to SIZE."
   (set (make-local-variable (if (or (> emacs-major-version 24)
-                                    (and (= emacs-major-version 24)
-                                         (>= emacs-minor-version 3)))
-                                'python-indent-offset
+                                  (and (= emacs-major-version 24)
+                                    (>= emacs-minor-version 3)))
+                              'python-indent-offset
                               'python-indent))
-       size)
+    size)
   ;; For https://launchpad.net/python-mode
   (when (boundp 'py-indent-offset)
     (set (make-local-variable 'py-indent-offset) size)))
@@ -211,58 +211,58 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
     (setq size (string-to-number size))
     (when (not (equal size "tab")) (setq size nil)))
   (setq tab-width (cond (tab_width (string-to-number tab_width))
-                        ((numberp size) size)
-                        (t tab-width)))
+                    ((numberp size) size)
+                    (t tab-width)))
   (when (equal size "tab")
     (setq size tab-width))
   (cond ((equal style "space")
-         (setq indent-tabs-mode nil))
-        ((equal style "tab")
-         (setq indent-tabs-mode t)))
+          (setq indent-tabs-mode nil))
+    ((equal style "tab")
+      (setq indent-tabs-mode t)))
   (when size
     (when (featurep 'evil)
       (set (make-local-variable 'evil-shift-width) size))
     (let ((parent major-mode)
-          entry)
+           entry)
       ;; Find the closet parent mode of `major-mode' in
       ;; `editorconfig-indentation-alist'.
       (while (and (not (setq entry (assoc parent editorconfig-indentation-alist)))
-                  (setq parent (get parent 'derived-mode-parent))))
+               (setq parent (get parent 'derived-mode-parent))))
       (when entry
         (let ((fn-or-list (cdr entry)))
           (cond ((functionp fn-or-list) (funcall fn-or-list size))
-                ((listp fn-or-list)
-                 (dolist (elem fn-or-list)
-                   (cond ((symbolp elem) (set (make-local-variable elem) size))
-                         ((consp elem)
-                          (let ((spec (cdr elem)))
-                            (set (make-local-variable (car elem))
-                                 (cond ((functionp spec) (funcall spec size))
-                                       ((integerp spec) (* spec size))
-                                       (t spec))))))))))))))
+            ((listp fn-or-list)
+              (dolist (elem fn-or-list)
+                (cond ((symbolp elem) (set (make-local-variable elem) size))
+                  ((consp elem)
+                    (let ((spec (cdr elem)))
+                      (set (make-local-variable (car elem))
+                        (cond ((functionp spec) (funcall spec size))
+                          ((integerp spec) (* spec size))
+                          (t spec))))))))))))))
 
 (defun editorconfig-set-line-ending (end-of-line)
   "Set line ending style to CR, LF, or CRLF by END-OF-LINE."
   (set-buffer-file-coding-system
-   (cond
-    ((equal end-of-line "lf") 'undecided-unix)
-    ((equal end-of-line "cr") 'undecided-mac)
-    ((equal end-of-line "crlf") 'undecided-dos)
-    (t 'undecided))
-   nil t))
+    (cond
+      ((equal end-of-line "lf") 'undecided-unix)
+      ((equal end-of-line "cr") 'undecided-mac)
+      ((equal end-of-line "crlf") 'undecided-dos)
+      (t 'undecided))
+    nil t))
 
 (defun editorconfig-set-trailing-nl (final-newline)
   "Set up requiring final newline by FINAL-NEWLINE."
   (cond
-   ((equal final-newline "true")
-    ;; keep prefs around how/when the nl is added, if set - otherwise add on save
-    (set      (make-local-variable 'require-final-newline)      (or require-final-newline t))
-    (set      (make-local-variable 'mode-require-final-newline) (or mode-require-final-newline t)))
-   ((equal final-newline "false")
-    ;; FIXME: Add functionality for actually REMOVING any trailing newlines here!
-    ;;        (rather than just making sure we don't automagically ADD a new one)
-    (set      (make-local-variable 'require-final-newline) nil)
-    (set      (make-local-variable 'mode-require-final-newline) nil))))
+    ((equal final-newline "true")
+      ;; keep prefs around how/when the nl is added, if set - otherwise add on save
+      (set      (make-local-variable 'require-final-newline)      (or require-final-newline t))
+      (set      (make-local-variable 'mode-require-final-newline) (or mode-require-final-newline t)))
+    ((equal final-newline "false")
+      ;; FIXME: Add functionality for actually REMOVING any trailing newlines here!
+      ;;        (rather than just making sure we don't automagically ADD a new one)
+      (set      (make-local-variable 'require-final-newline) nil)
+      (set      (make-local-variable 'mode-require-final-newline) nil))))
 
 (defun editorconfig-set-trailing-ws (trim-trailing-ws)
   "Set up trimming of trailing whitespace at end of lines by TRIM-TRAILING-WS."
@@ -271,16 +271,16 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
     ;; when true we push delete-trailing-whitespace (emacs > 21)
     ;; to write-file-functions
     (add-to-list
-     'write-file-functions
-     'delete-trailing-whitespace))
+      'write-file-functions
+      'delete-trailing-whitespace))
   (when (equal trim-trailing-ws "false")
     ;; when false we remove every delete-trailing-whitespace
     ;; from write-file-functions
     (setq
-     write-file-functions
-     (delete
-      'delete-trailing-whitespace
-      write-file-functions))))
+      write-file-functions
+      (delete
+        'delete-trailing-whitespace
+        write-file-functions))))
 
 (defun editorconfig-set-line-length (length)
   "Set the max line length (fill-column) to LENGTH."
@@ -299,12 +299,12 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   "Create properties hash table from PROPS-STRING."
   (let (props-list properties)
     (setq props-list (split-string props-string "\n")
-          properties (make-hash-table :test 'equal))
+      properties (make-hash-table :test 'equal))
     (dolist (prop props-list properties)
       (let ((key-val (split-string prop " *= *")))
         (when (> (length key-val) 1)
           (let ((key (intern (car key-val)))
-                (val (mapconcat 'identity (cdr key-val) "")))
+                 (val (mapconcat 'identity (cdr key-val) "")))
             (puthash key val properties)))))))
 
 (defun editorconfig-get-properties-from-exec ()
