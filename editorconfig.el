@@ -328,6 +328,7 @@ It calls `editorconfig-get-properties-from-exec' if
 ;;;###autoload
 (defun editorconfig-apply ()
   "Apply EditorConfig properties for current buffer."
+  (interactive)
   (when buffer-file-name
     (let ((props (and (functionp editorconfig-get-properties-function)
                    (funcall editorconfig-get-properties-function))))
