@@ -32,22 +32,16 @@
 ;; .editorconfig files and returns properties for given files.
 ;; This can be used in place of, for example, editorconfig-core-c.
 
-;; This library is not an editor plugin and does not configure Emacs for editing
-;; the files: this should be done with editorconfig-emacs.
-
 
 ;; Use from EditorConfig Emacs Plugin
 
-;; editorconfig-emacs (v0.5 or later) can utilize this library.
-;; Add following lines to your init.el:
+;; Emacs plugin (v0.5 or later) can utilize this implementation.
+;; By default, the plugin first search for any EditorConfig executable,
+;; and fallback to this library if not found.
+;; If you always want to use this library, add following lines to your init.el:
 
 ;;     (setq editorconfig-get-properties-function
 ;;           'editorconfig-core-get-properties-hash)
-
-;; This sexp configures editorconfig-emacs to call this library when getting
-;; EditorConfig properties instead of the default function
-;; editorconfig-get-properties-from-exec, which invokes external program
-;; like editorconfig-core-c.
 
 
 ;; Functions
