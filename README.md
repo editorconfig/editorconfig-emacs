@@ -51,6 +51,14 @@ in to all different packages for whitespace trimming to inform
 them about editorconfig settings, but aim for better coverage
 of things like [ws-trim](ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el).
 
+## Testing
+
+Make and [CMake](https://cmake.org) must be installed to run the tests.
+
+To run the tests:
+
+    $ make test
+
 ## Submitting Bugs and Feature Requests
 
 Bugs, feature requests, and other issues should be submitted to the issue
