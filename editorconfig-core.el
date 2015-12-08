@@ -5,7 +5,7 @@
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.6.1
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
-;; Package-Requires: ((editorconfig-fnmatch "20151023.1021") (cl-lib "0.5"))
+;; Package-Requires: ((editorconfig-fnmatch "0.6.1") (cl-lib "0.5"))
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
