@@ -14,7 +14,7 @@ In either case, copy `.el` files in this repository to `~/.emacs.d/lisp`
 and add the following to your `~/.emacs` file:
 
     (add-to-list 'load-path "~/.emacs.d/lisp")
-    (load "editorconfig")
+    (require 'editorconfig)
     (editorconfig-mode 1)
 
 Alternatively, you can find the package available on
