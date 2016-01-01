@@ -115,6 +115,7 @@ property emacs_linum to decide whether to show line numbers on the left
      (latex-mode . editorconfig-set-indentation/latex-mode)
      (lisp-mode lisp-indent-offset)
      (livescript-mode livescript-tab-width)
+     (lua-mode lua-indent-level)
      (mustache-mode mustache-basic-offset)
      (nxml-mode nxml-child-indent (nxml-attribute-indent . 2))
      (objc-mode c-basic-offset)
