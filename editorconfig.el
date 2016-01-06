@@ -107,6 +107,7 @@ property emacs_linum to decide whether to show line numbers on the left
        haskell-indent-offset
        shm-indent-spaces)
      (idl-mode c-basic-offset)
+     (jade-mode jade-tab-width)
      (java-mode c-basic-offset)
      (js-mode js-indent-level)
      (js2-mode js2-basic-offset)
