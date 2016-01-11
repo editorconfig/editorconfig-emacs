@@ -85,7 +85,7 @@ property emacs_linum to decide whether to show line numbers on the left
        (let ((show-line-num (gethash 'emacs_linum props)))
          (cond ((equal show-line-num \"true\") (linum-mode 1))
            ((equal show-line-num \"false\") (linum-mode 0))))))"
-  :type '(lambda (properties) (body))
+  :type 'hook
   :group 'editorconfig)
 (define-obsolete-variable-alias
   'edconf-custom-hooks
