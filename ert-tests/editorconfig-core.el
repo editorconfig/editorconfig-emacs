@@ -1,6 +1,6 @@
 (require 'editorconfig-core)
 
-(ert-deftest editorconfig-core--remove-duplicate ()
+(ert-deftest test-editorconfig-core--remove-duplicate ()
   (should (equal (editorconfig-core--remove-duplicate '(("a" . 1) ("b" . 2) ("c" . 3) ("b" . 4)))
             '(("a" . 1) ("b" . 4) ("c" . 3))))
   (should (equal (editorconfig-core--remove-duplicate '(("a" . 1) ("b" . 2) ("c" . 3)))
@@ -10,7 +10,7 @@
   )
 
 
-(ert-deftest editorconfig-core--get-handles ()
+(ert-deftest test-editorconfig-core--get-handles ()
   (let* ((fixtures (concat default-directory
                      "/ert-tests/fixtures/"))
           (dir (concat fixtures

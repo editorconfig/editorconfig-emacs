@@ -1,6 +1,6 @@
 (require 'editorconfig-core-handle)
 
-(ert-deftest editorconfig-core-handle ()
+(ert-deftest test-editorconfig-core-handle ()
   ;; handle.ini
   (let* ((fixtures (concat default-directory
                      "ert-tests/fixtures/"))
