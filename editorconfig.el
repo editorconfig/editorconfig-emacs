@@ -80,7 +80,7 @@ The hook does not have to be coding style related; you can add whatever
 functionality you want.  For example, the following is an example to add a new
 property emacs_linum to decide whether to show line numbers on the left
 
-  (add-to-list 'editorconfig-custom-hooks
+  (add-hook 'editorconfig-custom-hooks
     '(lambda (props)
        (let ((show-line-num (gethash 'emacs_linum props)))
          (cond ((equal show-line-num \"true\") (linum-mode 1))
@@ -344,9 +344,7 @@ It calls `editorconfig-get-properties-from-exec' if
           (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
           (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
           (editorconfig-set-line-length (gethash 'max_line_length props))
-          (dolist (hook editorconfig-custom-hooks)
-
-            (funcall hook props)))
+          (run-hook-with-args 'editorconfig-custom-hooks props))
         (display-warning :error "EditorConfig core program is not available.  Styles will not be applied.")))))
 
 ;;;###autoload
