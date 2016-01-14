@@ -3,9 +3,9 @@
 ;; Copyright (C) 2011-2015 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-;; Version: 0.6.1
+;; Version: 0.6.2
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
-;; Package-Requires: ((editorconfig-core "20151107.831"))
+;; Package-Requires: ((editorconfig-core "0.6.2"))
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
