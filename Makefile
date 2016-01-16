@@ -35,6 +35,7 @@ test-travis:
 test-ert: $(ERT_TESTS) $(OBJS)
 	$(EMACS) $(BATCHFLAGS) \
 		--eval "(require 'ert) (setq debug-on-error t)" \
+		--eval "(setq metadata-el-files '($(SRCS:%=\"%\")))" \
 		$(ERT_TESTS:%=-l "%") \
 		-f ert-run-tests-batch-and-exit
 
@@ -50,25 +51,3 @@ test-core: core-test/CMakeLists.txt $(OBJS)
 	cd $(PROJECT_ROOT_DIR)/core-test && \
 		EMACS_BIN=$(EMACS) EDITORCONFIG_CORE_LIBRARY_PATH="$(PROJECT_ROOT_DIR)" \
 		ctest --output-on-failure .
-
-
-# Check package metadata
-
-ELISP_GET_FILE_PACKAGE_METADATA = \
-	(lambda (f) \
-		(with-temp-buffer \
-			(insert-file-contents-literally f) \
-			(package-buffer-info)))
-
-ELISP_PRINT_METADATA = \
-	(mapc \
-		(lambda (f) \
-			(message \"Loading info: %s\" f) \
-			(message \"%S\" (funcall $(ELISP_GET_FILE_PACKAGE_METADATA) f))) \
-		command-line-args-left)
-
-test-metadata: $(SRCS)
-	$(EMACS) -batch -Q \
-		--eval "(require 'package)" \
-		--eval "$(ELISP_PRINT_METADATA)" \
-		$^
