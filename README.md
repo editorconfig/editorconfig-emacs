@@ -34,7 +34,7 @@ Current Emacs plugin coverage for EditorConfig's [properties][]:
 * `indent_size`
 * `tab_width`
 * `end_of_line`
-* <del>`charset`</del>
+* `charset`
 * `trim_trailing_whitespace`
 * `insert_final_newline = true` is supported
 * <del>`insert_final_newline = false`</del> is not enforced
