@@ -244,15 +244,24 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
                           ((integerp spec) (* spec size))
                           (t spec))))))))))))))
 
-(defun editorconfig-set-line-ending (end-of-line)
-  "Set line ending style to CR, LF, or CRLF by END-OF-LINE."
-  (set-buffer-file-coding-system
-    (cond
-      ((equal end-of-line "lf") 'undecided-unix)
-      ((equal end-of-line "cr") 'undecided-mac)
-      ((equal end-of-line "crlf") 'undecided-dos)
-      (t 'undecided))
-    nil t))
+(defun editorconfig-set-coding-system (end-of-line charset)
+  "Set buffer coding system by END-OF-LINE and CHARSET."
+  (let ((eol (cond
+               ((equal end-of-line "lf") 'undecided-unix)
+               ((equal end-of-line "cr") 'undecided-mac)
+               ((equal end-of-line "crlf") 'undecided-dos)
+               (t 'undecided)))
+         (cs (cond
+               ((equal charset "latin1") 'iso-latin-1)
+               ((equal charset "utf-8") 'utf-8)
+               ((equal charset "utf-8-bom") 'utf-8-with-signature)
+               ((equal charset "utf-16be") 'utf-16be)
+               ((equal charset "utf-16le") 'utf-16le)
+               (t 'undecided))))
+    (set-buffer-file-coding-system (merge-coding-systems
+                                     cs
+                                     eol)
+      nil t)))
 
 (defun editorconfig-set-trailing-nl (final-newline)
   "Set up requiring final newline by FINAL-NEWLINE."
@@ -340,7 +349,9 @@ It calls `editorconfig-get-properties-from-exec' if
           (editorconfig-set-indentation (gethash 'indent_style props)
             (gethash 'indent_size props)
             (gethash 'tab_width props))
-          (editorconfig-set-line-ending (gethash 'end_of_line props))
+          (editorconfig-set-coding-system
+            (gethash 'end_of_line props)
+            (gethash 'charset props))
           (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
           (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
           (editorconfig-set-line-length (gethash 'max_line_length props))
