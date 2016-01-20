@@ -71,7 +71,7 @@
 
 
 (defconst editorconfig-core-version
-  "0.6.1"
+  "0.7.0"
   "EditorConfig core version.")
 
 (defun editorconfig-core--remove-duplicate (alist)
