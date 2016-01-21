@@ -363,9 +363,7 @@ It calls `editorconfig-get-properties-from-exec' if
   "Toggle EditorConfig feature."
   :global t
   :lighter ""
-  (dolist (hook (list
-                  'find-file-hook
-                  'after-change-major-mode-hook))
+  (dolist (hook '(after-change-major-mode-hook))
     (if editorconfig-mode
       (add-hook hook 'editorconfig-apply)
       (remove-hook hook 'editorconfig-apply))))
