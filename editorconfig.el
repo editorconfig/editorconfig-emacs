@@ -304,8 +304,10 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   (let ((filename (buffer-file-name)))
     (with-temp-buffer
       (setq default-directory "/")
-      (call-process editorconfig-exec-path nil t nil filename)
-      (buffer-string))))
+      (if (eq 0
+            (call-process editorconfig-exec-path nil t nil filename))
+        (buffer-string)
+        (error (buffer-string))))))
 
 (defun editorconfig-parse-properties (props-string)
   "Create properties hash table from PROPS-STRING."
