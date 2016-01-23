@@ -129,6 +129,8 @@ property emacs_linum to decide whether to show line numbers on the left
      (sgml-mode sgml-basic-offset)
      (sh-mode sh-basic-offset sh-indentation)
      (slim-mode slim-indent-offset)
+     (tcl-mode tcl-indent-level
+       tcl-continued-indent-level)
      (web-mode (web-mode-indent-style . (lambda (size) 2))
        web-mode-markup-indent-offset
        web-mode-css-indent-offset
