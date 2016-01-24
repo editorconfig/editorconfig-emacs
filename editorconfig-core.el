@@ -3,7 +3,7 @@
 ;; Copyright (C) 2011-2015 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-;; Version: 0.7.0
+;; Version: 0.7.1
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
 ;; Package-Requires: ((editorconfig-fnmatch "0.6.2") (cl-lib "0.5"))
 
@@ -71,7 +71,7 @@
 
 
 (defconst editorconfig-core-version
-  "0.7.0"
+  "0.7.1"
   "EditorConfig core version.")
 
 (defun editorconfig-core--remove-duplicate (alist)
