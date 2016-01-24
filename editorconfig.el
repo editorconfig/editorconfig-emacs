@@ -325,9 +325,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   "Get EditorConfig properties of current buffer by calling `editorconfig-exec-path'."
   (if (executable-find editorconfig-exec-path)
     (editorconfig-parse-properties (editorconfig-call-editorconfig-exec))
-    (display-warning :error
-      "Unable to find editorconfig executable.")
-    nil))
+    (error "Unable to find editorconfig executable")))
 
 (defun editorconfig-get-properties ()
   "Get EditorConfig properties of current buffer.
