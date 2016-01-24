@@ -102,6 +102,7 @@ property emacs_linum to decide whether to show line numbers on the left
      (css-mode css-indent-offset)
      (emacs-lisp-mode lisp-indent-offset)
      (erlang-mode erlang-indent-level)
+     (ess-mode ess-indent-offset)
      (groovy-mode c-basic-offset)
      (haskell-mode haskell-indent-spaces
        haskell-indent-offset
