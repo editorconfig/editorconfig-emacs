@@ -308,8 +308,10 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   (let ((filename (buffer-file-name)))
     (with-temp-buffer
       (setq default-directory "/")
-      (call-process editorconfig-exec-path nil t nil filename)
-      (buffer-string))))
+      (if (eq 0
+            (call-process editorconfig-exec-path nil t nil filename))
+        (buffer-string)
+        (error (buffer-string))))))
 
 (defun editorconfig-parse-properties (props-string)
   "Create properties hash table from PROPS-STRING."
@@ -327,9 +329,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   "Get EditorConfig properties of current buffer by calling `editorconfig-exec-path'."
   (if (executable-find editorconfig-exec-path)
     (editorconfig-parse-properties (editorconfig-call-editorconfig-exec))
-    (display-warning :error
-      "Unable to find editorconfig executable.")
-    nil))
+    (error "Unable to find editorconfig executable")))
 
 (defun editorconfig-get-properties ()
   "Get EditorConfig properties of current buffer.
@@ -346,21 +346,27 @@ It calls `editorconfig-get-properties-from-exec' if
   "Apply EditorConfig properties for current buffer."
   (interactive)
   (when buffer-file-name
-    (let ((props (and (functionp editorconfig-get-properties-function)
-                   (funcall editorconfig-get-properties-function))))
-      (if props
-        (progn
-          (editorconfig-set-indentation (gethash 'indent_style props)
-            (gethash 'indent_size props)
-            (gethash 'tab_width props))
-          (editorconfig-set-coding-system
-            (gethash 'end_of_line props)
-            (gethash 'charset props))
-          (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
-          (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
-          (editorconfig-set-line-length (gethash 'max_line_length props))
-          (run-hook-with-args 'editorconfig-custom-hooks props))
-        (display-warning :error "EditorConfig core program is not available.  Styles will not be applied.")))))
+    (condition-case err
+      (progn
+        (unless (functionp editorconfig-get-properties-function)
+          (error "Invalid editorconfig-get-properties-function value"))
+        (let ((props (funcall editorconfig-get-properties-function)))
+          (progn
+            (editorconfig-set-indentation (gethash 'indent_style props)
+              (gethash 'indent_size props)
+              (gethash 'tab_width props))
+            (editorconfig-set-coding-system
+              (gethash 'end_of_line props)
+              (gethash 'charset props))
+            (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
+            (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
+            (editorconfig-set-line-length (gethash 'max_line_length props))
+            (run-hook-with-args 'editorconfig-custom-hooks props))))
+      (error
+        (display-warning 'editorconfig
+          (concat (error-message-string err)
+            ".  Styles will not be applied.")
+          :error)))))
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
