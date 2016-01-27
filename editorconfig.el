@@ -1,6 +1,6 @@
 ;;; editorconfig.el --- EditorConfig Emacs Plugin
 
-;; Copyright (C) 2011-2015 EditorConfig Team
+;; Copyright (C) 2011-2016 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.7.1
