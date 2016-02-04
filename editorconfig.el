@@ -128,6 +128,7 @@ property emacs_linum to decide whether to show line numbers on the left
      (python-mode . editorconfig-set-indentation/python-mode)
      (ruby-mode ruby-indent-level)
      (scala-mode scala-indent:step)
+     (scss-mode css-indent-offset)
      (sgml-mode sgml-basic-offset)
      (sh-mode sh-basic-offset sh-indentation)
      (slim-mode slim-indent-offset)
