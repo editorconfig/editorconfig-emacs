@@ -120,6 +120,7 @@ property emacs_linum to decide whether to show line numbers on the left
      (lua-mode lua-indent-level)
      (matlab-mode matlab-indent-level)
      (mustache-mode mustache-basic-offset)
+     (nginx-mode nginx-indent-level)
      (nxml-mode nxml-child-indent (nxml-attribute-indent . 2))
      (objc-mode c-basic-offset)
      (octave-mode octave-block-offset)
