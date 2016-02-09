@@ -137,6 +137,7 @@ property emacs_linum to decide whether to show line numbers on the left
      (slim-mode slim-indent-offset)
      (tcl-mode tcl-indent-level
        tcl-continued-indent-level)
+     (typescript-mode typescript-indent-level)
      (web-mode (web-mode-indent-style . (lambda (size) 2))
        web-mode-markup-indent-offset
        web-mode-css-indent-offset
