@@ -130,6 +130,7 @@ property emacs_linum to decide whether to show line numbers on the left
      (puppet-mode puppet-indent-level)
      (python-mode . editorconfig-set-indentation/python-mode)
      (ruby-mode ruby-indent-level)
+     (rust-mode rust-indent-offset)
      (scala-mode scala-indent:step)
      (scss-mode css-indent-offset)
      (sgml-mode sgml-basic-offset)
