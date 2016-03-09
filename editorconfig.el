@@ -145,6 +145,7 @@ property emacs_linum to decide whether to show line numbers on the left
        web-mode-markup-indent-offset
        web-mode-css-indent-offset
        web-mode-code-indent-offset
+       web-mode-block-padding
        web-mode-script-padding
        web-mode-style-padding)
      (yaml-mode yaml-indent-offset))
