@@ -358,6 +358,25 @@ It calls `editorconfig-get-properties-from-exec' if
     (editorconfig-core-get-properties-hash)))
 
 ;;;###autoload
+(defun editorconfig-display-current-properties ()
+  "Display EditorConfig properties extracted for current buffer."
+  (interactive)
+  (if editorconfig-properties-hash
+    (let (
+           (buf (get-buffer-create "*EditorConfig Properties*"))
+           (file buffer-file-name)
+           (props editorconfig-properties-hash))
+      (with-current-buffer buf
+        (erase-buffer)
+        (insert (format "# EditorConfig for %s\n" file))
+        (maphash (lambda (k v)
+                   (insert (format "%S = %s\n" k v)))
+          props))
+      (display-buffer buf))
+    (message "Properties are not applied to current buffer yet.")
+    nil))
+
+;;;###autoload
 (defun editorconfig-apply ()
   "Apply EditorConfig properties for current buffer."
   (interactive)
