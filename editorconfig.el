@@ -188,6 +188,11 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   'editorconfig-indentation-alist
   "0.5")
 
+(defcustom editorconfig-exclude-modes ()
+  "List of major mode symbols not to apply properties."
+  :type '(repeat (symbol :tag "Major Mode"))
+  :group 'editorconfig)
+
 (defvar editorconfig-properties-hash nil
   "Hash object of EditorConfig properties for current buffer.
 Set by `editorconfig-apply' and nil if that is not invoked in current buffer
@@ -378,7 +383,9 @@ It calls `editorconfig-get-properties-from-exec' if
 
 ;;;###autoload
 (defun editorconfig-apply ()
-  "Apply EditorConfig properties for current buffer."
+  "Apply EditorConfig properties for current buffer.
+This function ignores `editorconfig-exclude-modes' and always applies available
+properties."
   (interactive)
   (when buffer-file-name
     (condition-case err
@@ -404,15 +411,27 @@ It calls `editorconfig-get-properties-from-exec' if
             ".  Styles will not be applied.")
           :error)))))
 
+(defun editorconfig-mode-apply ()
+  "Apply EditorConfig properties for current buffer.
+This function do the job only when the major mode is not listed in
+`editorconfig-exclude-modes'."
+  (when (and major-mode
+          (not (memq major-mode
+                 editorconfig-exclude-modes)))
+    (editorconfig-apply)))
+
 ;;;###autoload
 (define-minor-mode editorconfig-mode
-  "Toggle EditorConfig feature."
+  "Toggle EditorConfig feature.
+When enabled EditorConfig properties will be applied to buffers when first
+visiting files or changing major modes if the major mode is not listed in
+`editorconfig-exclude-modes'."
   :global t
   :lighter ""
   (dolist (hook '(after-change-major-mode-hook))
     (if editorconfig-mode
-      (add-hook hook 'editorconfig-apply)
-      (remove-hook hook 'editorconfig-apply))))
+      (add-hook hook 'editorconfig-mode-apply)
+      (remove-hook hook 'editorconfig-mode-apply))))
 
 
 
