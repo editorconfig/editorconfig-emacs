@@ -9,6 +9,7 @@ TRAVIS_FILE = .travis.yml
 # Compile with noninteractive and relatively clean environment.
 BATCHFLAGS = -batch -q --no-site-file -L $(PROJECT_ROOT_DIR)
 
+MAIN_SRC = editorconfig.el
 SRCS = editorconfig.el editorconfig-core.el editorconfig-core-handle.el \
 	editorconfig-fnmatch.el
 OBJS = $(SRCS:.el=.elc)
@@ -35,7 +36,7 @@ test-travis:
 test-ert: $(ERT_TESTS) $(OBJS)
 	$(EMACS) $(BATCHFLAGS) \
 		--eval "(require 'ert) (setq debug-on-error t)" \
-		--eval "(setq metadata-el-files '($(SRCS:%=\"%\")))" \
+		--eval "(setq metadata-el-files '($(MAIN_SRC:%=\"%\")))" \
 		$(ERT_TESTS:%=-l "%") \
 		-f ert-run-tests-batch-and-exit
 
