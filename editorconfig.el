@@ -101,6 +101,7 @@ property emacs_linum to decide whether to show line numbers on the left
      (cmake-mode cmake-tab-width)
      (coffee-mode coffee-tab-width)
      (cperl-mode cperl-indent-level)
+     (crystal-mode crystal-indent-level)
      (css-mode css-indent-offset)
      (emacs-lisp-mode lisp-indent-offset)
      (erlang-mode erlang-indent-level)
