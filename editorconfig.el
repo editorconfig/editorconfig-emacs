@@ -440,31 +440,50 @@ visiting files or changing major modes if the major mode is not listed in
 (define-derived-mode editorconfig-conf-mode conf-mode "EditorConfig"
   "Major mode for editing .editorconfig files."
   (set-variable 'indent-line-function 'indent-relative)
-  (conf-mode-initialize
-    "#"
-    `(
-       ("^#.*\\|^;.*\\| #.*\\| ;.*" 0 font-lock-comment-face)
-       ("^[ \t]*\\(root\\)[ \t]*[=:]" 1 font-lock-builtin-face)
-       ("^[ \t]*\\(indent_style\\)[ \t]*[=:]" 1 font-lock-builtin-face)
-       ("^[ \t]*\\(indent_size\\)[ \t]*[=:]" 1 font-lock-builtin-face)
-       ("^[ \t]*\\(tab_width\\)[ \t]*[=:]" 1 font-lock-builtin-face)
-       ("^[ \t]*\\(end_of_line\\)[ \t]*[=:]" 1 font-lock-builtin-face)
-       ("^[ \t]*\\(charset\\)[ \t]*[=:]" 1 font-lock-builtin-face)
-       ("^[ \t]*\\(trim_trailing_whitespace\\)[ \t]*[=:]" 1 font-lock-builtin-face)
-       ("^[ \t]*\\(insert_final_newline\\)[ \t]*[=:]" 1 font-lock-builtin-face)
-       ("^[ \t]*\\(max_line_length\\)[ \t]*[=:]" 1 font-lock-builtin-face)
+  (let ((key-property-list
+          '("charset"
+            "end_of_line"
+            "indent_size"
+            "indent_style"
+            "insert_final_newline"
+            "max_line_length"
+            "root"
+            "tab_width"
+            "trim_trailing_whitespace"))
+        (key-value-list
+          '("true"
+            "false"
+            "lf"
+            "cr"
+            "crlf"
+            "space"
+            "tab"
+            "latin1"
+            "utf-8"
+            "utf-8-bom"
+            "utf-16be"
+            "utf-16le"))
+        (font-lock-value
+          '(("^[ \t]*\\[\\(.+?\\)\\]" 1 font-lock-type-face)
+            ("^[ \t]*\\(.+?\\)[ \t]*[=:]" 1 font-lock-variable-name-face))))
 
-       ("[=:][ \t]*\\(true\\)\\([ \t]\\|$\\)" 1 font-lock-constant-face)
-       ("[=:][ \t]*\\(false\\)\\([ \t]\\|$\\)" 1 font-lock-constant-face)
-       ("[=:][ \t]*\\(lf\\)\\([ \t]\\|$\\)" 1 font-lock-constant-face)
-       ("[=:][ \t]*\\(cr\\)\\([ \t]\\|$\\)" 1 font-lock-constant-face)
-       ("[=:][ \t]*\\(crlf\\)\\([ \t]\\|$\\)" 1 font-lock-constant-face)
-       ("[=:][ \t]*\\(space\\)\\([ \t]\\|$\\)" 1 font-lock-constant-face)
-       ("[=:][ \t]*\\(tab\\)\\([ \t]\\|$\\)" 1 font-lock-constant-face)
+    ;; Highlight all key values
+    (dolist (key-value key-value-list)
+      (add-to-list
+        'font-lock-value
+        `(,(format "[=:][ \t]*\\(%s\\)\\([ \t]\\|$\\)" key-value)
+          1 font-lock-constant-face)))
+    ;; Highlight all key properties
+    (dolist (key-property key-property-list)
+      (add-to-list
+        'font-lock-value
+        `(,(format "^[ \t]*\\(%s\\)[ \t]*[=:]" key-property)
+          1 font-lock-builtin-face)))
+    ;; Highlight comments
+    (add-to-list 'font-lock-value
+      '("^#.*\\|^;.*\\| #.*\\| ;.*" 0 font-lock-comment-face))
 
-       ("^[ \t]*\\[\\(.+?\\)\\]" 1 'font-lock-type-face)
-       ("^[ \t]*\\(.+?\\)[ \t]*[=:]" 1 'font-lock-variable-name-face)
-       )))
+    (conf-mode-initialize "#" font-lock-value)))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist
