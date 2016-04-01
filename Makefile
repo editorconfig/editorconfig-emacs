@@ -17,7 +17,7 @@ OBJS = $(SRCS:.el=.elc)
 $(OBJS): %.elc: %.el
 	$(EMACS) $(BATCHFLAGS) -f batch-byte-compile $^
 
-.PHONY: all clean test test-travis test-ert test-core test-metadata
+.PHONY: all clean test test-travis test-ert test-core test-metadata sandbox
 
 all: $(OBJS)
 
@@ -52,3 +52,9 @@ test-core: core-test/CMakeLists.txt $(OBJS)
 	cd $(PROJECT_ROOT_DIR)/core-test && \
 		EMACS_BIN=$(EMACS) EDITORCONFIG_CORE_LIBRARY_PATH="$(PROJECT_ROOT_DIR)" \
 		ctest --output-on-failure .
+
+
+# Start Emacs that loads *.el in current directory and does not load the user
+# init file
+sandbox:
+	$(EMACS) -q -L $(PROJECT_ROOT_DIR) $(SRCS:%=-l "%")
