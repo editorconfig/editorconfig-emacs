@@ -437,7 +437,7 @@ visiting files or changing major modes if the major mode is not listed in
 
 
 ;;;###autoload
-(define-derived-mode editorconfig-conf-mode conf-mode "EditorConfig"
+(define-derived-mode editorconfig-conf-mode conf-unix-mode "EditorConfig"
   "Major mode for editing .editorconfig files."
   (set-variable 'indent-line-function 'indent-relative)
   (let ((key-property-list
