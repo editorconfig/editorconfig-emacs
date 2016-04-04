@@ -421,6 +421,13 @@ This function do the job only when the major mode is not listed in
                  editorconfig-exclude-modes)))
     (editorconfig-apply)))
 
+(defvar editorconfig-conf-mode-syntax-table
+  (let ((table (make-syntax-table conf-unix-mode-syntax-table)))
+    (modify-syntax-entry ?\; "<" table)
+    table)
+  "Syntax table in use in `editorconfig-conf-mode' buffers.")
+
+
 ;;;###autoload
 (define-minor-mode editorconfig-mode
   "Toggle EditorConfig feature.
