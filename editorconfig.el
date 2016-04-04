@@ -486,9 +486,6 @@ visiting files or changing major modes if the major mode is not listed in
         'font-lock-value
         `(,(format "^[ \t]*\\(%s\\)[ \t]*[=:]" key-property)
           1 font-lock-builtin-face)))
-    ;; Highlight comments
-    (add-to-list 'font-lock-value
-      '("^#.*\\|^;.*\\| #.*\\| ;.*" 0 font-lock-comment-face))
 
     (conf-mode-initialize "#" font-lock-value)))
 
