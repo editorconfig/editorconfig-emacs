@@ -95,6 +95,7 @@ property emacs_linum to decide whether to show line numbers on the left
   "0.5")
 
 (defcustom editorconfig-indentation-alist
+  ;; For contributors: Sort modes in alphabetical order, please :)
   '((awk-mode c-basic-offset)
      (c++-mode c-basic-offset)
      (c-mode c-basic-offset)
