@@ -322,7 +322,8 @@ yet.")
 
 (defun editorconfig-set-line-length (length)
   "Set the max line length (fill-column) to LENGTH."
-  (when (editorconfig-string-integer-p length)
+  (when (and (editorconfig-string-integer-p length)
+          (> (string-to-number length) 0))
     (set-fill-column (string-to-number length))))
 
 (defun editorconfig-call-editorconfig-exec ()
