@@ -12,8 +12,8 @@ This is an [EditorConfig][] plugin for [Emacs](https://www.gnu.org/software/emac
 Download the [EditorConfig C Core][] and follow the instructions in the README
 and INSTALL files to install it.
 
-Or, when no Core executable is found, this plugin uses Emacs Lisp implemented
-Core as a fallback.
+This plugin also has a core library implemented in Emacs-Lisp, and fallback
+to it when no core executable is found.
 
 In either case, copy `.el` files in this repository to `~/.emacs.d/lisp`
 and add the following to your `~/.emacs` file:
