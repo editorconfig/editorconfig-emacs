@@ -45,6 +45,11 @@
   "editorconfig-core"
   nil)
 
+(defgroup editorconfig nil
+  "help developers define and maintain consistentcoding styles between different
+editors and IDEs"
+  :group 'tools)
+
 (defcustom editorconfig-exec-path
   "editorconfig"
   "EditorConfig executable name.
