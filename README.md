@@ -83,7 +83,7 @@ add a pair of major-mode symbol and its indentation variables:
 
 ```emacs-lisp
 (add-to-list 'editorconfig-indentation-alist
-    ;; Just an example, of course EditorConfig already includes this setting!
+    ;; Just an example, of course EditorConfig has already included this setting!
     '(c-mode c-basic-offset))
 ```
 
