@@ -3,7 +3,7 @@
 [![MELPA Stable](https://stable.melpa.org/packages/editorconfig-badge.svg)](https://stable.melpa.org/#/editorconfig)
 
 
-# EditorConfig Emacs Plugin 
+# EditorConfig Emacs Plugin
 
 This is an [EditorConfig][] plugin for [Emacs](https://www.gnu.org/software/emacs/).
 
@@ -12,15 +12,17 @@ This is an [EditorConfig][] plugin for [Emacs](https://www.gnu.org/software/emac
 Download the [EditorConfig C Core][] and follow the instructions in the README
 and INSTALL files to install it.
 
-Or, when no Core executable is found, this plugin uses Emacs Lisp implemented
-Core as a fallback.
+This plugin also has a core library implemented in Emacs-Lisp, and fallback
+to it when no core executable is found.
 
 In either case, copy `.el` files in this repository to `~/.emacs.d/lisp`
 and add the following to your `~/.emacs` file:
 
-    (add-to-list 'load-path "~/.emacs.d/lisp")
-    (require 'editorconfig)
-    (editorconfig-mode 1)
+```emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/lisp")
+(require 'editorconfig)
+(editorconfig-mode 1)
+```
 
 Alternatively, you can find the package available on
 [Marmalade](http://marmalade-repo.org/packages/editorconfig) and
@@ -55,6 +57,39 @@ ones that show up on our radar. Similarly, we don't yet hook
 in to all different packages for whitespace trimming to inform
 them about editorconfig settings, but aim for better coverage
 of things like [ws-trim](ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el).
+
+## Customize
+
+### `editorconfig-custom-hooks`
+
+A list of custom hooks after loading common EditorConfig settings, where you can
+set some custom variables or overwrite existing properties.
+
+For example, `web-mode` has several variables for indentation offset size and
+EditorConfig sets them at once by `indent_size`. You may want to stop indenting
+only blocks of `web-mode`: it can be achieved by adding following to your init.el:
+
+```emacs-lisp
+(add-hook 'editorconfig-custom-hooks
+  (lambda (hash) (setq web-mode-block-padding 0)))
+```
+
+You can also define your own custom properties and enable them here.
+
+### `editorconfig-indentation-alist`
+
+Alist of indentaion setting mothods by modes.
+
+For the easiest case to add a new support for a major-mode, you just need to
+add a pair of major-mode symbol and its indentation variables:
+
+```emacs-lisp
+(add-to-list 'editorconfig-indentation-alist
+  ;; Just an example, of course EditorConfig has already included this setting!
+  '(c-mode c-basic-offset))
+```
+
+For a bit more compilicated cases please take a look at the docstring of this variable.
 
 ## Testing
 

@@ -45,6 +45,13 @@
   "editorconfig-core"
   nil)
 
+(defgroup editorconfig nil
+  "EditorConfig Emacs Plugin.
+
+EditorConfig Helps developers define and maintain consistent coding styles
+between different editors and IDEs"
+  :group 'tools)
+
 (defcustom editorconfig-exec-path
   "editorconfig"
   "EditorConfig executable name.
@@ -95,6 +102,7 @@ property emacs_linum to decide whether to show line numbers on the left
   "0.5")
 
 (defcustom editorconfig-indentation-alist
+  ;; For contributors: Sort modes in alphabetical order, please :)
   '((awk-mode c-basic-offset)
      (c++-mode c-basic-offset)
      (c-mode c-basic-offset)
