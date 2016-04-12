@@ -46,8 +46,10 @@
   nil)
 
 (defgroup editorconfig nil
-  "help developers define and maintain consistentcoding styles between different
-editors and IDEs"
+  "EditorConfig Emacs Plugin.
+
+EditorConfig Helps developers define and maintain consistent coding styles
+between different editors and IDEs"
   :group 'tools)
 
 (defcustom editorconfig-exec-path
