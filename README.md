@@ -18,9 +18,11 @@ to it when no core executable is found.
 In either case, copy `.el` files in this repository to `~/.emacs.d/lisp`
 and add the following to your `~/.emacs` file:
 
-    (add-to-list 'load-path "~/.emacs.d/lisp")
-    (require 'editorconfig)
-    (editorconfig-mode 1)
+```emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/lisp")
+(require 'editorconfig)
+(editorconfig-mode 1)
+```
 
 Alternatively, you can find the package available on
 [Marmalade](http://marmalade-repo.org/packages/editorconfig) and
