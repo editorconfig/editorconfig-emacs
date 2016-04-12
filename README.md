@@ -69,7 +69,7 @@ only blocks of `web-mode`: it can be achieved by adding following to your init.e
 
 ```emacs-lisp
 (add-hook 'editorconfig-custom-hooks
-          (lambda (hash) (setq web-mode-block-padding 0)))
+  (lambda (hash) (setq web-mode-block-padding 0)))
 ```
 
 You can also define your own custom properties and enable them here.
@@ -83,8 +83,8 @@ add a pair of major-mode symbol and its indentation variables:
 
 ```emacs-lisp
 (add-to-list 'editorconfig-indentation-alist
-    ;; Just an example, of course EditorConfig has already included this setting!
-    '(c-mode c-basic-offset))
+  ;; Just an example, of course EditorConfig has already included this setting!
+  '(c-mode c-basic-offset))
 ```
 
 For a bit more compilicated cases please take a look at the docstring of this variable.
