@@ -17,12 +17,15 @@ OBJS = $(SRCS:.el=.elc)
 $(OBJS): %.elc: %.el
 	$(EMACS) $(BATCHFLAGS) -f batch-byte-compile $^
 
-.PHONY: all clean test test-travis test-ert test-core test-metadata sandbox
+.PHONY: all clean git-submodule test test-travis test-ert test-core test-metadata sandbox
 
 all: $(OBJS)
 
 clean:
 	-rm -f $(OBJS)
+
+git-submodule:
+	git submodule update --init
 
 test: test-ert test-core test-metadata $(OBJS)
 	$(EMACS) $(BATCHFLAGS) -l editorconfig.el
@@ -33,7 +36,7 @@ test-travis:
 
 
 # ert test
-test-ert: $(ERT_TESTS) $(OBJS)
+test-ert: git-submodule $(ERT_TESTS) $(OBJS)
 	$(EMACS) $(BATCHFLAGS) \
 		--eval "(require 'ert) (setq debug-on-error t)" \
 		--eval "(setq metadata-el-files '($(MAIN_SRC:%=\"%\")))" \
@@ -43,10 +46,7 @@ test-ert: $(ERT_TESTS) $(OBJS)
 
 
 # Core test
-core-test/CMakeLists.txt:
-	git submodule update --init
-
-test-core: core-test/CMakeLists.txt $(OBJS)
+test-core: git-submodule $(OBJS)
 	cd $(PROJECT_ROOT_DIR)/core-test && \
 		cmake -DEDITORCONFIG_CMD="$(PROJECT_ROOT_DIR)/bin/editorconfig-el" .
 	cd $(PROJECT_ROOT_DIR)/core-test && \
