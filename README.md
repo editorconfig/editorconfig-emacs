@@ -89,6 +89,8 @@ add a pair of major-mode symbol and its indentation variables:
   '(c-mode c-basic-offset))
 ```
 
+You can also modify this variable with the command
+<kbd>M-x customize-variable [RET] editorconfig-indentation-alist [RET]</kbd>.
 For a bit more compilicated cases please take a look at the docstring of this variable.
 
 ## Testing
