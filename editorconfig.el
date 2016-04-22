@@ -127,6 +127,7 @@ property emacs_linum to decide whether to show line numbers on the left
      (js2-jsx-mode js2-basic-offset sgml-basic-offset)
      (js3-mode js3-indent-level)
      (json-mode js-indent-level)
+     (julia-mode julia-indent-offset)
      (latex-mode . editorconfig-set-indentation/latex-mode)
      (lisp-mode lisp-indent-offset)
      (livescript-mode livescript-tab-width)
