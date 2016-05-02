@@ -41,11 +41,25 @@
   "Hash of EditorConfig filename and its `editorconfig-core-handle' instance.")
 
 (cl-defstruct editorconfig-core-handle
+  ;; Alist of top propetties
+  ;; e.g. (("root" . "true"))
   (top-prop nil)
-  (prop nil)
-  (mtime nil)
-  (path nil))
 
+  ;; Alist of properties
+  ;; Key: Section name
+  ;; Value: Alist of properties for each section name
+  ;; e.g.
+  ;; (
+  ;;  ("*" ("end_of_line" . "lf") ("indent_style" . "space"))
+  ;;  ("Makefile" ("indent_style" . "tab"))
+  ;; )
+  (prop nil)
+
+  ;; e.g. (22310 59113 203882 991000)
+  (mtime nil)
+
+  ;; e.g. "/home/a/b/.editorconfig"
+  (path nil))
 
 
 (defun editorconfig-core-handle (conf)
