@@ -86,7 +86,7 @@ The list returned will be ordered by the lines they appear.
 
 If HANDLE is nil return nil."
   (when handle
-    (mapcar 'cdr
+    (mapcar (lambda (prop) (copy-alist (cdr prop)))
       (cl-remove-if-not (lambda (prop)
                           (editorconfig-core-handle--fnmatch-p file
                             (car prop)
