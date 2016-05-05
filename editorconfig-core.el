@@ -52,7 +52,7 @@
 ;; Give CONFNAME for basename of config file other than .editorconfig.
 ;; If need to specify config format version, give CONFVERSION.
 
-;; This functions returns alist of properties. Each element will look like
+;; This functions returns alist of properties.  Each element will look like
 ;; (KEY . VALUE) .
 
 

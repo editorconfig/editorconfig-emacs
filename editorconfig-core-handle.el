@@ -26,7 +26,7 @@
 
 ;;; Commentary:
 
-;; Handle class for EditorConfig config file. This library is used internally
+;; Handle class for EditorConfig config file.  This library is used internally
 ;; from editorconfig-core.el .
 
 ;;; Code:
