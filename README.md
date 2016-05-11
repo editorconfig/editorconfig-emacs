@@ -25,7 +25,8 @@ and add the following to your `~/.emacs` file:
 ```
 
 Alternatively, you can find the package available on
-[MELPA](http://melpa.org/#/editorconfig).
+[MELPA](http://melpa.org/#/editorconfig) and [MELPA Stable](http://stable.melpa.org/#/editorconfig).
+
 
 ## Supported properties
 
