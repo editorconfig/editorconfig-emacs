@@ -25,8 +25,10 @@ and add the following to your `~/.emacs` file:
 ```
 
 Alternatively, you can find the package available on
-[Marmalade](http://marmalade-repo.org/packages/editorconfig) and
-[MELPA](http://melpa.org/#/editorconfig).
+[MELPA](http://melpa.org/#/editorconfig) and [MELPA Stable](http://stable.melpa.org/#/editorconfig)
+(there is also the package in [Marmalade](http://marmalade-repo.org/packages/editorconfig)
+repository, but currently we do not update that).
+
 
 ## Supported properties
 
