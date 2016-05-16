@@ -157,6 +157,8 @@ If CONF is not found return nil."
              ;; Alist of properties for current PATTERN
              (props ())
 
+             ;; Current line num
+             (current-line-number 1)
              )
         (while (not (eq (point) point-max))
           (setq line
@@ -183,8 +185,10 @@ If CONF is not found return nil."
               (let ((idx (string-match "=\\|:"
                            line)))
                 (unless idx
-                  (error (format "Failed to parse file: %s"
-                           conf)))
+                  (error "Error while reading config file: %s:%d:\n    %s\n"
+                         conf
+                         current-line-number
+                         line))
                 (let (
                        (key (downcase (editorconfig-core-handle--string-trim
                                         (substring line
@@ -202,7 +206,12 @@ If CONF is not found return nil."
                       (setq top-props
                         `(,@top-props (,key . ,value))))))))
             )
-          (forward-line 1))
+          (setq current-line-number
+            (1+ current-line-number))
+          ;; Use  this code instead of goto-line for Lisp program
+          (goto-char (point-min))
+          (forward-line (1- current-line-number))
+          )
         (when pattern
           (setq all-props
             `(,@all-props (,pattern . ,props))))
