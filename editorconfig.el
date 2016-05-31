@@ -214,9 +214,8 @@ yet.")
 
 (defun editorconfig-string-integer-p (string)
   "Return non-nil if STRING represents integer."
-  (if (stringp string)
-    (string-match-p "\\`[0-9]+\\'" string)
-    nil))
+  (and (stringp string)
+    (string-match-p "\\`[0-9]+\\'" string)))
 
 (defun editorconfig-set-indentation/python-mode (size)
   "Set `python-mode' indent size to SIZE."
