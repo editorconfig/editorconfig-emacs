@@ -370,6 +370,7 @@ It calls `editorconfig-get-properties-from-exec' if
 `editorconfig-core-get-properties-hash'."
   (if (executable-find editorconfig-exec-path)
     (editorconfig-get-properties-from-exec)
+    (require 'editorconfig-core)
     (editorconfig-core-get-properties-hash)))
 
 ;;;###autoload
