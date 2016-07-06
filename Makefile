@@ -57,4 +57,4 @@ test-core: core-test/CMakeLists.txt $(OBJS)
 # Start Emacs that loads *.el in current directory and does not load the user
 # init file
 sandbox:
-	$(EMACS) -q -L $(PROJECT_ROOT_DIR) $(SRCS:%=-l "%")
+	$(EMACS) -q -L $(PROJECT_ROOT_DIR) $(MAIN_SRC:%=-l "%")
