@@ -292,10 +292,12 @@ yet.")
                ((equal charset "utf-16be") 'utf-16be)
                ((equal charset "utf-16le") 'utf-16le)
                (t 'undecided))))
-    (set-buffer-file-coding-system (merge-coding-systems
-                                     cs
-                                     eol)
-      nil t)))
+    (unless (and (eq eol 'undecided)
+              (eq cs 'undecided))
+      (set-buffer-file-coding-system (merge-coding-systems
+                                       cs
+                                       eol)
+        nil t))))
 
 (defun editorconfig-set-trailing-nl (final-newline)
   "Set up requiring final newline by FINAL-NEWLINE."
