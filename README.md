@@ -28,6 +28,14 @@ Alternatively, you can find the package available on
 [MELPA](http://melpa.org/#/editorconfig) and [MELPA Stable](http://stable.melpa.org/#/editorconfig)
 ([The Marmalade package](http://marmalade-repo.org/packages/editorconfig) is deprecated).
 
+Or if you use [**use-package**](https://www.emacswiki.org/emacs/UsePackage):
+
+```emacs-list
+(use-package editorconfig
+  :ensure t
+  :init
+  (add-hook 'prog-mode-hook 'editorconfig-mode))
+```
 
 ## Supported properties
 
