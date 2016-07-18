@@ -34,7 +34,8 @@ Or if you use [**use-package**](https://www.emacswiki.org/emacs/UsePackage):
 (use-package editorconfig
   :ensure t
   :init
-  (add-hook 'prog-mode-hook 'editorconfig-mode))
+  (add-hook 'prog-mode-hook (editorconfig-mode 1))
+  (add-hook 'text-mode-hook (editorconfig-mode 1)))
 ```
 
 ## Supported properties
