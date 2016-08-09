@@ -67,7 +67,6 @@
 
 If CONF does not exist return nil."
   (when (file-readable-p conf)
-    (setq conf (file-truename conf))
     (let ((cached (gethash conf
                     editorconfig-core-handle--cache-hash))
            (mtime (nth 5
