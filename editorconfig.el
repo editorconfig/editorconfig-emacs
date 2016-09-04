@@ -48,6 +48,8 @@
 
 EditorConfig Helps developers define and maintain consistent coding styles
 between different editors and IDEs"
+  :tag "EditorConfig"
+  :prefix "editorconfig-"
   :group 'tools)
 
 (defcustom editorconfig-exec-path
