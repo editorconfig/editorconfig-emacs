@@ -205,6 +205,11 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   :type '(repeat (symbol :tag "Major Mode"))
   :group 'editorconfig)
 
+(defcustom editorconfig-exclude-prefixes '(("\\`https?:" . t))
+  "List of buffer filename prefix regexp patterns not to apply properties."
+  :type '(repeat (string))
+  :group 'editorconfig)
+
 (defvar editorconfig-properties-hash nil
   "Hash object of EditorConfig properties for current buffer.
 Set by `editorconfig-apply' and nil if that is not invoked in current buffer
@@ -432,7 +437,9 @@ This function do the job only when the major mode is not listed in
 `editorconfig-exclude-modes'."
   (when (and major-mode
              (not (memq major-mode
-                        editorconfig-exclude-modes)))
+                        editorconfig-exclude-modes))
+             buffer-file-name
+             (not (assoc-default buffer-file-name editorconfig-exclude-prefixes 'string-match)))
     (editorconfig-apply)))
 
 
