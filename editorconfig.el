@@ -207,7 +207,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 
 (defcustom editorconfig-exclude-prefixes '(("\\`https?:" . t))
   "List of buffer filename prefix regexp patterns not to apply properties."
-  :type '(repeat (string))
+  :type '(alist :key-type string :value-type boolean)
   :group 'editorconfig)
 
 (defvar editorconfig-properties-hash nil
