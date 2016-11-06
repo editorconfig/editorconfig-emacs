@@ -443,7 +443,7 @@ When enabled EditorConfig properties will be applied to buffers when first
 visiting files or changing major modes if the major mode is not listed in
 `editorconfig-exclude-modes'."
   :global t
-  :lighter "EditorConfig"
+  :lighter " EditorConfig"
   (dolist (hook '(after-change-major-mode-hook))
     (if editorconfig-mode
       (add-hook hook 'editorconfig-mode-apply)
