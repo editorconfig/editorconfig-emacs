@@ -38,6 +38,7 @@
 ;; version control systems.
 
 ;;; Code:
+(require 'cl-lib)
 
 (declare-function editorconfig-core-get-properties-hash
                   "editorconfig-core"
