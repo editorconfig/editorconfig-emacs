@@ -39,6 +39,7 @@
 
 ;;; Code:
 (require 'cl-lib)
+(eval-when-compile (require 'rx))
 
 (declare-function editorconfig-core-get-properties-hash
                   "editorconfig-core"
@@ -206,7 +207,9 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   :type '(repeat (symbol :tag "Major Mode"))
   :group 'editorconfig)
 
-(defcustom editorconfig-exclude-regexps '("\\`https?:")
+(defcustom editorconfig-exclude-regexps
+  (list (eval-when-compile
+          (rx string-start (or "http" "https" "ftp" "sftp" "rsync") ":")))
   "List of buffer filename prefix regexp patterns not to apply properties."
   :type '(repeat string)
   :group 'editorconfig)
