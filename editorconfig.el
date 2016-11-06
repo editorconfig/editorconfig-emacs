@@ -205,7 +205,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   :type '(repeat (symbol :tag "Major Mode"))
   :group 'editorconfig)
 
-(defcustom editorconfig-exclude-prefixes '(("\\`https?:" . t))
+(defcustom editorconfig-exclude-regexps '(("\\`https?:" . t))
   "List of buffer filename prefix regexp patterns not to apply properties."
   :type '(alist :key-type string :value-type boolean)
   :group 'editorconfig)
@@ -439,7 +439,7 @@ This function do the job only when the major mode is not listed in
              (not (memq major-mode
                         editorconfig-exclude-modes))
              buffer-file-name
-             (not (assoc-default buffer-file-name editorconfig-exclude-prefixes 'string-match)))
+             (not (assoc-default buffer-file-name editorconfig-exclude-regexps 'string-match)))
     (editorconfig-apply)))
 
 
