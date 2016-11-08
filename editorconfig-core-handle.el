@@ -68,20 +68,20 @@
 If CONF does not exist return nil."
   (when (file-readable-p conf)
     (let ((cached (gethash conf
-                    editorconfig-core-handle--cache-hash))
-           (mtime (nth 5
-                    (file-attributes conf))))
+                           editorconfig-core-handle--cache-hash))
+          (mtime (nth 5
+                      (file-attributes conf))))
       (if (and cached
-            (equal (editorconfig-core-handle-mtime cached)
-              mtime))
-        cached
+               (equal (editorconfig-core-handle-mtime cached)
+                      mtime))
+          cached
         (let ((parsed (editorconfig-core-handle--parse-file conf)))
           (puthash conf
-            (make-editorconfig-core-handle :top-prop (car parsed)
-              :prop (cdr parsed)
-              :mtime mtime
-              :path conf)
-            editorconfig-core-handle--cache-hash))))))
+                   (make-editorconfig-core-handle :top-prop (car parsed)
+                                                  :prop (cdr parsed)
+                                                  :mtime mtime
+                                                  :path conf)
+                   editorconfig-core-handle--cache-hash))))))
 
 (defun editorconfig-core-handle-root-p (handle)
   "Return non-nil if HANDLE represent root EditorConfig file.
@@ -89,9 +89,9 @@ If CONF does not exist return nil."
 If HANDLE is nil return nil."
   (when handle
     (string-equal "true"
-      (downcase (or (cdr (assoc "root"
-                           (editorconfig-core-handle-top-prop handle)))
-                  "")))))
+                  (downcase (or (cdr (assoc "root"
+                                            (editorconfig-core-handle-top-prop handle)))
+                                "")))))
 
 (defun editorconfig-core-handle-get-properties (handle file)
   "Return list of alist of properties from HANDLE for FILE.
@@ -100,11 +100,11 @@ The list returned will be ordered by the lines they appear.
 If HANDLE is nil return nil."
   (when handle
     (mapcar (lambda (prop) (copy-alist (cdr prop)))
-      (cl-remove-if-not (lambda (prop)
-                          (editorconfig-core-handle--fnmatch-p file
-                            (car prop)
-                            (file-name-directory (editorconfig-core-handle-path handle))))
-        (editorconfig-core-handle-prop handle)))))
+            (cl-remove-if-not (lambda (prop)
+                                (editorconfig-core-handle--fnmatch-p file
+                                                                     (car prop)
+                                                                     (file-name-directory (editorconfig-core-handle-path handle))))
+                              (editorconfig-core-handle-prop handle)))))
 
 (defun editorconfig-core-handle--fnmatch-p (name pattern dir)
   "Return non-nil if NAME match PATTERN.
@@ -112,24 +112,24 @@ If pattern has slash, pattern should be relative to DIR.
 
 This function is a fnmatch with a few modification for EditorConfig usage."
   (if (string-match-p "/" pattern)
-    (let ((pattern (replace-regexp-in-string "^/"
-                     ""
-                     pattern))
-           (dir (file-name-as-directory dir)))
-      (editorconfig-fnmatch-p name
-        (concat dir
-          pattern)))
+      (let ((pattern (replace-regexp-in-string "^/"
+                                               ""
+                                               pattern))
+            (dir (file-name-as-directory dir)))
+        (editorconfig-fnmatch-p name
+                                (concat dir
+                                        pattern)))
     (editorconfig-fnmatch-p name
-      (concat "**/"
-        pattern))))
+                            (concat "**/"
+                                    pattern))))
 
 (defsubst editorconfig-core-handle--string-trim (str)
   "Remove leading and trailing whitespace from STR."
   (replace-regexp-in-string "[ \t\n\r]+\\'"
-    ""
-    (replace-regexp-in-string "\\`[ \t\n\r]+"
-      ""
-      str)))
+                            ""
+                            (replace-regexp-in-string "\\`[ \t\n\r]+"
+                                                      ""
+                                                      str)))
 
 (defun editorconfig-core-handle--parse-file (conf)
   "Parse EditorConfig file CONF.
@@ -146,76 +146,76 @@ If CONF is not found return nil."
       (insert-file-contents conf)
       (goto-char (point-min))
       (let ((point-max (point-max))
-             (all-props ())
-             (top-props nil)
+            (all-props ())
+            (top-props nil)
 
-             ;; String of current line
-             (line "")
-             ;; nil when pattern not appeared yet, "" when pattern is empty ("[]")
-             (pattern nil)
-             ;; Alist of properties for current PATTERN
-             (props ())
+            ;; String of current line
+            (line "")
+            ;; nil when pattern not appeared yet, "" when pattern is empty ("[]")
+            (pattern nil)
+            ;; Alist of properties for current PATTERN
+            (props ())
 
-             ;; Current line num
-             (current-line-number 1)
-             )
+            ;; Current line num
+            (current-line-number 1)
+            )
         (while (not (eq (point) point-max))
           (setq line
-            (buffer-substring-no-properties (point-at-bol)
-              (point-at-eol)))
+                (buffer-substring-no-properties (point-at-bol)
+                                                (point-at-eol)))
           (setq line
-            (replace-regexp-in-string "\\(^\\| \\)\\(#\\|;\\).*$"
-              ""
-              (editorconfig-core-handle--string-trim line)))
+                (replace-regexp-in-string "\\(^\\| \\)\\(#\\|;\\).*$"
+                                          ""
+                                          (editorconfig-core-handle--string-trim line)))
 
           (cond
-            ((string-equal "" line)
-              nil)
+           ((string-equal "" line)
+            nil)
 
-            ((string-match "^\\[\\(.*\\)\\]$"
-               line)
-              (when pattern
-                (setq all-props
-                  `(,@all-props (,pattern . ,props)))
-                (setq props nil))
-              (setq pattern (match-string 1 line)))
+           ((string-match "^\\[\\(.*\\)\\]$"
+                          line)
+            (when pattern
+              (setq all-props
+                    `(,@all-props (,pattern . ,props)))
+              (setq props nil))
+            (setq pattern (match-string 1 line)))
 
-            (t
-              (let ((idx (string-match "=\\|:"
-                           line)))
-                (unless idx
-                  (error "Error while reading config file: %s:%d:\n    %s\n"
-                         conf
-                         current-line-number
-                         line))
-                (let (
-                       (key (downcase (editorconfig-core-handle--string-trim
-                                        (substring line
-                                          0
-                                          idx))))
-                       (value (editorconfig-core-handle--string-trim
-                                (substring line
-                                  (1+ idx)))))
-                  (when (and (< (length key) 51)
-                          (< (length value) 256))
-                    (if pattern
+           (t
+            (let ((idx (string-match "=\\|:"
+                                     line)))
+              (unless idx
+                (error "Error while reading config file: %s:%d:\n    %s\n"
+                       conf
+                       current-line-number
+                       line))
+              (let (
+                    (key (downcase (editorconfig-core-handle--string-trim
+                                    (substring line
+                                               0
+                                               idx))))
+                    (value (editorconfig-core-handle--string-trim
+                            (substring line
+                                       (1+ idx)))))
+                (when (and (< (length key) 51)
+                           (< (length value) 256))
+                  (if pattern
                       (when (< (length pattern) 4097)
                         (setq props
-                          `(,@props (,key . ,value))))
-                      (setq top-props
-                        `(,@top-props (,key . ,value))))))))
-            )
+                              `(,@props (,key . ,value))))
+                    (setq top-props
+                          `(,@top-props (,key . ,value))))))))
+           )
           (setq current-line-number
-            (1+ current-line-number))
+                (1+ current-line-number))
           ;; Use  this code instead of goto-line for Lisp program
           (goto-char (point-min))
           (forward-line (1- current-line-number))
           )
         (when pattern
           (setq all-props
-            `(,@all-props (,pattern . ,props))))
+                `(,@all-props (,pattern . ,props))))
         (cons top-props
-          all-props)))))
+              all-props)))))
 
 (provide 'editorconfig-core-handle)
 

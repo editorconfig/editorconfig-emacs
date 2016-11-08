@@ -43,50 +43,50 @@
   "Major mode for editing .editorconfig files."
   (set-variable 'indent-line-function 'indent-relative)
   (let ((key-property-list
-          '("charset"
-            "end_of_line"
-            "indent_size"
-            "indent_style"
-            "insert_final_newline"
-            "max_line_length"
-            "root"
-            "tab_width"
-            "trim_trailing_whitespace"))
+         '("charset"
+           "end_of_line"
+           "indent_size"
+           "indent_style"
+           "insert_final_newline"
+           "max_line_length"
+           "root"
+           "tab_width"
+           "trim_trailing_whitespace"))
         (key-value-list
-          '("true"
-            "false"
-            "lf"
-            "cr"
-            "crlf"
-            "space"
-            "tab"
-            "latin1"
-            "utf-8"
-            "utf-8-bom"
-            "utf-16be"
-            "utf-16le"))
+         '("true"
+           "false"
+           "lf"
+           "cr"
+           "crlf"
+           "space"
+           "tab"
+           "latin1"
+           "utf-8"
+           "utf-8-bom"
+           "utf-16be"
+           "utf-16le"))
         (font-lock-value
-          '(("^[ \t]*\\[\\(.+?\\)\\]" 1 font-lock-type-face)
-            ("^[ \t]*\\(.+?\\)[ \t]*[=:]" 1 font-lock-variable-name-face))))
+         '(("^[ \t]*\\[\\(.+?\\)\\]" 1 font-lock-type-face)
+           ("^[ \t]*\\(.+?\\)[ \t]*[=:]" 1 font-lock-variable-name-face))))
 
     ;; Highlight all key values
     (dolist (key-value key-value-list)
       (add-to-list
-        'font-lock-value
-        `(,(format "[=:][ \t]*\\(%s\\)\\([ \t]\\|$\\)" key-value)
-          1 font-lock-constant-face)))
+       'font-lock-value
+       `(,(format "[=:][ \t]*\\(%s\\)\\([ \t]\\|$\\)" key-value)
+         1 font-lock-constant-face)))
     ;; Highlight all key properties
     (dolist (key-property key-property-list)
       (add-to-list
-        'font-lock-value
-        `(,(format "^[ \t]*\\(%s\\)[ \t]*[=:]" key-property)
-          1 font-lock-builtin-face)))
+       'font-lock-value
+       `(,(format "^[ \t]*\\(%s\\)[ \t]*[=:]" key-property)
+         1 font-lock-builtin-face)))
 
     (conf-mode-initialize "#" font-lock-value)))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist
-  '("/\\.editorconfig\\'" . editorconfig-conf-mode))
+             '("/\\.editorconfig\\'" . editorconfig-conf-mode))
 
 (provide 'editorconfig-conf-mode)
 
