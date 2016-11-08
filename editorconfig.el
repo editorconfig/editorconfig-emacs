@@ -38,6 +38,8 @@
 ;; version control systems.
 
 ;;; Code:
+(require 'cl-lib)
+(eval-when-compile (require 'rx))
 
 (declare-function editorconfig-core-get-properties-hash
                   "editorconfig-core"
@@ -203,6 +205,13 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 (defcustom editorconfig-exclude-modes ()
   "List of major mode symbols not to apply properties."
   :type '(repeat (symbol :tag "Major Mode"))
+  :group 'editorconfig)
+
+(defcustom editorconfig-exclude-regexps
+  (list (eval-when-compile
+          (rx string-start (or "http" "https" "ftp" "sftp" "rsync") ":")))
+  "List of buffer filename prefix regexp patterns not to apply properties."
+  :type '(repeat string)
   :group 'editorconfig)
 
 (defvar editorconfig-properties-hash nil
@@ -432,7 +441,11 @@ This function do the job only when the major mode is not listed in
 `editorconfig-exclude-modes'."
   (when (and major-mode
              (not (memq major-mode
-                        editorconfig-exclude-modes)))
+                        editorconfig-exclude-modes))
+             buffer-file-name
+             (not (cl-loop for regexp in editorconfig-exclude-regexps
+                           if (string-match regexp buffer-file-name) return t
+                           finally return nil)))
     (editorconfig-apply)))
 
 
