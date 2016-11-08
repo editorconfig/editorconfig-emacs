@@ -379,7 +379,7 @@ yet.")
   "Get EditorConfig properties of current buffer.
 
 It calls `editorconfig-get-properties-from-exec' if
-`editorconfig-exec-path` is found, otherwise
+`editorconfig-exec-path' is found, otherwise
 `editorconfig-core-get-properties-hash'."
   (if (executable-find editorconfig-exec-path)
       (editorconfig-get-properties-from-exec)
