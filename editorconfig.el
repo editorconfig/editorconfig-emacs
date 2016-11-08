@@ -48,8 +48,8 @@
 (defgroup editorconfig nil
   "EditorConfig Emacs Plugin.
 
-EditorConfig Helps developers define and maintain consistent coding styles
-between different editors and IDEs"
+EditorConfig helps developers define and maintain consistent
+coding styles between different editors and IDEs."
   :tag "EditorConfig"
   :prefix "editorconfig-"
   :group 'tools)
@@ -68,11 +68,12 @@ This executable is invoked by `editorconfig-call-editorconfig-exec'."
 
 (defcustom editorconfig-get-properties-function
   'editorconfig-get-properties
-  "Function to get EditorConofig properties for current buffer.
-This function will be called with no argument and should return a hash object
-containing properties, or nil if any core program is not available.
-The hash object should have symbols of property names as keys and strings of
-property values as values."
+  "A function which gets EditorConofig properties for current buffer.
+
+This function will be called with no argument and should return a
+hash object containing properties, or nil if any core program is
+not available.  The hash object should have symbols of property
+names as keys and strings of property values as values."
   :type 'function
   :group 'editorconfig)
 (define-obsolete-variable-alias
@@ -83,13 +84,14 @@ property values as values."
 (defcustom editorconfig-custom-hooks ()
   "A list of custom hooks after loading common EditorConfig settings.
 
-Each element in this list is a hook function.  This hook function takes one
-parameter, which is a property hash table.  The value of properties can be
-obtained through gethash function.
+Each element in this list is a hook function.  This hook function
+takes one parameter, which is a property hash table.  The value
+of properties can be obtained through gethash function.
 
-The hook does not have to be coding style related; you can add whatever
-functionality you want.  For example, the following is an example to add a new
-property emacs_linum to decide whether to show line numbers on the left
+The hook does not have to be coding style related; you can add
+whatever functionality you want.  For example, the following is
+an example to add a new property emacs_linum to decide whether to
+show line numbers on the left:
 
   (add-hook 'editorconfig-custom-hooks
     '(lambda (props)
@@ -167,8 +169,8 @@ property emacs_linum to decide whether to show line numbers on the left
 
 Each element looks like (MODE . FUNCTION) or (MODE . INDENT-SPEC-LIST).
 
-If FUNCTION is provided, it will be called when setting the indentation.  The
-indent size will be passed.
+If FUNCTION is provided, it will be called when setting the
+indentation.  The indent size will be passed.
 
 If INDENT-SPEC-LIST is provided, each element of it must have one of the
 following forms:
@@ -210,14 +212,15 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 (defcustom editorconfig-exclude-regexps
   (list (eval-when-compile
           (rx string-start (or "http" "https" "ftp" "sftp" "rsync") ":")))
-  "List of buffer filename prefix regexp patterns not to apply properties."
+  "List of buffer filename prefix regexp patterns not to apply
+properties."
   :type '(repeat string)
   :group 'editorconfig)
 
 (defvar editorconfig-properties-hash nil
   "Hash object of EditorConfig properties for current buffer.
-Set by `editorconfig-apply' and nil if that is not invoked in current buffer
-yet.")
+Set by `editorconfig-apply' and nil if that is not invoked in
+current buffer yet.")
 (make-variable-buffer-local 'editorconfig-properties-hash)
 
 
@@ -311,7 +314,8 @@ yet.")
                                      nil t))))
 
 (defun editorconfig-set-trailing-nl (final-newline)
-  "Set up requiring final newline by FINAL-NEWLINE."
+  "Set up requiring final newline (`require-final-newline' and
+`mode-require-final-newline') by FINAL-NEWLINE."
   (cond
    ((equal final-newline "true")
     ;; keep prefs around how/when the nl is added, if set - otherwise add on save
@@ -324,7 +328,8 @@ yet.")
     (set      (make-local-variable 'mode-require-final-newline) nil))))
 
 (defun editorconfig-set-trailing-ws (trim-trailing-ws)
-  "Set up trimming of trailing whitespace at end of lines by TRIM-TRAILING-WS."
+  "Set up trimming of trailing whitespace at end of lines by
+TRIM-TRAILING-WS."
   (make-local-variable 'write-file-functions) ;; just current buffer
   (when (equal trim-trailing-ws "true")
     ;; when true we push delete-trailing-whitespace (emacs > 21)
@@ -342,7 +347,7 @@ yet.")
       write-file-functions))))
 
 (defun editorconfig-set-line-length (length)
-  "Set the max line length (fill-column) to LENGTH."
+  "Set the max line length (`fill-column') to LENGTH."
   (when (and (editorconfig-string-integer-p length)
              (> (string-to-number length) 0))
     (set-fill-column (string-to-number length))))
@@ -370,7 +375,8 @@ yet.")
             (puthash key val properties)))))))
 
 (defun editorconfig-get-properties-from-exec ()
-  "Get EditorConfig properties of current buffer by calling `editorconfig-exec-path'."
+  "Get EditorConfig properties of current buffer by calling
+`editorconfig-exec-path'."
   (if (executable-find editorconfig-exec-path)
       (editorconfig-parse-properties (editorconfig-call-editorconfig-exec))
     (error "Unable to find editorconfig executable")))
@@ -408,8 +414,8 @@ It calls `editorconfig-get-properties-from-exec' if
 ;;;###autoload
 (defun editorconfig-apply ()
   "Apply EditorConfig properties for current buffer.
-This function ignores `editorconfig-exclude-modes' and always applies available
-properties."
+This function ignores `editorconfig-exclude-modes' and always
+applies available properties."
   (interactive)
   (when buffer-file-name
     (condition-case err
@@ -437,8 +443,8 @@ properties."
 
 (defun editorconfig-mode-apply ()
   "Apply EditorConfig properties for current buffer.
-This function do the job only when the major mode is not listed in
-`editorconfig-exclude-modes'."
+This function does the job only when the major mode is not listed
+in `editorconfig-exclude-modes'."
   (when (and major-mode
              (not (memq major-mode
                         editorconfig-exclude-modes))
@@ -452,9 +458,9 @@ This function do the job only when the major mode is not listed in
 ;;;###autoload
 (define-minor-mode editorconfig-mode
   "Toggle EditorConfig feature.
-When enabled EditorConfig properties will be applied to buffers when first
-visiting files or changing major modes if the major mode is not listed in
-`editorconfig-exclude-modes'."
+When enabled EditorConfig properties will be applied to buffers
+when first visiting files or changing major modes if the major
+mode is not listed in `editorconfig-exclude-modes'."
   :global t
   :lighter " EditorConfig"
   (dolist (hook '(after-change-major-mode-hook))
@@ -465,3 +471,7 @@ visiting files or changing major modes if the major mode is not listed in
 (provide 'editorconfig)
 
 ;;; editorconfig.el ends here
+
+;; Local Variables:
+;; sentence-end-double-space: t
+;; End:
