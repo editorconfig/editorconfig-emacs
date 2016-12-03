@@ -87,7 +87,7 @@ You can also define your own custom properties and enable them here.
 
 ### `editorconfig-indentation-alist`
 
-Alist of indentaion setting mothods by modes.
+Alist of indentation setting methods by modes.
 
 For the easiest case to add a new support for a major-mode, you just need to
 add a pair of major-mode symbol and its indentation variables:
@@ -100,7 +100,7 @@ add a pair of major-mode symbol and its indentation variables:
 
 You can also modify this variable with the command
 <kbd>M-x customize-variable [RET] editorconfig-indentation-alist [RET]</kbd>.
-For a bit more compilicated cases please take a look at the docstring of this variable.
+For a bit more complicated cases please take a look at the docstring of this variable.
 
 ## Testing
 
