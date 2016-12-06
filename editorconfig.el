@@ -121,6 +121,11 @@ show line numbers on the left:
     (groovy-mode c-basic-offset)
     (haskell-mode haskell-indent-spaces
                   haskell-indent-offset
+                  haskell-indentation-layout-offset
+                  haskell-indentation-left-offset
+                  haskell-indentation-starter-offset
+                  haskell-indentation-where-post-offset
+                  haskell-indentation-where-pre-offset
                   shm-indent-spaces)
     (idl-mode c-basic-offset)
     (jade-mode jade-tab-width)
