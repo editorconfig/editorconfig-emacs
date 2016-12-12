@@ -148,6 +148,11 @@ show line numbers on the left:
     (objc-mode c-basic-offset)
     (octave-mode octave-block-offset)
     (perl-mode perl-indent-level)
+    ;; No need to change `php-mode-coding-style' value for php-mode
+    ;; since we run editorconfig later than it resets `c-basic-offset'.
+    ;; See https://github.com/editorconfig/editorconfig-emacs/issues/116
+    ;; for details.
+    (php-mode c-basic-offset)
     (pike-mode c-basic-offset)
     (ps-mode ps-mode-tab)
     (puppet-mode puppet-indent-level)
