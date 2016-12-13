@@ -118,6 +118,9 @@ show line numbers on the left:
     (emacs-lisp-mode lisp-indent-offset)
     (erlang-mode erlang-indent-level)
     (ess-mode ess-indent-offset)
+    (fsharp-mode fsharp-continuation-offset
+                 fsharp-indent-level
+                 fsharp-indent-offset)
     (groovy-mode c-basic-offset)
     (haskell-mode haskell-indent-spaces
                   haskell-indent-offset
