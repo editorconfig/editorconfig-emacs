@@ -99,12 +99,13 @@ The list returned will be ordered by the lines they appear.
 
 If HANDLE is nil return nil."
   (when handle
-    (mapcar (lambda (prop) (copy-alist (cdr prop)))
-            (cl-remove-if-not (lambda (prop)
-                                (editorconfig-core-handle--fnmatch-p file
-                                                                     (car prop)
-                                                                     (file-name-directory (editorconfig-core-handle-path handle))))
-                              (editorconfig-core-handle-prop handle)))))
+    (apply 'append
+           (mapcar (lambda (prop) (copy-alist (cdr prop)))
+                   (cl-remove-if-not (lambda (prop)
+                                       (editorconfig-core-handle--fnmatch-p file
+                                                                            (car prop)
+                                                                            (file-name-directory (editorconfig-core-handle-path handle))))
+                                     (editorconfig-core-handle-prop handle))))))
 
 (defun editorconfig-core-handle--fnmatch-p (name pattern dir)
   "Return non-nil if NAME match PATTERN.

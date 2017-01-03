@@ -135,9 +135,8 @@ This functions returns alist of properties.  Each element will look like
   (let ((result (editorconfig-core--remove-duplicate
                  (apply 'append
                         (mapcar (lambda (handle)
-                                  (apply 'append
-                                         (editorconfig-core-handle-get-properties handle
-                                                                                  file)))
+                                  (editorconfig-core-handle-get-properties handle
+                                                                           file))
                                 (editorconfig-core--get-handles (file-name-directory file)
                                                                 confname))))))
     (dolist (key '("end_of_line" "indent_style" "indent_size"
