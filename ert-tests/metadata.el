@@ -5,8 +5,8 @@
 (ert-deftest test-metadata ()
   (dolist (el metadata-el-files)
     (message "Loading info: %s"
-      el)
+             el)
     (with-temp-buffer
       (insert-file-contents el)
       (message "%S"
-        (package-buffer-info)))))
+               (package-buffer-info)))))
