@@ -94,7 +94,7 @@ If HANDLE is nil return nil."
                                 "")))))
 
 (defun editorconfig-core-handle-get-properties (handle file)
-  "Return list of alist of properties from HANDLE for FILE.
+  "Return alist of properties from HANDLE for FILE.
 The list returned will be ordered by the lines they appear.
 
 If HANDLE is nil return nil."
