@@ -11,11 +11,11 @@
     (should (equal (editorconfig-core-handle-get-properties handle
                                                             (concat fixtures
                                                                     "b.js"))
-                   '((("key2" . "value2")))))
+                   '(("key2" . "value2"))))
     (should (equal (editorconfig-core-handle-get-properties handle
                                                             (concat fixtures
                                                                     "a.js"))
-                   '((("key1" . "value1")) (("key2" . "value2"))))))
+                   '(("key1" . "value1") ("key2" . "value2")))))
   ;; Test twice for checking cache
   (let* ((fixtures (concat default-directory
                            "ert-tests/fixtures/"))
@@ -26,11 +26,11 @@
     (should (equal (editorconfig-core-handle-get-properties handle
                                                             (concat fixtures
                                                                     "b.js"))
-                   '((("key2" . "value2")))))
+                   '(("key2" . "value2"))))
     (should (equal (editorconfig-core-handle-get-properties handle
                                                             (concat fixtures
                                                                     "a.js"))
-                   '((("key1" . "value1")) (("key2" . "value2"))))))
+                   '(("key1" . "value1") ("key2" . "value2")))))
 
   ;; handle2.ini
   (let* ((fixtures (concat default-directory
@@ -46,5 +46,5 @@
     (should (equal (editorconfig-core-handle-get-properties handle
                                                             (concat fixtures
                                                                     "a.js"))
-                   '((("key" . "value"))))))
+                   '(("key" . "value")))))
   )
