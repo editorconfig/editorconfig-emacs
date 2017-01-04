@@ -400,7 +400,8 @@ TRIM-TRAILING-WS."
 It calls `editorconfig-get-properties-from-exec' if
 `editorconfig-exec-path' is found, otherwise
 `editorconfig-core-get-properties-hash'."
-  (if (executable-find editorconfig-exec-path)
+  (if (and (executable-find editorconfig-exec-path)
+           (not (file-remote-p buffer-file-name)))
       (editorconfig-get-properties-from-exec)
     (require 'editorconfig-core)
     (editorconfig-core-get-properties-hash)))
