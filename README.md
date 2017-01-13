@@ -12,8 +12,8 @@ This is an [EditorConfig][] plugin for [Emacs](https://www.gnu.org/software/emac
 Download the [EditorConfig C Core][] and follow the instructions in the README
 and INSTALL files to install it.
 
-This plugin also has a core library implemented in Emacs-Lisp, and fallback
-to it when no core executable is found.
+This plugin also has a built-in core library implemented in Emacs-Lisp, and
+fallback to it when no core executable is found.
 
 In either case, copy `.el` files in this repository to `~/.emacs.d/lisp`
 and add the following to your `~/.emacs` file:
@@ -101,6 +101,37 @@ add a pair of major-mode symbol and its indentation variables:
 You can also modify this variable with the command
 <kbd>M-x customize-variable [RET] editorconfig-indentation-alist [RET]</kbd>.
 For a bit more complicated cases please take a look at the docstring of this variable.
+
+### `editorconfig-exec-path`
+
+String of `editorconfig` executable name (command name or full path to
+the executable).
+
+
+### `editorconfig-get-properties-function`
+
+Function to use to get EditorConfig properties.
+
+For example, if you always want to use built-in core library instead
+of any EditorConfig executable to get properties, add following to
+your init.el:
+
+``` emacs-lisp
+(set-variable 'editorconfig-get-properties-function
+              #'editorconfig-core-get-properties-hash)
+```
+
+Possible known values are:
+
+* `editorconfig-get-properties` (default)
+  * Use `editorconfig-get-properties-from-exec` when
+    `editorconfig-exec-path` executable is found, otherwise use
+    `editorconfig-core-get-properties-hash`
+* `editorconfig-get-properties-from-exec`
+  * Get properties by executing EditorConfig executable specified in
+    `editorconfig-exec-path`
+* `editorconfig-core-get-properties-hash`
+  * Always use built-in Emacs-Lisp implementation to get properties
 
 ## Testing
 
