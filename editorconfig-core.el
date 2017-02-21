@@ -1,6 +1,6 @@
 ;;; editorconfig-core.el --- EditorConfig Core library in Emacs Lisp
 
-;; Copyright (C) 2011-2016 EditorConfig Team
+;; Copyright (C) 2011-2017 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
