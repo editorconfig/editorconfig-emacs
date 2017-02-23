@@ -170,6 +170,12 @@ show line numbers on the left:
     (tcl-mode tcl-indent-level
               tcl-continued-indent-level)
     (typescript-mode typescript-indent-level)
+    (verilog-mode verilog-indent-level
+                  verilog-indent-level-behavioral
+                  verilog-indent-level-declaration
+                  verilog-indent-level-module
+                  verilog-cexp-indent
+                  verilog-case-indent)
     (web-mode (web-mode-indent-style . (lambda (size) 2))
               web-mode-markup-indent-offset
               web-mode-css-indent-offset
