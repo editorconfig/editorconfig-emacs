@@ -454,7 +454,13 @@ applies available properties."
               (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
               (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
               (editorconfig-set-line-length (gethash 'max_line_length props))
-              (run-hook-with-args 'editorconfig-custom-hooks props))))
+              (condition-case err
+                  (run-hook-with-args 'editorconfig-custom-hooks props)
+                (error
+                 (display-warning 'editorconfig-custom-hooks
+                                  (concat (error-message-string err)
+                                          ". Stop running hook.")
+                                  :warning))))))
       (error
        (display-warning 'editorconfig
                         (concat (error-message-string err)
