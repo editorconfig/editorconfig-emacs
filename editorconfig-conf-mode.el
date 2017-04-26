@@ -39,7 +39,7 @@
   "Syntax table in use in `editorconfig-conf-mode' buffers.")
 
 ;;;###autoload
-(define-derived-mode editorconfig-conf-mode conf-unix-mode "EditorConfig"
+(define-derived-mode editorconfig-conf-mode conf-unix-mode "Conf[EditorConfig]"
   "Major mode for editing .editorconfig files."
   (set-variable 'indent-line-function 'indent-relative)
   (let ((key-property-list
