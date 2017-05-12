@@ -123,6 +123,8 @@ show line numbers on the left:
     (emacs-lisp-mode lisp-indent-offset)
     (erlang-mode erlang-indent-level)
     (ess-mode ess-indent-offset)
+    (feature-mode feature-indent-offset
+                  feature-indent-level)
     (fsharp-mode fsharp-continuation-offset
                  fsharp-indent-level
                  fsharp-indent-offset)
