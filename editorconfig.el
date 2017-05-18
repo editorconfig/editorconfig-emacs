@@ -376,7 +376,7 @@ TRIM-TRAILING-WS."
   "Set the max line length (`fill-column') to LENGTH."
   (when (and (editorconfig-string-integer-p length)
              (> (string-to-number length) 0))
-    (set-fill-column (string-to-number length))))
+    (setq fill-column (string-to-number length))))
 
 (defun editorconfig-call-editorconfig-exec ()
   "Call EditorConfig core and return output."
