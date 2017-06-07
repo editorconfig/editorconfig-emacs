@@ -34,6 +34,7 @@ test-travis:
 
 # ert test
 test-ert: $(ERT_TESTS) $(OBJS)
+	git submodule update --init
 	$(EMACS) $(BATCHFLAGS) \
 		--eval "(require 'ert) (setq debug-on-error t)" \
 		--eval "(setq metadata-el-files '($(MAIN_SRC:%=\"%\")))" \
