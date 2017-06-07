@@ -420,6 +420,16 @@ It calls `editorconfig-get-properties-from-exec' if
     (editorconfig-core-get-properties-hash)))
 
 ;;;###autoload
+(defun editorconfig-find-current-editorconfig ()
+  "Find the closest .editorconfig file for current file."
+  (interactive)
+  (eval-and-compile (require 'editorconfig-core))
+  (let ((file (editorconfig-core-get-nearest-editorconfig
+               default-directory)))
+    (when file
+      (find-file file))))
+
+;;;###autoload
 (defun editorconfig-display-current-properties ()
   "Display EditorConfig properties extracted for current buffer."
   (interactive)
