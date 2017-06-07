@@ -65,6 +65,8 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 (require 'editorconfig-core-handle)
 
 
@@ -109,12 +111,20 @@ RESULT is used internally and normally should not be used."
                      dir)
             (and handle
                  (editorconfig-core-handle-root-p handle)))
-        (cons handle result)
+        (cl-remove-if-not 'identity
+                          (cons handle result))
       (editorconfig-core--get-handles parent
                                       confname
                                       (cons handle
                                             result)))))
 
+;;;###autoload
+(defun editorconfig-core-get-nearest-editorconfig (directory)
+  "Return path to .editorconfig file that is closest to DIRECTORY."
+  (let ((handle (car (last (editorconfig-core--get-handles directory
+                                                           ".editorconfig")))))
+    (when handle
+      (editorconfig-core-handle-path handle))))
 
 ;;;###autoload
 (defun editorconfig-core-get-properties (&optional file confname confversion)
