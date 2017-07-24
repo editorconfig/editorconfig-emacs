@@ -378,6 +378,32 @@ TRIM-TRAILING-WS."
              (> (string-to-number length) 0))
     (setq fill-column (string-to-number length))))
 
+(defun editorconfig--is-a-mode-p (current want)
+  "Return non-nil if major mode CURRENT is a major mode WANT."
+  (or (eq current
+          want)
+      (let ((parent (get current 'derived-mode-parent)))
+        (and parent
+             (editorconfig--is-a-mode-p parent want)))))
+
+(defun editorconfig-set-major-mode (filetype)
+  "Set buffer `major-mode' by FILETYPE.
+
+FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
+  (let ((mode (and filetype
+                   (not (string= filetype
+                                 ""))
+                   (intern (concat filetype
+                                   "-mode")))))
+    (when (and mode
+               (not (editorconfig--is-a-mode-p major-mode
+                                               mode)))
+      (if (fboundp mode)
+          (funcall mode)
+        (display-warning :error (format "Major-mode `%S' not found"
+                                        mode))
+        nil))))
+
 (defun editorconfig-call-editorconfig-exec ()
   "Call EditorConfig core and return output."
   (let ((filename (buffer-file-name)))
@@ -471,6 +497,7 @@ applies available properties."
               (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
               (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
               (editorconfig-set-line-length (gethash 'max_line_length props))
+              (editorconfig-set-major-mode (gethash 'file_type_emacs props))
               (condition-case err
                   (run-hook-with-args 'editorconfig-custom-hooks props)
                 (error
