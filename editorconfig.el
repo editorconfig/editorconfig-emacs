@@ -186,10 +186,10 @@ show line numbers on the left:
     (web-mode (web-mode-indent-style . (lambda (size) 2))
               web-mode-attr-indent-offset
               web-mode-attr-value-indent-offset
-              web-mode-sql-indent-offset
-              web-mode-markup-indent-offset
-              web-mode-css-indent-offset
               web-mode-code-indent-offset
+              web-mode-css-indent-offset
+              web-mode-markup-indent-offset
+              web-mode-sql-indent-offset
               web-mode-block-padding
               web-mode-script-padding
               web-mode-style-padding)
