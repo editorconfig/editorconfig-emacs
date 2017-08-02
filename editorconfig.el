@@ -112,7 +112,8 @@ show line numbers on the left:
 
 (defcustom editorconfig-indentation-alist
   ;; For contributors: Sort modes in alphabetical order, please :)
-  '((awk-mode c-basic-offset)
+  '((apache-mode apache-indent-level)
+    (awk-mode c-basic-offset)
     (c++-mode c-basic-offset)
     (c-mode c-basic-offset)
     (cmake-mode cmake-tab-width)
