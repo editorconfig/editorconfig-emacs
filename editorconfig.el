@@ -86,6 +86,12 @@ names as keys and strings of property values as values."
   'editorconfig-get-properties-function
   "0.5")
 
+(defcustom editorconfig-mode-lighter " EditorConfig"
+  "Lighter displayed in mode line
+when `editorconfig-mode' is enabled."
+  :type 'string
+  :group 'editorconfig)
+
 (defcustom editorconfig-custom-hooks ()
   "A list of custom hooks after loading common EditorConfig settings.
 
@@ -509,7 +515,7 @@ When enabled EditorConfig properties will be applied to buffers
 when first visiting files or changing major modes if the major
 mode is not listed in `editorconfig-exclude-modes'."
   :global t
-  :lighter " EditorConfig"
+  :lighter editorconfig-mode-lighter
   (dolist (hook '(after-change-major-mode-hook))
     (if editorconfig-mode
         (add-hook hook 'editorconfig-mode-apply)
