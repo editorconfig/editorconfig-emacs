@@ -73,7 +73,7 @@ which specifies "file types" for files.
 As for Emacs, it means `major-mode` can be specified: for example,
 when `file_type_emacs` is set to `markdown` for `a.txt`,
 `markdown-mode` will be enabled when opening `a.txt`.
-This propertiy is experimental and its meaning might change in
+This property is experimental and its meaning might change in
 the future updates.
 
 
