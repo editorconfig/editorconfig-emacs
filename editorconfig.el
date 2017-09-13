@@ -507,6 +507,15 @@ in `editorconfig-exclude-modes'."
                            finally return nil)))
     (editorconfig-apply)))
 
+(defun editorconfig-format-buffer()
+  "Format buffer according to .editorconfig indent_style and indent_width"
+  (interactive)
+  (if (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
+      (tabify (point-min) (point-max)))
+  (if (string= (gethash 'indent_style editorconfig-properties-hash) "space")
+      (untabify (point-min) (point-max)))
+  (indent-region (point-min) (point-max)))
+
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
