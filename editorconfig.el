@@ -135,7 +135,7 @@ show line numbers on the left:
     (fsharp-mode fsharp-continuation-offset
                  fsharp-indent-level
                  fsharp-indent-offset)
-    (groovy-mode c-basic-offset)
+    (groovy-mode groovy-indent-offset)
     (haskell-mode haskell-indent-spaces
                   haskell-indent-offset
                   haskell-indentation-layout-offset
