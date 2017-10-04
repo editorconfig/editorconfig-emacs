@@ -45,6 +45,7 @@
   (let ((key-property-list
          '("charset"
            "end_of_line"
+           "file_type_emacs"
            "indent_size"
            "indent_style"
            "insert_final_newline"
