@@ -552,7 +552,9 @@ when first visiting files or changing major modes if the major
 mode is not listed in `editorconfig-exclude-modes'."
   :global t
   :lighter editorconfig-mode-lighter
-  (dolist (hook '(after-change-major-mode-hook))
+  ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
+  ;; not `after-change-major-mode-hook'
+  (dolist (hook '(change-major-mode-after-body-hook))
     (if editorconfig-mode
         (add-hook hook 'editorconfig-mode-apply)
       (remove-hook hook 'editorconfig-mode-apply))))
