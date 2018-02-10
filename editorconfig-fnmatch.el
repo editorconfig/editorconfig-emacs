@@ -190,29 +190,33 @@ translation is found for PATTERN."
           (?\[
            (if in-brackets
                (setq result `(,@result "\\["))
-             (setq pos index
-                   has-slash nil)
-             (while (and (< pos length)
-                         (not (= (aref pattern pos) ?\]))
-                         (not has-slash))
-               (if (and (= (aref pattern pos) ?/)
-                        (not (= (aref pattern (- pos 1)) ?\\)))
-                   (setq has-slash t)
-                 (setq pos (1+ pos))))
-             (if has-slash
-                 (setq result `(,@result ,(concat "\\["
-                                                  (substring pattern
-                                                             index
-                                                             (1+ pos))
-                                                  "\\]"))
-                       index (+ pos 2))
-               (if (and (< index length)
-                        (memq (aref pattern index)
-                              '(?! ?^)))
-                   (setq index (1+ index)
-                         result `(,@result "[^"))
-                 (setq result `(,@result "[")))
-               (setq in-brackets t))))
+             (if (= (aref pattern index) ?/)
+                 ;; Slash after an half-open bracket
+                 (setq result `(,@result "\\[/")
+                       index (+ index 1))
+               (setq pos index
+                     has-slash nil)
+               (while (and (< pos length)
+                           (not (= (aref pattern pos) ?\]))
+                           (not has-slash))
+                 (if (and (= (aref pattern pos) ?/)
+                          (not (= (aref pattern (- pos 1)) ?\\)))
+                     (setq has-slash t)
+                   (setq pos (1+ pos))))
+               (if has-slash
+                   (setq result `(,@result ,(concat "\\["
+                                                    (substring pattern
+                                                               index
+                                                               (1+ pos))
+                                                    "\\]"))
+                         index (+ pos 2))
+                 (if (and (< index length)
+                          (memq (aref pattern index)
+                                '(?! ?^)))
+                     (setq index (1+ index)
+                           result `(,@result "[^"))
+                   (setq result `(,@result "[")))
+                 (setq in-brackets t)))))
 
           (?-
            (if in-brackets
