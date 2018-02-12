@@ -417,13 +417,16 @@ FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
 
 (defun editorconfig-call-editorconfig-exec ()
   "Call EditorConfig core and return output."
-  (let ((filename (buffer-file-name)))
-    (with-temp-buffer
-      (setq default-directory "/")
-      (if (eq 0
-              (call-process editorconfig-exec-path nil t nil filename))
-          (buffer-string)
-        (error (buffer-string))))))
+  (let* ((filename (buffer-file-name))
+         (filename (and filename (expand-file-name filename))))
+    (if filename
+        (with-temp-buffer
+          (setq default-directory "/")
+          (if (eq 0
+                  (call-process editorconfig-exec-path nil t nil filename))
+              (buffer-string)
+            (error (buffer-string))))
+      "")))
 
 (defun editorconfig-parse-properties (props-string)
   "Create properties hash table from PROPS-STRING."
