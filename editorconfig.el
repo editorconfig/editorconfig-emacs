@@ -426,7 +426,7 @@ FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
                   (call-process editorconfig-exec-path nil t nil filename))
               (buffer-string)
             (error (buffer-string))))
-      (buffer-string))))
+      "")))
 
 (defun editorconfig-parse-properties (props-string)
   "Create properties hash table from PROPS-STRING."
