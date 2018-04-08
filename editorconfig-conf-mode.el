@@ -54,7 +54,8 @@
            "tab_width"
            "trim_trailing_whitespace"))
         (key-value-list
-         '("true"
+         '("unset"
+           "true"
            "false"
            "lf"
            "cr"
