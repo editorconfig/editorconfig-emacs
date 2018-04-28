@@ -25,6 +25,10 @@
   (concat default-directory
           "ert-tests/plugin-tests/test_files/"))
 
+(defvar editorconfig-secondary-ert-dir
+  (concat default-directory
+          "ert-tests/test_files_secondary/"))
+
 (ert-deftest test-editorconfig nil
   "Check if properties are applied."
   (editorconfig-mode 1)
@@ -39,4 +43,27 @@
     (should (eq python-indent-offset 4))
     (should (eq tab-width 8))
     (should (eq indent-tabs-mode nil)))
+  (editorconfig-mode -1))
+
+(ert-deftest test-lisp-use-default-indent nil
+  (editorconfig-mode 1)
+
+  (with-visit-file (concat editorconfig-secondary-ert-dir
+                     "2_space.el")
+    (should (eq lisp-indent-offset 2)))
+
+  (let ((editorconfig-lisp-use-default-indent t))
+    (with-visit-file (concat editorconfig-secondary-ert-dir
+                       "2_space.el")
+      (should (eq lisp-indent-offset nil))))
+
+  (let ((editorconfig-lisp-use-default-indent 2))
+    (with-visit-file (concat editorconfig-secondary-ert-dir
+                       "2_space.el")
+      (should (eq lisp-indent-offset nil))))
+
+  (let ((editorconfig-lisp-use-default-indent 4))
+    (with-visit-file (concat editorconfig-secondary-ert-dir
+                       "2_space.el")
+      (should (eq lisp-indent-offset 2))))
   (editorconfig-mode -1))
