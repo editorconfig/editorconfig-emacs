@@ -1,6 +1,8 @@
 # -*- Makefile -*-
 
 EMACS = emacs
+PANDOC = pandoc
+MAKEINFO = makeinfo
 
 PROJECT_ROOT_DIR = $(PWD)
 ERT_TESTS = $(wildcard $(PROJECT_ROOT_DIR)/ert-tests/*.el)
@@ -17,12 +19,24 @@ OBJS = $(SRCS:.el=.elc)
 $(OBJS): %.elc: %.el
 	$(EMACS) $(BATCHFLAGS) -f batch-byte-compile $^
 
-.PHONY: all clean test test-travis test-ert test-core test-metadata sandbox
+.PHONY: all clean test test-travis test-ert test-core test-metadata sandbox doc info
 
 all: $(OBJS)
 
 clean:
 	-rm -f $(OBJS)
+
+
+docs: info
+
+info: docs/editorconfig.info
+
+docs/editorconfig.info: README.md
+	mkdir -p docs
+	tail -n +4 $< | $(PANDOC) -s -f markdown -o $@.texi
+	echo >>$@.texi
+	$(MAKEINFO) --no-split $@.texi -o $@
+
 
 test: test-ert test-core test-metadata $(OBJS)
 	$(EMACS) $(BATCHFLAGS) -l editorconfig.el
