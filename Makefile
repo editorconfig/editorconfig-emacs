@@ -27,12 +27,12 @@ clean:
 	-rm -f $(OBJS)
 
 
-docs: info
+doc: info
 
-info: docs/editorconfig.info
+info: doc/editorconfig.info
 
-docs/editorconfig.info: README.md
-	mkdir -p docs
+doc/editorconfig.info: README.md
+	mkdir -p doc
 	tail -n +4 $< | $(PANDOC) -s -f markdown -o $@.texi
 	echo >>$@.texi
 	$(MAKEINFO) --no-split $@.texi -o $@
