@@ -1,0 +1,4 @@
+@dircategory Emacs
+@direntry
+* EditorConfig: (editorconfig). EditorConfig Emacs Plugin.
+@end direntry

@@ -27,15 +27,12 @@ clean:
 	-rm -f $(OBJS)
 
 
-doc: info
+doc: doc/editorconfig.texi
 
-info: doc/editorconfig.info
-
-doc/editorconfig.info: README.md
+doc/editorconfig.texi: README.md doc/header.txt
 	mkdir -p doc
-	tail -n +4 $< | $(PANDOC) -s -f markdown -o $@.texi
-	echo >>$@.texi
-	$(MAKEINFO) --no-split $@.texi -o $@
+	tail -n +4 $< | $(PANDOC) -s -f markdown -t texinfo -o $@.body
+	cat doc/header.txt $@.body >$@
 
 
 test: test-ert test-core test-metadata $(OBJS)
