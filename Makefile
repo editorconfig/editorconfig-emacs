@@ -29,9 +29,10 @@ clean:
 
 doc: doc/editorconfig.texi
 
-doc/editorconfig.texi: README.md
+doc/editorconfig.texi: README.md doc/header.txt
 	mkdir -p doc
-	tail -n +4 $< | $(PANDOC) -s -f markdown -o $@
+	tail -n +4 $< | $(PANDOC) -s -f markdown -t texinfo -o $@.body
+	cat doc/header.txt $@.body >$@
 
 
 test: test-ert test-core test-metadata $(OBJS)
