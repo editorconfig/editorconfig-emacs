@@ -15,10 +15,12 @@ SRCS = editorconfig.el editorconfig-core.el editorconfig-core-handle.el \
 	editorconfig-fnmatch.el
 OBJS = $(SRCS:.el=.elc)
 
+TEXI ?= doc/editorconfig.texi
+
 $(OBJS): %.elc: %.el
 	$(EMACS) $(BATCHFLAGS) -f batch-byte-compile $^
 
-.PHONY: all clean test test-travis test-ert test-core test-metadata sandbox doc info
+.PHONY: all clean test test-travis test-ert test-core test-metadata test-doc-updated sandbox doc info
 
 all: $(OBJS)
 
@@ -26,15 +28,15 @@ clean:
 	-rm -f $(OBJS)
 
 
-doc: doc/editorconfig.texi
+doc: $(TEXI)
 
-doc/editorconfig.texi: README.md doc/header.txt
+$(TEXI): README.md doc/header.txt
 	mkdir -p doc
 	tail -n +4 $< | $(PANDOC) -s -f markdown -t texinfo -o $@.body
 	cat doc/header.txt $@.body >$@
 
 
-test: test-ert test-core test-metadata $(OBJS)
+test: test-ert test-core test-metadata test-doc-updated $(OBJS)
 	$(EMACS) $(BATCHFLAGS) -l editorconfig.el
 
 test-travis:
@@ -64,6 +66,14 @@ test-core: core-test/CMakeLists.txt $(OBJS)
 	cd $(PROJECT_ROOT_DIR)/core-test && \
 		EMACS_BIN=$(EMACS) EDITORCONFIG_CORE_LIBRARY_PATH="$(PROJECT_ROOT_DIR)" \
 		ctest --output-on-failure .
+
+
+test-doc-updated:
+	make doc TEXI=$(TEXI).tmp
+	cmp $(TEXI) $(TEXI).tmp
+	rm -f $(TEXI).tmp
+
+
 
 
 # Start Emacs that loads *.el in current directory and does not load the user
