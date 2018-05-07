@@ -2,7 +2,6 @@
 
 EMACS = emacs
 PANDOC = pandoc
-MAKEINFO = makeinfo
 
 PROJECT_ROOT_DIR = $(PWD)
 ERT_TESTS = $(wildcard $(PROJECT_ROOT_DIR)/ert-tests/*.el)
