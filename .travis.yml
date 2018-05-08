@@ -1,27 +1,17 @@
-# https://github.com/rolandwalker/emacs-travis
-
-language: emacs-lisp
+language: generic
+sudo: false
 
 env:
   matrix:
-    - EMACS=emacs24
-    - EMACS=emacs-snapshot
+    - EMACS_VERSION=26-pretest
+    - EMACS_VERSION=25.3
+    - EMACS_VERSION=24.5
 
-install:
-  - if [ "$EMACS" = "emacs24" ]; then
-        sudo add-apt-repository -y ppa:cassou/emacs &&
-        sudo apt-get update -qq &&
-        sudo apt-get install -qq emacs24 emacs24-el;
-    fi
-  - if [ "$EMACS" = "emacs-snapshot" ]; then
-        sudo add-apt-repository -y ppa:cassou/emacs &&
-        sudo apt-get update -qq &&
-        sudo apt-get install -qq emacs-snapshot &&
-        sudo apt-get install -qq emacs-snapshot-el emacs-snapshot-gtk;
-    fi
+before_install:
+  - git clone --depth=1 https://github.com/rejeep/evm.git ./.evm
+  - ./.evm/bin/evm config path /tmp
+  - ./.evm/bin/evm install emacs-$EMACS_VERSION-travis --use
+  - ./.evm/bin/emacs --version
 
 script:
-  $EMACS --version && make test EMACS=${EMACS}
-
-# notifications:
-#   email: false
+  make test EMACS=$PWD/.evm/bin/emacs
