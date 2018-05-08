@@ -124,10 +124,10 @@ This function is a fnmatch with a few modification for EditorConfig usage."
                                     pattern))))
 
 (defsubst editorconfig-core-handle--string-trim (str)
-  "Remove leading and trailing whitespace from STR."
-  (replace-regexp-in-string "[ \t\n\r]+\\'"
+  "Remove leading and trailing whitespaces from STR."
+  (replace-regexp-in-string "[[:space:]]+\\'"
                             ""
-                            (replace-regexp-in-string "\\`[ \t\n\r]+"
+                            (replace-regexp-in-string "\\`[[:space:]]+"
                                                       ""
                                                       str)))
 

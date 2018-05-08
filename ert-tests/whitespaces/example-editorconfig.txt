@@ -1,0 +1,12 @@
+root = true
+
+[*]
+
+# Text encoding name.
+charset = utf-8
+
+# Page Break
+
+
+# Remove trailing whitespace on lines?
+trim_trailing_whitespace = true

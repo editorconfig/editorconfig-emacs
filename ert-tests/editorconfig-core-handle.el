@@ -47,4 +47,10 @@
                                                             (concat fixtures
                                                                     "a.js"))
                    '((("key" . "value"))))))
+
+  ;; For checking various normal whitespace (line breaks, horizontal space, vertical space, etc.)
+  (let* ((conf (concat default-directory
+                       "ert-tests/whitespaces/example-editorconfig.txt"))
+         (handle (editorconfig-core-handle conf)))
+    (should (editorconfig-core-handle-p handle)))
   )
