@@ -7,6 +7,10 @@ env:
     - EMACS_VERSION=25.3
     - EMACS_VERSION=24.5
 
+# matrix:
+#   allow_failures:
+#     - env: EMACS_VERSION=26-pretest
+
 before_install:
   - git clone --depth=1 https://github.com/rejeep/evm.git ./.evm
   - ./.evm/bin/evm config path /tmp
