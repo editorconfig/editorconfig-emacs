@@ -72,7 +72,7 @@ test-core: core-test/CMakeLists.txt $(OBJS)
 
 test-doc-updated:
 	make doc TEXI=$(TEXI).tmp
-	cmp $(TEXI) $(TEXI).tmp
+	diff -u $(TEXI) $(TEXI).tmp
 	rm -f $(TEXI).tmp
 
 
