@@ -12,6 +12,7 @@ env:
 #     - env: EMACS_VERSION=26-pretest
 
 before_install:
+  - sudo apt-get install -y pandoc
   - git clone --depth=1 https://github.com/rejeep/evm.git ./.evm
   - ./.evm/bin/evm config path /tmp
   - ./.evm/bin/evm install emacs-$EMACS_VERSION-travis --use
