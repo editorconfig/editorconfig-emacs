@@ -1,5 +1,7 @@
 # -*- Makefile -*-
 
+TEXI_TOP := EditorConfig Emacs Plugin
+
 EMACS = emacs
 PANDOC = pandoc
 
@@ -32,7 +34,7 @@ doc/editorconfig.texi: README.md doc/header.txt
 	mkdir -p doc
 	tail -n +4 $< | $(PANDOC) -s -f markdown -t texinfo -o $@.body
 	cat doc/header.txt $@.body >$@
-	sed -i.bak -e 's/^@top .*/@top EditorConfig Emacs Plugin/' $@
+	sed -i.bak -e 's/^@top .*/@top ${TEXI_TOP}/' $@
 	rm -f $@.body $@.bak
 
 test: test-ert test-core test-metadata $(OBJS)
