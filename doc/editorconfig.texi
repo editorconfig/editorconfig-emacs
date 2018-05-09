@@ -9,7 +9,7 @@
 @paragraphindent 0
 @end ifnottex
 @node Top
-@top EditorConfig Emacs Plugin Top
+@top EditorConfig Emacs Plugin
 
 @menu
 * EditorConfig Emacs Plugin::
