@@ -34,7 +34,8 @@ $(TEXI): README.md doc/header.txt
 	mkdir -p doc
 	tail -n +4 $< | $(PANDOC) -s -f markdown -t texinfo -o $@.body
 	cat doc/header.txt $@.body >$@
-	sed -i "" -e 's/^@top .*$/@top EditorConfig Emacs Plugin/' $@
+	sed -i.bak -e 's/^@top .*$/@top EditorConfig Emacs Plugin/' $@
+	rm -f $@.body $@.bak
 
 
 test: test-ert test-core test-metadata test-doc-updated $(OBJS)
