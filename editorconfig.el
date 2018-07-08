@@ -395,13 +395,15 @@ number - `lisp-indent-offset' is not set only if indent_size is
   "Set up trimming of trailing whitespace at end of lines by
 TRIM-TRAILING-WS."
   (make-local-variable 'write-file-functions) ;; just current buffer
-  (when (equal trim-trailing-ws "true")
+  (when (and (equal trim-trailing-ws "true")
+             (not buffer-read-only))
     ;; when true we push delete-trailing-whitespace (emacs > 21)
     ;; to write-file-functions
     (add-to-list
      'write-file-functions
      'delete-trailing-whitespace))
-  (when (equal trim-trailing-ws "false")
+  (when (or (equal trim-trailing-ws "false")
+            buffer-read-only)
     ;; when false we remove every delete-trailing-whitespace
     ;; from write-file-functions
     (setq
