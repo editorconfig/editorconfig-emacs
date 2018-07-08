@@ -585,7 +585,8 @@ mode is not listed in `editorconfig-exclude-modes'."
   :lighter editorconfig-mode-lighter
   ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
   ;; not `after-change-major-mode-hook'
-  (dolist (hook '(change-major-mode-after-body-hook))
+  (dolist (hook '(change-major-mode-after-body-hook
+                  read-only-mode-hook))
     (if editorconfig-mode
         (add-hook hook 'editorconfig-mode-apply)
       (remove-hook hook 'editorconfig-mode-apply))))
