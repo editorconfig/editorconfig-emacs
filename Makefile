@@ -5,7 +5,7 @@ TEXI_TOP := EditorConfig Emacs Plugin
 EMACS = emacs
 PANDOC = pandoc
 
-PROJECT_ROOT_DIR = $(PWD)
+PROJECT_ROOT_DIR = $(CURDIR)
 ERT_TESTS = $(wildcard $(PROJECT_ROOT_DIR)/ert-tests/*.el)
 TRAVIS_FILE = .travis.yml
 
