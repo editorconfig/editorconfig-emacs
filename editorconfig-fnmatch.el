@@ -103,21 +103,7 @@ be used:
          (match (string-match re name))
          (num-groups-len (length num-groups))
          (pattern-matched t))
-    (when match
-      (let (num-group matched-num-str matched-num min-num max-num)
-        (dotimes (index num-groups-len)
-          (setq num-group (nth index num-groups))
-          (setq matched-num-str (match-string (1+ index)
-                                              name)
-                min-num (car num-group)
-                max-num (nth 1 num-group))
-          (setq matched-num (string-to-number matched-num-str))
-          (when (or (= (aref matched-num-str 0)
-                       ?0)
-                    (< matched-num min-num)
-                    (< max-num matched-num))
-            (setq pattern-matched nil))))
-      pattern-matched)))
+    match))
 
 ;;(editorconfig-fnmatch-translate "{a,{-3..3}}.js")
 ;;(editorconfig-fnmatch-p "1.js" "{a,{-3..3}}.js")
@@ -249,12 +235,21 @@ translation is found for PATTERN."
                  (setq num-range (string-match editorconfig-fnmatch--numeric-range-regexp
                                                pattern-sub))
                  (if num-range
-                     (setq numeric-groups `(,@numeric-groups ,(mapcar 'string-to-number
-                                                                      (list (match-string 1
-                                                                                          pattern-sub)
-                                                                            (match-string 2
-                                                                                          pattern-sub))))
-                           result `(,@result "\\([+-]?[0-9]+\\)"))
+                     (let ((number-start (string-to-number (match-string 1
+                                                                         pattern-sub)))
+                           (number-end (string-to-number (match-string 2
+                                                                       pattern-sub))))
+                       (setq numeric-groups `(,@numeric-groups ,(mapcar 'string-to-number
+                                                                        (list (match-string 1
+                                                                                            pattern-sub)
+                                                                              (match-string 2
+                                                                                            pattern-sub))))
+                             result `(,@result ,(concat "\\(?:"
+                                                        (mapconcat 'number-to-string
+                                                                   (cl-loop for i from number-start to number-end
+                                                                            collect i)
+                                                                   "\\|")
+                                                        "\\)"))))
                    (let ((inner (editorconfig-fnmatch--do-translate pattern-sub t)))
                      (setq result `(,@result ,(format "{%s}"
                                                       (car inner)))
