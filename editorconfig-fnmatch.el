@@ -55,8 +55,11 @@
 (require 'cl-lib)
 
 (defvar editorconfig-fnmatch--cache-hashtable
-  (make-hash-table :test 'equal)
+  nil
   "Cache of shell pattern and its translation.")
+;; Clear cache on file reload
+(setq editorconfig-fnmatch--cache-hashtable
+      (make-hash-table :test 'equal))
 
 
 (defconst editorconfig-fnmatch--left-brace-regexp
