@@ -54,7 +54,7 @@
 
 (require 'cl-lib)
 
-(defvar editorconfig-fnmatch--cache-hash
+(defvar editorconfig-fnmatch--cache-hashtable
   (make-hash-table :test 'equal)
   "Cache of shell pattern and its translation.")
 
@@ -82,8 +82,8 @@
     num))
 
 ;;;###autoload
-(defun editorconfig-fnmatch-p (name pattern)
-  "Test whether NAME match PATTERN.
+(defun editorconfig-fnmatch-p (string pattern)
+  "Test whether STRING match PATTERN.
 
 Matching ignores case if `case-fold-search' is non-nil.
 
@@ -97,13 +97,8 @@ be used:
 [^name]     Matches any single character not in name
 {s1,s2,s3}  Matches any of the strings given (separated by commas)
 {min..max}  Matches any number between min and max"
-  (let* ((translated (editorconfig-fnmatch-translate pattern))
-         (re (car translated))
-         (num-groups (nth 1 translated))
-         (match (string-match re name))
-         (num-groups-len (length num-groups))
-         (pattern-matched t))
-    match))
+  (string-match (editorconfig-fnmatch-translate pattern)
+                string))
 
 ;;(editorconfig-fnmatch-translate "{a,{-3..3}}.js")
 ;;(editorconfig-fnmatch-p "1.js" "{a,{-3..3}}.js")
@@ -113,11 +108,11 @@ be used:
 
 Translation result will be cached, so same translation will not be done twice."
   (let ((cached (gethash pattern
-                         editorconfig-fnmatch--cache-hash)))
+                         editorconfig-fnmatch--cache-hashtable)))
     (or cached
         (puthash pattern
                  (editorconfig-fnmatch--do-translate pattern)
-                 editorconfig-fnmatch--cache-hash))))
+                 editorconfig-fnmatch--cache-hashtable))))
 
 
 (defun editorconfig-fnmatch--do-translate (pattern &optional nested)
@@ -140,7 +135,6 @@ translation is found for PATTERN."
                             (editorconfig-fnmatch--match-num
                              editorconfig-fnmatch--right-brace-regexp
                              pattern)))
-        (numeric-groups ())
 
         current-char
         pos
@@ -239,12 +233,7 @@ translation is found for PATTERN."
                                                                          pattern-sub)))
                            (number-end (string-to-number (match-string 2
                                                                        pattern-sub))))
-                       (setq numeric-groups `(,@numeric-groups ,(mapcar 'string-to-number
-                                                                        (list (match-string 1
-                                                                                            pattern-sub)
-                                                                              (match-string 2
-                                                                                            pattern-sub))))
-                             result `(,@result ,(concat "\\(?:"
+                       (setq result `(,@result ,(concat "\\(?:"
                                                         (mapconcat 'number-to-string
                                                                    (cl-loop for i from number-start to number-end
                                                                             collect i)
@@ -252,8 +241,7 @@ translation is found for PATTERN."
                                                         "\\)"))))
                    (let ((inner (editorconfig-fnmatch--do-translate pattern-sub t)))
                      (setq result `(,@result ,(format "{%s}"
-                                                      (car inner)))
-                           numeric-groups `(,@numeric-groups ,@(nth 1 inner)))))
+                                                      inner)))))
                  (setq index (1+ pos)))
              (if matching-braces
                  (setq result `(,@result "\\(?:")
@@ -294,10 +282,7 @@ translation is found for PATTERN."
           (setq is-escaped nil))))
     (unless nested
       (setq result `("^" ,@result "\\'")))
-    (list (mapconcat 'identity
-                     result
-                     "")
-          numeric-groups)))
+    (apply 'concat result)))
 
 (provide 'editorconfig-fnmatch)
 
