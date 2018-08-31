@@ -1,9 +1,10 @@
 # -*- Makefile -*-
 
-TEXI_TOP := EditorConfig Emacs Plugin
+TEXI_CHAPTER := EditorConfig Emacs Plugin
 
 EMACS = emacs
 PANDOC = pandoc
+AWK = awk
 
 PROJECT_ROOT_DIR = $(CURDIR)
 ERT_TESTS = $(wildcard $(PROJECT_ROOT_DIR)/ert-tests/*.el)
@@ -33,9 +34,9 @@ doc: doc/editorconfig.texi
 doc/editorconfig.texi: README.md doc/header.txt
 	mkdir -p doc
 	tail -n +4 $< | $(PANDOC) -s -f markdown -t texinfo -o $@.body
-	cat doc/header.txt $@.body >$@
-	sed -i.bak -e 's/^@top .*/@top ${TEXI_TOP}/' $@
-	rm -f $@.body $@.bak
+	$(AWK) 'f{print} /^@chapter $(TEXI_CHAPTER)/{f=1;print}' $@.body >$@.body2
+	cat doc/header.txt $@.body2 >$@
+	rm -f $@.body $@.body2
 
 test: test-ert test-core test-metadata $(OBJS)
 	$(EMACS) $(BATCHFLAGS) -l editorconfig.el
