@@ -2,20 +2,8 @@
 @direntry
 * EditorConfig: (editorconfig). EditorConfig Emacs Plugin.
 @end direntry
-\input texinfo
-@documentencoding UTF-8
 
-@ifnottex
-@paragraphindent 0
-@end ifnottex
 @node Top
-@top EditorConfig Emacs Plugin
-
-@menu
-* EditorConfig Emacs Plugin::
-@end menu
-
-@node EditorConfig Emacs Plugin
 @chapter EditorConfig Emacs Plugin
 @anchor{#editorconfig-emacs-plugin}
 This is an @uref{http://editorconfig.org,EditorConfig} plugin for
