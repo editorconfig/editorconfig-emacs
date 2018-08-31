@@ -2,3 +2,5 @@
 @direntry
 * EditorConfig: (editorconfig). EditorConfig Emacs Plugin.
 @end direntry
+
+@node Top
