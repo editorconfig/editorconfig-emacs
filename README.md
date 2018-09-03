@@ -25,7 +25,7 @@ and add the following to your `~/.emacs` file:
 ```
 
 Alternatively, you can find the package available on
-[MELPA](http://melpa.org/#/editorconfig) and [MELPA Stable](http://stable.melpa.org/#/editorconfig)
+[MELPA](https://melpa.org/#/editorconfig) and [MELPA Stable](https://stable.melpa.org/#/editorconfig)
 ([The Marmalade package](http://marmalade-repo.org/packages/editorconfig) is deprecated).
 
 Or if you use [**use-package**](https://www.emacswiki.org/emacs/UsePackage):
@@ -171,6 +171,6 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-[EditorConfig]: http://editorconfig.org
+[EditorConfig]: https://editorconfig.org
 [EditorConfig C Core]: https://github.com/editorconfig/editorconfig-core-c
-[properties]: http://editorconfig.org/#supported-properties
+[properties]: https://editorconfig.org/#supported-properties
