@@ -6,7 +6,7 @@
 @node Top
 @chapter EditorConfig Emacs Plugin
 @anchor{#editorconfig-emacs-plugin}
-This is an @uref{http://editorconfig.org,EditorConfig} plugin for
+This is an @uref{https://editorconfig.org,EditorConfig} plugin for
 @uref{https://www.gnu.org/software/emacs/,Emacs}.
 @menu
 * Installation::
@@ -39,8 +39,8 @@ file:
 @end verbatim
 
 Alternatively, you can find the package available on
-@uref{http://melpa.org/#/editorconfig,MELPA} and
-@uref{http://stable.melpa.org/#/editorconfig,MELPA Stable}
+@uref{https://melpa.org/#/editorconfig,MELPA} and
+@uref{https://stable.melpa.org/#/editorconfig,MELPA Stable}
 (@uref{http://marmalade-repo.org/packages/editorconfig,The Marmalade
 package} is deprecated).
 
@@ -58,7 +58,7 @@ Or if you use
 @section Supported properties
 @anchor{#supported-properties}
 Current Emacs plugin coverage for EditorConfig's
-@uref{http://editorconfig.org/#supported-properties,properties}:
+@uref{https://editorconfig.org/#supported-properties,properties}:
 
 @itemize
 @item
