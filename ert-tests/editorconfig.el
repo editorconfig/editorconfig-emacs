@@ -1,5 +1,13 @@
 (require 'editorconfig)
 
+(defun display-warning (type message &optional level buffer-name)
+  "When testing overwrite this function to throw error when called."
+  (error "display-warning called: %S %S %S %S"
+         type
+         message
+         level
+         buffer-name))
+
 (defmacro with-visit-file (path &rest body)
   "Visit PATH and evaluate BODY."
   (declare (indent 1) (debug t))
@@ -86,4 +94,16 @@
   (with-visit-file (concat editorconfig-secondary-ert-dir
                            "c.txt")
     (should (eq major-mode 'conf-unix-mode)))
+  (editorconfig-mode -1))
+
+(ert-deftest test-file-type-ext nil
+  (editorconfig-mode 1)
+  (with-visit-file (concat editorconfig-secondary-ert-dir
+                           "a.txt")
+    (should (eq major-mode 'conf-unix-mode)))
+
+  (with-visit-file (concat editorconfig-secondary-ert-dir
+                           "bin/perlscript")
+    (should (eq major-mode 'perl-mode))
+    (should (eq perl-indent-level 5)))
   (editorconfig-mode -1))
