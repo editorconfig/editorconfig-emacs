@@ -429,7 +429,7 @@ TRIM-TRAILING-WS."
         (and parent
              (editorconfig--is-a-mode-p parent want)))))
 
-(defun editorconfig-set-major-mode (filetype)
+(defun editorconfig-set-major-mode-from-name (filetype)
   "Set buffer `major-mode' by FILETYPE.
 
 FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
@@ -600,7 +600,7 @@ applies available properties."
               (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
               (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
               (editorconfig-set-line-length (gethash 'max_line_length props))
-              (editorconfig-set-major-mode (gethash 'file_type_emacs props))
+              (editorconfig-set-major-mode-from-name (gethash 'file_type_emacs props))
               (editorconfig-set-major-mode-from-ext (gethash 'file_type_ext props))
               (condition-case err
                   (run-hook-with-args 'editorconfig-custom-hooks props)
