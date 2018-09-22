@@ -80,3 +80,10 @@
     (should (not (memq 'delete-trailing-whitespace
                        write-file-functions))))
   (editorconfig-mode -1))
+
+(ert-deftest test-file-type-emacs nil
+  (editorconfig-mode 1)
+  (with-visit-file (concat editorconfig-secondary-ert-dir
+                           "c.txt")
+    (should (eq major-mode 'conf-unix-mode)))
+  (editorconfig-mode -1))
