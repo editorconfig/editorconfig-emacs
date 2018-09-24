@@ -272,6 +272,9 @@ number - `lisp-indent-offset' is not set only if indent_size is
          equal to this number.  For example, if this is set to 2,
          `lisp-indent-offset'will not be set only if indent_size is 2.")
 
+(defconst editorconfig-unset-value "unset"
+  "String used to unset properties in .editorconfig .")
+
 (defun editorconfig-string-integer-p (string)
   "Return non-nil if STRING represents integer."
   (and (stringp string)
@@ -426,7 +429,7 @@ TRIM-TRAILING-WS."
         (and parent
              (editorconfig--is-a-mode-p parent want)))))
 
-(defun editorconfig-set-major-mode (filetype)
+(defun editorconfig-set-major-mode-from-name (filetype)
   "Set buffer `major-mode' by FILETYPE.
 
 FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
@@ -442,6 +445,63 @@ FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
           (funcall mode)
         (display-warning :error (format "Major-mode `%S' not found"
                                         mode))
+        nil))))
+
+(defvar editorconfig--apply-major-mode-currently nil
+  "Used internally.")
+(make-variable-buffer-local 'editorconfig--apply-major-mode-currently)
+(put 'editorconfig--apply-major-mode-currently
+     'permanent-local
+     t)
+
+(defun editorconig-apply-major-mode-safely (mode)
+  "Set `major-mode' to MODE.
+Normally `editorconfig-apply' will be hooked so that it runs when changing
+`major-mode', so there is a possibility that MODE is called infinitely if
+MODE is called naively from inside of `editorconfig-apply'.
+This funcion will avoid such cases and set `major-mode' safely.
+
+Just checking current `major-mode' value is not enough, because it can be
+different from MODE value (for example, `conf-mode' will set `major-mode' to
+`conf-unix-mode' or another conf mode)."
+  (unless (eq mode
+              editorconfig--apply-major-mode-currently)
+    (unwind-protect
+        (progn
+          (setq editorconfig--apply-major-mode-currently
+                mode)
+          (funcall mode))
+      (setq editorconfig--apply-major-mode-currently
+            nil))))
+
+(defun editorconfig--find-mode-from-ext (ext &optional filename)
+  "Get suitable `major-mode' from EXT and FILENAME.
+If FILENAME is omitted filename of current buffer is used."
+  (cl-assert ext)
+  (cl-assert (not (string= ext "")))
+  (let* ((name (concat (or filename
+                           buffer-file-name)
+                       "."
+                       ext)))
+    (assoc-default name
+                   auto-mode-alist
+                   'string-match)))
+
+(defun editorconfig-set-major-mode-from-ext (ext)
+  "Set buffer `major-mode' by EXT.
+
+EXT should be a string like `\"ini\"`, if not nil or empty string."
+  (cl-assert buffer-file-name)
+  (when (and ext
+             (not (string= ext ""))
+             (not (string= ext editorconfig-unset-value)))
+
+    (let ((mode (editorconfig--find-mode-from-ext ext
+                                                  buffer-file-name)))
+      (if mode
+            (editorconig-apply-major-mode-safely mode)
+        (display-warning :error (format "Major-mode for `%s' not found"
+                                        ext))
         nil))))
 
 (defun editorconfig-call-editorconfig-exec ()
@@ -540,7 +600,8 @@ applies available properties."
               (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
               (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
               (editorconfig-set-line-length (gethash 'max_line_length props))
-              (editorconfig-set-major-mode (gethash 'file_type_emacs props))
+              (editorconfig-set-major-mode-from-name (gethash 'file_type_emacs props))
+              (editorconfig-set-major-mode-from-ext (gethash 'file_type_ext props))
               (condition-case err
                   (run-hook-with-args 'editorconfig-custom-hooks props)
                 (error

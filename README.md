@@ -53,6 +53,7 @@ Current Emacs plugin coverage for EditorConfig's [properties][]:
   we just buffer-locally override any preferences that would auto-add them
   to files `.editorconfig` marks as trailing-newline-free
 * `max_line_length`
+* `file_type_ext` (Experimental)
 * `file_type_emacs` (Experimental)
 * `root` (only used by EditorConfig core)
 
@@ -66,15 +67,25 @@ we might not yet cover some mode you use, but we try to add the
 ones that show up on our radar. Similarly, we don't yet hook
 in to all different packages for whitespace trimming to inform
 them about editorconfig settings, but aim for better coverage
-of things like [ws-trim](ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el).
+of things like
+[ws-trim](ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el).
 
-This plugin also has an experimental support for `file_type_emacs`,
-which specifies "file types" for files.
-As for Emacs, it means `major-mode` can be specified: for example,
-when `file_type_emacs` is set to `markdown` for `a.txt`,
-`markdown-mode` will be enabled when opening `a.txt`.
-This property is experimental and its meaning might change in
-the future updates.
+
+### File Type
+
+This plugin also has experimental supports for `file_type_ext` and
+`file_type_emacs`, which specify "file types" for files.
+As for Emacs, it means `major-mode` can be set.
+
+**file_type_ext** When it is set to `md` for `a.txt`, for example,
+`major-mode` will be decided as if the file name would be `a.txt.md`
+(and thus `markdown-mode` is likely to be used).
+
+**file_type_emacs** When it is set to `markdown` for `a.txt`,
+`markdown-mode`  will be enabled when opening `a.txt`.
+
+These property are experimental and their meanings might change in the
+future updates. When both are specified, `file_type_ext` takes precedence.
 
 
 ## Customize

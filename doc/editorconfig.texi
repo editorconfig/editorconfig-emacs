@@ -84,6 +84,8 @@ trailing-newline-free
 @item
 @code{max_line_length}
 @item
+@code{file_type_ext} (Experimental)
+@item
 @code{file_type_emacs} (Experimental)
 @item
 @code{root} (only used by EditorConfig core)
@@ -100,14 +102,28 @@ on our radar. Similarly, we don't yet hook in to all different packages
 for whitespace trimming to inform them about editorconfig settings, but
 aim for better coverage of things like
 @uref{ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el,ws-trim}.
+@menu
+* File Type::
+@end menu
 
-This plugin also has an experimental support for @code{file_type_emacs},
-which specifies ``file types'' for files. As for Emacs, it means
-@code{major-mode} can be specified: for example, when
-@code{file_type_emacs} is set to @code{markdown} for @code{a.txt},
-@code{markdown-mode} will be enabled when opening @code{a.txt}. This
-property is experimental and its meaning might change in the future
-updates.
+@node File Type
+@subsection File Type
+@anchor{#file-type}
+This plugin also has experimental supports for @code{file_type_ext} and
+@code{file_type_emacs}, which specify ``file types'' for files. As for
+Emacs, it means @code{major-mode} can be set.
+
+@strong{file_type_ext} When it is set to @code{md} for @code{a.txt}, for
+example, @code{major-mode} will be decided as if the file name would be
+@code{a.txt.md} (and thus @code{markdown-mode} is likely to be used).
+
+@strong{file_type_emacs} When it is set to @code{markdown} for
+@code{a.txt}, @code{markdown-mode} will be enabled when opening
+@code{a.txt}.
+
+These property are experimental and their meanings might change in the
+future updates. When both are specified, @code{file_type_ext} takes
+precedence.
 
 @node Customize
 @section Customize
