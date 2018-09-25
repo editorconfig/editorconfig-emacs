@@ -89,7 +89,7 @@
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist
-             '("/\\.editorconfig\\'" . editorconfig-conf-mode))
+             '("\\.editorconfig\\'" . editorconfig-conf-mode))
 
 (provide 'editorconfig-conf-mode)
 
