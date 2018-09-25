@@ -26,5 +26,5 @@ tab_width = 4
 indent_style = space
 indent_size = 2
 
-[.editorconfig]
-file_type_emacs = editorconfig-conf
+[ert-tests/**/*.ini]
+file_type_ext = editorconfig
