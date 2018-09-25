@@ -438,11 +438,9 @@ FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
                                  ""))
                    (intern (concat filetype
                                    "-mode")))))
-    (when (and mode
-               (not (editorconfig--is-a-mode-p major-mode
-                                               mode)))
+    (when mode
       (if (fboundp mode)
-          (funcall mode)
+          (editorconig-apply-major-mode-safely mode)
         (display-warning :error (format "Major-mode `%S' not found"
                                         mode))
         nil))))
@@ -464,10 +462,13 @@ This funcion will avoid such cases and set `major-mode' safely.
 Just checking current `major-mode' value is not enough, because it can be
 different from MODE value (for example, `conf-mode' will set `major-mode' to
 `conf-unix-mode' or another conf mode)."
+  (cl-assert mode)
   (when (and (not (eq mode
                       editorconfig--apply-major-mode-currently))
              (not (eq mode
-                      major-mode)))
+                      major-mode))
+             (not (editorconfig--is-a-mode-p major-mode
+                                             mode)))
     (unwind-protect
         (progn
           (setq editorconfig--apply-major-mode-currently
