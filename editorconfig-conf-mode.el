@@ -46,6 +46,7 @@
          '("charset"
            "end_of_line"
            "file_type_emacs"
+           "file_type_ext"
            "indent_size"
            "indent_style"
            "insert_final_newline"
