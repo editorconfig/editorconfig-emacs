@@ -464,8 +464,10 @@ This funcion will avoid such cases and set `major-mode' safely.
 Just checking current `major-mode' value is not enough, because it can be
 different from MODE value (for example, `conf-mode' will set `major-mode' to
 `conf-unix-mode' or another conf mode)."
-  (unless (eq mode
-              editorconfig--apply-major-mode-currently)
+  (when (and (not (eq mode
+                      editorconfig--apply-major-mode-currently))
+             (not (eq mode
+                      major-mode)))
     (unwind-protect
         (progn
           (setq editorconfig--apply-major-mode-currently
