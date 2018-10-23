@@ -118,7 +118,7 @@ show line numbers on the left:
 (define-obsolete-variable-alias
   'editorconfig-custom-hooks
   'editorconfig-after-apply-functions
-  "0.7.13")
+  "0.7.14")
 
 (defcustom editorconfig-indentation-alist
   ;; For contributors: Sort modes in alphabetical order, please :)
