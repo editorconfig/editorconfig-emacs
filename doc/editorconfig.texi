@@ -129,16 +129,18 @@ precedence.
 @section Customize
 @anchor{#customize}
 @menu
-* editorconfig-custom-hooks::
+* editorconfig-after-apply-functions::
 * editorconfig-indentation-alist::
 * editorconfig-exec-path::
 * editorconfig-get-properties-function::
 @end menu
 
-@node editorconfig-custom-hooks
-@subsection @code{editorconfig-custom-hooks}
-@anchor{#editorconfig-custom-hooks}
-A list of custom hooks after loading common EditorConfig settings, where
+@node editorconfig-after-apply-functions
+@subsection @code{editorconfig-after-apply-functions}
+@anchor{#editorconfig-after-apply-functions}
+(Formerly @code{editorconfig-custom-hooks})
+
+A list of functions after loading common EditorConfig settings, where
 you can set some custom variables or overwrite existing properties.
 
 For example, @code{web-mode} has several variables for indentation
@@ -147,7 +149,7 @@ You may want to stop indenting only blocks of @code{web-mode}: it can be
 achieved by adding following to your init.el:
 
 @verbatim
-(add-hook 'editorconfig-custom-hooks
+(add-hook 'editorconfig-after-apply-functions
   (lambda (hash) (setq web-mode-block-padding 0)))
 @end verbatim
 
