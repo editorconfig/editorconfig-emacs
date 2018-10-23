@@ -421,14 +421,6 @@ TRIM-TRAILING-WS."
              (> (string-to-number length) 0))
     (setq fill-column (string-to-number length))))
 
-(defun editorconfig--is-a-mode-p (current want)
-  "Return non-nil if major mode CURRENT is a major mode WANT."
-  (or (eq current
-          want)
-      (let ((parent (get current 'derived-mode-parent)))
-        (and parent
-             (editorconfig--is-a-mode-p parent want)))))
-
 (defun editorconfig-set-major-mode-from-name (filetype)
   "Set buffer `major-mode' by FILETYPE.
 
@@ -467,8 +459,7 @@ different from MODE value (for example, `conf-mode' will set `major-mode' to
                       editorconfig--apply-major-mode-currently))
              (not (eq mode
                       major-mode))
-             (not (editorconfig--is-a-mode-p major-mode
-                                             mode)))
+             (not (derived-mode-p mode)))
     (unwind-protect
         (progn
           (setq editorconfig--apply-major-mode-currently
