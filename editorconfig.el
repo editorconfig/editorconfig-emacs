@@ -606,6 +606,13 @@ applies available properties."
             (error "Invalid editorconfig-get-properties-function value"))
           (let ((props (funcall editorconfig-get-properties-function)))
             (progn
+              (condition-case err
+                  (run-hook-with-args 'editorconfig-hack-properties-functions props)
+                (error
+                 (display-warning 'editorconfig-hack-properties-functions
+                                  (concat (error-message-string err)
+                                          ". Abort running hook.")
+                                  :warning)))
               (setq editorconfig-properties-hash props)
               (editorconfig-set-indentation (gethash 'indent_style props)
                                             (gethash 'indent_size props)
