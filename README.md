@@ -90,9 +90,11 @@ future updates. When both are specified, `file_type_ext` takes precedence.
 
 ## Customize
 
-### `editorconfig-custom-hooks`
+### `editorconfig-after-apply-functions`
 
-A list of custom hooks after loading common EditorConfig settings, where you can
+(Formerly `editorconfig-custom-hooks`)
+
+A list of functions after loading common EditorConfig settings, where you can
 set some custom variables or overwrite existing properties.
 
 For example, `web-mode` has several variables for indentation offset size and
@@ -100,7 +102,7 @@ EditorConfig sets them at once by `indent_size`. You may want to stop indenting
 only blocks of `web-mode`: it can be achieved by adding following to your init.el:
 
 ```emacs-lisp
-(add-hook 'editorconfig-custom-hooks
+(add-hook 'editorconfig-after-apply-functions
   (lambda (hash) (setq web-mode-block-padding 0)))
 ```
 
