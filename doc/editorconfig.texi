@@ -109,7 +109,7 @@ aim for better coverage of things like
 @node File Type
 @subsection File Type
 @anchor{#file-type}
-This plugin also has experimental supports for @code{file_type_ext} and
+This plugin has experimental supports for @code{file_type_ext} and
 @code{file_type_emacs}, which specify ``file types'' for files. As for
 Emacs, it means @code{major-mode} can be set.
 
@@ -173,7 +173,7 @@ a @code{makefile-mode} with following code:
 (add-hook 'editorconfig-hack-properties-functions
           '(lambda (props)
              (when (derived-mode-p makefile-mode)
-               (puthash 'indent_style \"tab\" props))))
+               (puthash 'indent_style "tab" props))))
 @end verbatim
 
 @node editorconfig-indentation-alist

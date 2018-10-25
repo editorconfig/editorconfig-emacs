@@ -73,7 +73,7 @@ of things like
 
 ### File Type
 
-This plugin also has experimental supports for `file_type_ext` and
+This plugin has experimental supports for `file_type_ext` and
 `file_type_emacs`, which specify "file types" for files.
 As for Emacs, it means `major-mode` can be set.
 
@@ -124,7 +124,7 @@ overwrite \"indent_style\" property when current `major-mode` is a
 (add-hook 'editorconfig-hack-properties-functions
           '(lambda (props)
              (when (derived-mode-p makefile-mode)
-               (puthash 'indent_style \"tab\" props))))
+               (puthash 'indent_style "tab" props))))
 
 ```
 
