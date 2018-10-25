@@ -57,22 +57,22 @@
   (editorconfig-mode 1)
 
   (with-visit-file (concat editorconfig-secondary-ert-dir
-                     "2_space.el")
+                           "2_space.el")
     (should (eq lisp-indent-offset 2)))
 
   (let ((editorconfig-lisp-use-default-indent t))
     (with-visit-file (concat editorconfig-secondary-ert-dir
-                       "2_space.el")
+                             "2_space.el")
       (should (eq lisp-indent-offset nil))))
 
   (let ((editorconfig-lisp-use-default-indent 2))
     (with-visit-file (concat editorconfig-secondary-ert-dir
-                       "2_space.el")
+                             "2_space.el")
       (should (eq lisp-indent-offset nil))))
 
   (let ((editorconfig-lisp-use-default-indent 4))
     (with-visit-file (concat editorconfig-secondary-ert-dir
-                       "2_space.el")
+                             "2_space.el")
       (should (eq lisp-indent-offset 2))))
   (editorconfig-mode -1))
 
@@ -106,4 +106,15 @@
                            "bin/perlscript")
     (should (eq major-mode 'perl-mode))
     (should (eq perl-indent-level 5)))
+  (editorconfig-mode -1))
+
+(ert-deftest test-hack-properties-functions nil
+  (editorconfig-mode 1)
+  (add-hook 'editorconfig-hack-properties-functions
+            (lambda (props)
+              (puthash 'indent_size "5" props)))
+  (with-visit-file (concat editorconfig-ert-dir
+                           "4_space.py")
+    (should (eq python-indent-offset 5)))
+  (setq editorconfig-hack-properties-functions nil)
   (editorconfig-mode -1))

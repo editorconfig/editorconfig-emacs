@@ -120,6 +120,24 @@ show line numbers on the left:
   'editorconfig-after-apply-functions
   "0.7.14")
 
+(defcustom editorconfig-hack-properties-functions ()
+  "A list of function to alter property values before applying them.
+
+These functions will be run after loading \".editorconfig\" files and before
+applying them to current buffer, so that you can alter some properties from
+\".editorconfig\" before they take effect.
+
+For example, Makefiles always use tab characters for indentation: you can
+overwrite \"indent_style\" property when current `major-mode' is a
+`makefile-mode' with following code:
+
+  (add-hook 'editorconfig-hack-properties-functions
+            '(lambda (props)
+               (when (derived-mode-p makefile-mode)
+                 (puthash 'indent_style \"tab\" props))))"
+  :type 'hook
+  :group 'editorconfig)
+
 (defcustom editorconfig-indentation-alist
   ;; For contributors: Sort modes in alphabetical order, please :)
   '((apache-mode apache-indent-level)
@@ -588,6 +606,13 @@ applies available properties."
             (error "Invalid editorconfig-get-properties-function value"))
           (let ((props (funcall editorconfig-get-properties-function)))
             (progn
+              (condition-case err
+                  (run-hook-with-args 'editorconfig-hack-properties-functions props)
+                (error
+                 (display-warning 'editorconfig-hack-properties-functions
+                                  (concat (error-message-string err)
+                                          ". Abort running hook.")
+                                  :warning)))
               (setq editorconfig-properties-hash props)
               (editorconfig-set-indentation (gethash 'indent_style props)
                                             (gethash 'indent_size props)

@@ -108,6 +108,26 @@ only blocks of `web-mode`: it can be achieved by adding following to your init.e
 
 You can also define your own custom properties and enable them here.
 
+### `editorconfig-hack-properties-functions`
+
+A list of function to alter property values before applying them.
+
+These functions will be run after loading \".editorconfig\" files and before
+applying them to current buffer, so that you can alter some properties from
+\".editorconfig\" before they take effect.
+
+For example, Makefiles always use tab characters for indentation: you can
+overwrite \"indent_style\" property when current `major-mode` is a
+`makefile-mode` with following code:
+
+``` emacs-lisp
+(add-hook 'editorconfig-hack-properties-functions
+          '(lambda (props)
+             (when (derived-mode-p makefile-mode)
+               (puthash 'indent_style \"tab\" props))))
+
+```
+
 ### `editorconfig-indentation-alist`
 
 Alist of indentation setting methods by modes.

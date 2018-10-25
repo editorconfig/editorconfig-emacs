@@ -130,6 +130,7 @@ precedence.
 @anchor{#customize}
 @menu
 * editorconfig-after-apply-functions::
+* editorconfig-hack-properties-functions::
 * editorconfig-indentation-alist::
 * editorconfig-exec-path::
 * editorconfig-get-properties-function::
@@ -154,6 +155,26 @@ achieved by adding following to your init.el:
 @end verbatim
 
 You can also define your own custom properties and enable them here.
+
+@node editorconfig-hack-properties-functions
+@subsection @code{editorconfig-hack-properties-functions}
+@anchor{#editorconfig-hack-properties-functions}
+A list of function to alter property values before applying them.
+
+These functions will be run after loading ".editorconfig" files and
+before applying them to current buffer, so that you can alter some
+properties from ".editorconfig" before they take effect.
+
+For example, Makefiles always use tab characters for indentation: you
+can overwrite "indent_style" property when current @code{major-mode} is
+a @code{makefile-mode} with following code:
+
+@verbatim
+(add-hook 'editorconfig-hack-properties-functions
+          '(lambda (props)
+             (when (derived-mode-p makefile-mode)
+               (puthash 'indent_style \"tab\" props))))
+@end verbatim
 
 @node editorconfig-indentation-alist
 @subsection @code{editorconfig-indentation-alist}
