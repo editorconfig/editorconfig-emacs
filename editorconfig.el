@@ -133,7 +133,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
 
   (add-hook 'editorconfig-hack-properties-functions
             '(lambda (props)
-               (when (derived-mode-p makefile-mode)
+               (when (derived-mode-p 'makefile-mode)
                  (puthash 'indent_style \"tab\" props))))"
   :type 'hook
   :group 'editorconfig)
