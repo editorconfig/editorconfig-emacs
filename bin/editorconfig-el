@@ -80,8 +80,8 @@ with required output."
      (message editorconfig-bin-help-message)
      (kill-emacs 0))
     ((-v --version)
-     (message "EditorConfig-Core-EmacsLisp Version %s"
-              editorconfig-core-version)
+     (princ (format "EditorConfig-Core-EmacsLisp Version %s\n"
+                    editorconfig-core-version))
      (kill-emacs 0))
 
     (otherwise
@@ -105,19 +105,19 @@ with required output."
        (dolist (p (editorconfig-core-get-properties (caar parsed)
                                                     (nth 1 parsed)
                                                     (nth 2 parsed)))
-         (message "%s=%s"
-                  (car p)
-                  (cdr p))))
+         (princ (format "%s=%s\n"
+                        (car p)
+                        (cdr p)))))
       (otherwise
        (dolist (file (car parsed))
-         (message "[%s]"
-                  file)
+         (princ (format "[%s]\n"
+                        file))
          (dolist (p (editorconfig-core-get-properties file
                                                       (nth 1 parsed)
                                                       (nth 2 parsed)))
-           (message "%s=%s"
-                    (car p)
-                    (cdr p)))))))
+           (princ (format "%s=%s\n"
+                          (car p)
+                          (cdr p))))))))
   0)
 
 ;; car of command-line-args-left is "--"
