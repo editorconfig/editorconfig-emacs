@@ -277,9 +277,12 @@ properties."
   :type '(repeat string)
   :group 'editorconfig)
 
-(defcustom editorconfig-use-ws-butler nil
-  "Use command `ws-butler-mode' for trimming trailing whitespace."
-  :type 'boolean
+(defcustom editorconfig-trim-whitespaces-mode nil
+  "Buffer local minor-mode to use to trim trailing whitespaces.
+
+If set, enable that mode when `trim_trailing_whitespace` is set to true.
+Otherwise, use `delete-trailing-whitespace'."
+  :type 'symbol
   :group 'editorconfig)
 
 (defvar editorconfig-properties-hash nil
@@ -306,11 +309,6 @@ number - `lisp-indent-offset' is not set only if indent_size is
   "Return non-nil if STRING represents integer."
   (and (stringp string)
        (string-match-p "\\`[0-9]+\\'" string)))
-
-(defun editorconfig-use-ws-butler-p ()
-  "Return non-nil if `editorconfig-use-ws-butler' is enabled and
-`ws-butler' is available."
-  (and editorconfig-use-ws-butler (fboundp 'ws-butler-mode)))
 
 (defun editorconfig-set-indentation/python-mode (size)
   "Set `python-mode' indent size to SIZE."
@@ -427,15 +425,14 @@ number - `lisp-indent-offset' is not set only if indent_size is
     (set      (make-local-variable 'mode-require-final-newline) nil))))
 
 (defun editorconfig-set-trailing-ws (trim-trailing-ws)
-  "Set up trimming of trailing whitespace at end of lines by
-TRIM-TRAILING-WS."
+  "Set up trimming of trailing whitespace at end of lines by TRIM-TRAILING-WS."
   (make-local-variable 'write-file-functions) ;; just current buffer
   (when (and (equal trim-trailing-ws "true")
              (not buffer-read-only))
     ;; when true we push delete-trailing-whitespace (emacs > 21)
     ;; to write-file-functions
-    (if (editorconfig-use-ws-butler-p)
-        (ws-butler-mode 1)
+    (if editorconfig-trim-whitespaces-mode
+        (funcall editorconfig-trim-whitespaces-mode 1)
       (add-to-list
        'write-file-functions
        'delete-trailing-whitespace)))
@@ -443,13 +440,13 @@ TRIM-TRAILING-WS."
             buffer-read-only)
     ;; when false we remove every delete-trailing-whitespace
     ;; from write-file-functions
-    (if (editorconfig-use-ws-butler-p)
-        (ws-butler-mode 0)
-      (setq
-       write-file-functions
-       (delete
-        'delete-trailing-whitespace
-        write-file-functions)))))
+    (when editorconfig-trim-whitespaces-mode
+      (funcall editorconfig-trim-whitespaces-mode 0))
+    (setq
+     write-file-functions
+     (delete
+      'delete-trailing-whitespace
+      write-file-functions))))
 
 (defun editorconfig-set-line-length (length)
   "Set the max line length (`fill-column') to LENGTH."
