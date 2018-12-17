@@ -176,6 +176,24 @@ Possible known values are:
 * `editorconfig-core-get-properties-hash`
   * Always use built-in Emacs-Lisp implementation to get properties
 
+
+### `editorconfig-trim-whitespaces-mode`
+
+Buffer local minor-mode to use to trim trailing whitespaces.
+
+If set, enable that mode when `trim_trailing_whitespace` is set to true.
+Otherwise, use `delete-trailing-whitespace'.
+
+One possible value is
+[`ws-butler-mode`](https://github.com/lewang/ws-butler), with which
+only lines touched get trimmed. To use it, add following to yo
+init.el:
+
+``` emacs-lisp
+(setq editorconfig-trim-whitespaces-mode
+      'ws-butler-mode)
+```
+
 ## Testing
 
 Make and [CMake](https://cmake.org) must be installed to run the tests.
