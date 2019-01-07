@@ -195,15 +195,64 @@ If need to specify config format version, give CONFVERSION.
 
 This function is almost same as `editorconfig-core-get-properties', but returns
 hash object instead."
-  (let ((result (editorconfig-core-get-properties file
-                                                  confname
-                                                  confversion))
-        (hash (make-hash-table :test 'equal)))
-    (dolist (prop result)
-      (puthash (intern (car prop))
-               (cdr prop)
-               hash))
-    hash))
+  (setq file
+        (expand-file-name (or file
+                              buffer-file-name
+                              (error "FILE is not given and `buffer-file-name' is nil"))))
+  (setq confname (or confname
+                     ".editorconfig"))
+  (setq confversion (or confversion
+                        "0.12.0"))
+  (let ((result (make-hash-table)))
+    (dolist (handle (editorconfig-core--get-handles (file-name-directory file)
+                                                    confname))
+      (editorconfig-core--hash-merge result
+                                     (editorconfig-core-handle-get-properties-hash handle
+                                                                                   file)))
+
+    ;; Downcase known boolean values
+    (dolist (key '(
+                   end_of_line indent_style indent_size insert_final_newline
+                   trim_trailing_whitespace charset
+                   ))
+      (let ((val (gethash key
+                          result)))
+        (when val
+          (puthash key
+                   (downcase val)
+                   result))))
+
+    ;; Add indent_size property
+    (let ((v-indent-size (gethash 'indent_size result))
+          (v-indent-style (gethash 'indent_style result)))
+      (when (and (not v-indent-size)
+                 (string= v-indent-style "tab")
+                 ;; If VERSION < 0.9.0, indent_size should have no default value
+                 (version<= "0.9.0"
+                            confversion))
+        (puthash 'indent_size
+                 "tab"
+                 result)))
+    ;; Add tab_width property
+    (let ((v-indent-size (gethash 'indent_size result))
+          (v-tab-width (gethash 'tab_width result)))
+      (when (and v-indent-size
+                 (not v-tab-width)
+                 (not (string= v-indent-size "tab")))
+        (puthash 'tab_width
+                 v-indent-size
+                 result)))
+    ;; Update indent-size property
+    (let ((v-indent-size (gethash 'indent_size result))
+          (v-tab-width (gethash 'tab_width result)))
+      (when (and v-indent-size
+                 v-tab-width
+                 (string= v-indent-size "tab"))
+        (puthash 'indent_size
+                 v-tab-width
+                 result)))
+
+    result))
 
 (provide 'editorconfig-core)
 
