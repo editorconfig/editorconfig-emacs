@@ -74,28 +74,6 @@
   "0.7.14"
   "EditorConfig core version.")
 
-(defun editorconfig-core--remove-duplicate (alist)
-  "Remove duplicated keys in ALIST.
-
-If same keys are found in ALIST multiple times, the latter ones take precedence.
-For example, when ALIST is
-
-    '((a 1) (b 2) (c 3) (b 4))
-
-then the result will be
-
-    '((a 1) (b 4) (c 3)) ."
-  (let ((result ()))
-    (dolist (e alist)
-      (let ((pair (assoc (car e)
-                         result)))
-        (if pair
-            (setcdr pair
-                    (cdr e))
-          (setq result
-                `(,@result ,e)))))
-    result))
-
 (defun editorconfig-core--get-handles (dir confname &optional result)
   "Get list of EditorConfig handlers for DIR from CONFNAME.
 
@@ -135,55 +113,13 @@ If need to specify config format version, give CONFVERSION.
 
 This functions returns alist of properties.  Each element will look like
 '(KEY . VALUE) ."
-  (setq file (expand-file-name (or file
-                                   buffer-file-name
-                                   (error "FILE is not given and `buffer-file-name' is nil"))))
-  (setq confname (or confname
-                     ".editorconfig"))
-  (setq confversion (or confversion
-                        "0.12.0"))
-  (let ((result (editorconfig-core--remove-duplicate
-                 (apply 'append
-                        (mapcar (lambda (handle)
-                                  (apply 'append
-                                         (editorconfig-core-handle-get-properties handle
-                                                                                  file)))
-                                (editorconfig-core--get-handles (file-name-directory file)
-                                                                confname))))))
-    (dolist (key '("end_of_line" "indent_style" "indent_size"
-                   "insert_final_newline" "trim_trailing_whitespace" "charset"))
-      (let ((pair (assoc key
-                         result)))
-        (when pair
-          (setcdr pair
-                  (downcase (cdr pair))))))
-
-    ;; Add indent_size property
-    (let ((p-indent-size (assoc "indent_size" result))
-          (p-indent-style (assoc "indent_style" result)))
-      (when (and (not p-indent-size)
-                 (string= (cdr p-indent-style) "tab")
-                 ;; If VERSION < 0.9.0, indent_size should have no default value
-                 (version<= "0.9.0"
-                            confversion))
-        (setq result
-              `(,@result ("indent_size" . "tab")))))
-    ;; Add tab_width property
-    (let ((p-indent-size (assoc "indent_size" result))
-          (p-tab-width (assoc "tab_width" result)))
-      (when (and p-indent-size
-                 (not p-tab-width)
-                 (not (string= (cdr p-indent-size) "tab")))
-        (setq result
-              `(,@result ("tab_width" . ,(cdr p-indent-size))))))
-    ;; Update indent-size property
-    (let ((p-indent-size (assoc "indent_size" result))
-          (p-tab-width (assoc "tab_width" result)))
-      (when (and p-indent-size
-                 p-tab-width
-                 (string= (cdr p-indent-size) "tab"))
-        (setcdr p-indent-size (cdr p-tab-width))))
-
+  (let ((hash (editorconfig-core-get-properties-hash file confname confversion))
+        (result nil))
+    (maphash (lambda (key value)
+               (add-to-list 'result
+                            (cons (symbol-name key)
+                                  value)))
+             hash)
     result))
 
 (defun editorconfig-core--hash-merge (into update)
