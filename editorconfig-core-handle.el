@@ -31,6 +31,8 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+
 (require 'editorconfig-fnmatch)
 
 ;; For cl-defstruct
@@ -45,6 +47,7 @@
   ;; e.g. (("root" . "true"))
   (top-prop nil)
 
+  ;; TODO: Define struct for section
   ;; Alist of properties
   ;; Key: Section name
   ;; Value: Alist of properties for each section name
@@ -105,6 +108,25 @@ If HANDLE is nil return nil."
                                                                      (car prop)
                                                                      (file-name-directory (editorconfig-core-handle-path handle))))
                               (editorconfig-core-handle-prop handle)))))
+(make-obsolete 'editorconfig-core-handle-get-properties
+               'editorconfig-core-handle-get-properties-hash
+               "0.8.0")
+
+
+(defun editorconfig-core-handle-get-properties-hash (handle file)
+  "Return hash of properties from HANDLE for FILE.
+
+If HANDLE is nil return nil."
+  (when handle
+    (let ((hash (make-hash-table)))
+      (dolist (prop (editorconfig-core-handle-prop handle))
+        (when (editorconfig-core-handle--fnmatch-p file
+                                                   (car prop)
+                                                   (file-name-directory (editorconfig-core-handle-path
+                                                                         handle)))
+          (cl-loop for (key . value) in (cdr prop)
+                   do (puthash (intern key) value hash))))
+      hash)))
 
 (defun editorconfig-core-handle--fnmatch-p (name pattern dir)
   "Return non-nil if NAME match PATTERN.
