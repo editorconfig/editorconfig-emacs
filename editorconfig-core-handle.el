@@ -110,7 +110,7 @@ If HANDLE is nil return nil."
                               (editorconfig-core-handle-prop handle)))))
 (make-obsolete 'editorconfig-core-handle-get-properties
                'editorconfig-core-handle-get-properties-hash
-               "0.7.15")
+               "0.8.0")
 
 
 (defun editorconfig-core-handle-get-properties-hash (handle file)
