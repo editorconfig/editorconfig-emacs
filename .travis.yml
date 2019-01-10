@@ -16,6 +16,7 @@ before_install:
   - ./.evm/bin/evm config path /tmp
   - ./.evm/bin/evm install emacs-$EMACS_VERSION-travis --use
   - ./.evm/bin/emacs --version
+  - if [[ "$EMACS_VERSION" == 24.5 ]]; then curl "http://git.savannah.gnu.org/cgit/emacs/elpa.git/plain/packages/cl-generic/cl-generic.el?id=a1cdea05e8cbfe15ba075c64417db20b814e48e8" >cl-generic.el; fi
 
 script:
   make test EMACS=$PWD/.evm/bin/emacs
