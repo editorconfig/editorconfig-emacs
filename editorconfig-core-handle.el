@@ -32,8 +32,6 @@
 ;;; Code:
 
 (require 'cl-lib)
-;; Require explicit load for Emacs<25
-(require 'cl-generic)
 
 (require 'editorconfig-fnmatch)
 
