@@ -115,12 +115,12 @@ If HANDLE is nil return nil."
                                                                             file
                                                                             dir)
                when props collect (copy-alist props)))))
-      (make-obsolete 'editorconfig-core-handle-get-properties
-                     'editorconfig-core-handle-get-properties-hash
-                     "0.8.0")
+(make-obsolete 'editorconfig-core-handle-get-properties
+               'editorconfig-core-handle-get-properties-hash
+               "0.8.0")
 
 
-(defun  editorconfig-core-handle-get-properties-hash (handle file)
+(defun editorconfig-core-handle-get-properties-hash (handle file)
   "Return hash of properties from HANDLE for FILE.
 
 If HANDLE is nil return nil."
