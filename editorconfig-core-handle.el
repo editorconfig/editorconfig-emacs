@@ -46,8 +46,7 @@
   ;; (KEY . VALUE)
   (props nil))
 
-(cl-defmethod editorconfig-core-handle-section-get-properties
-  ((section editorconfig-core-handle-section) file dir)
+(defun editorconfig-core-handle-section-get-properties (section file dir)
   "Return properties alist when SECTION name matches FILE.
 
 DIR should be where the directory where .editorconfig which has SECTION exists.
@@ -94,7 +93,7 @@ If CONF does not exist return nil."
                                                   :path conf)
                    editorconfig-core-handle--cache-hash))))))
 
-(cl-defmethod editorconfig-core-handle-root-p ((handle editorconfig-core-handle))
+(defun editorconfig-core-handle-root-p (handle)
   "Return non-nil if HANDLE represent root EditorConfig file.
 
 If HANDLE is nil return nil."
@@ -104,7 +103,7 @@ If HANDLE is nil return nil."
                                             (editorconfig-core-handle-top-props handle)))
                                 "")))))
 
-(cl-defmethod editorconfig-core-handle-get-properties ((handle editorconfig-core-handle) file)
+(defun editorconfig-core-handle-get-properties (handle file)
   "Return list of alist of properties from HANDLE for FILE.
 The list returned will be ordered by the lines they appear.
 
@@ -121,7 +120,7 @@ If HANDLE is nil return nil."
                      "0.8.0")
 
 
-(cl-defmethod  editorconfig-core-handle-get-properties-hash ((handle editorconfig-core-handle) file)
+(defun  editorconfig-core-handle-get-properties-hash (handle file)
   "Return hash of properties from HANDLE for FILE.
 
 If HANDLE is nil return nil."
