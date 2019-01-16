@@ -7,28 +7,19 @@
 
 This is an [EditorConfig][] plugin for [Emacs](https://www.gnu.org/software/emacs/).
 
-## Installation
 
-Download the [EditorConfig C Core][] and follow the instructions in the README
-and INSTALL files to install it.
+## Setup
 
-This plugin also has a built-in core library implemented in Emacs-Lisp, and
-fallback to it when no core executable is found.
-
-In either case, copy `.el` files in this repository to `~/.emacs.d/lisp`
-and add the following to your `~/.emacs` file:
+This package is available on [MELPA](https://melpa.org/#/editorconfig)
+and [MELPA Stable](https://stable.melpa.org/#/editorconfig).
+Install from there and enable global minor-mode `editorconfig-mode`:
 
 ```emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/lisp")
-(require 'editorconfig)
 (editorconfig-mode 1)
 ```
 
-Alternatively, you can find the package available on
-[MELPA](https://melpa.org/#/editorconfig) and [MELPA Stable](https://stable.melpa.org/#/editorconfig)
-([The Marmalade package](http://marmalade-repo.org/packages/editorconfig) is deprecated).
-
-Or if you use [**use-package**](https://www.emacswiki.org/emacs/UsePackage):
+If you use [**use-package**](https://www.emacswiki.org/emacs/UsePackage),
+add the following:
 
 ```emacs-lisp
 (use-package editorconfig
@@ -36,6 +27,30 @@ Or if you use [**use-package**](https://www.emacswiki.org/emacs/UsePackage):
   :config
   (editorconfig-mode 1))
 ```
+
+
+To install manually copy all `.el` files in this repository to
+`~/.emacs.d/lisp`  and add the following to your `init.el` file:
+
+```emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/lisp")
+(require 'editorconfig)
+(editorconfig-mode 1)
+```
+
+### Install a Core Program
+
+This package requires a Core program.
+The officially recommended one is [EditorConfig C Core][],
+follow the instructions in the README and INSTALL files to install it.
+
+Though using C Core is recommended, but this plugin also
+includes a core library implemented in Emacs Lisp.
+This plugin uses this as a fallback method when no core executable
+is found, so it works out-of-the-box without explicitly installing
+any other core program.
+
+
 
 ## Supported properties
 
@@ -90,6 +105,12 @@ future updates. When both are specified, `file_type_ext` takes precedence.
 
 ## Customize
 
+`editorconfig-emacs` provides some customize variables.
+
+Here are some of these variables: for the full list of available variables, 
+type <kbd>M-x customize-group [RET] editorconfig [RET]</kbd>.
+
+
 ### `editorconfig-after-apply-functions`
 
 (Formerly `editorconfig-custom-hooks`)
@@ -107,6 +128,7 @@ only blocks of `web-mode`: it can be achieved by adding following to your init.e
 ```
 
 You can also define your own custom properties and enable them here.
+
 
 ### `editorconfig-hack-properties-functions`
 
@@ -128,6 +150,7 @@ overwrite \"indent_style\" property when current `major-mode` is a
 
 ```
 
+
 ### `editorconfig-indentation-alist`
 
 Alist of indentation setting methods by modes.
@@ -141,52 +164,18 @@ add a pair of major-mode symbol and its indentation variables:
   '(c-mode c-basic-offset))
 ```
 
-You can also modify this variable with the command
-<kbd>M-x customize-variable [RET] editorconfig-indentation-alist [RET]</kbd>.
-For a bit more complicated cases please take a look at the docstring of this variable.
-
-### `editorconfig-exec-path`
-
-String of `editorconfig` executable name (command name or full path to
-the executable).
-
-
-### `editorconfig-get-properties-function`
-
-Function to use to get EditorConfig properties.
-
-For example, if you always want to use built-in core library instead
-of any EditorConfig executable to get properties, add following to
-your init.el:
-
-``` emacs-lisp
-(set-variable 'editorconfig-get-properties-function
-              #'editorconfig-core-get-properties-hash)
-```
-
-Possible known values are:
-
-* `editorconfig-get-properties` (default)
-  * Use `editorconfig-get-properties-from-exec` when
-    `editorconfig-exec-path` executable is found, otherwise use
-    `editorconfig-core-get-properties-hash`
-* `editorconfig-get-properties-from-exec`
-  * Get properties by executing EditorConfig executable specified in
-    `editorconfig-exec-path`
-* `editorconfig-core-get-properties-hash`
-  * Always use built-in Emacs-Lisp implementation to get properties
-
 
 ### `editorconfig-trim-whitespaces-mode`
 
 Buffer local minor-mode to use to trim trailing whitespaces.
 
-If set, enable that mode when `trim_trailing_whitespace` is set to true.
-Otherwise, use `delete-trailing-whitespace`.
+If set, enable/disable that mode in accord with `trim_trailing_whitespace`
+property in `.editorconfig`.
+Otherwise, use Emacs built-in `delete-trailing-whitespace` function.
 
 One possible value is
 [`ws-butler-mode`](https://github.com/lewang/ws-butler), with which
-only lines touched get trimmed. To use it, add following to yo
+only lines touched get trimmed. To use it, add following to your
 init.el:
 
 ``` emacs-lisp

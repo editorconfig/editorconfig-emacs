@@ -78,7 +78,26 @@ This executable is invoked by `editorconfig-call-editorconfig-exec'."
 This function will be called with no argument and should return a
 hash object containing properties, or nil if any core program is
 not available.  The hash object should have symbols of property
-names as keys and strings of property values as values."
+names as keys and strings of property values as values.
+
+
+For example, if you always want to use built-in core library instead
+of any EditorConfig executable to get properties, add following to
+your init.el:
+
+(set-variable 'editorconfig-get-properties-function
+              #'editorconfig-core-get-properties-hash)
+
+Possible known values are:
+
+* `editorconfig-get-properties' (default)
+  * Use `editorconfig-get-properties-from-exec' when
+    `editorconfig-exec-path' executable executable is found, otherwise
+    use `editorconfig-core-get-properties-hash'
+* `editorconfig-get-properties-from-exec'
+  * Get properties by executing EditorConfig executable
+* `editorconfig-core-get-properties-hash'
+  * Always use built-in Emacs-Lisp implementation to get properties"
   :type 'function
   :group 'editorconfig)
 (define-obsolete-variable-alias
