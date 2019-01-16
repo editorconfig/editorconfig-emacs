@@ -87,8 +87,7 @@ names as keys and strings of property values as values."
   "0.5")
 
 (defcustom editorconfig-mode-lighter " EditorConfig"
-  "Lighter displayed in mode line
-when `editorconfig-mode' is enabled."
+  "Lighter displayed in mode line when function `editorconfig-mode' is enabled."
   :type 'string
   :group 'editorconfig)
 
@@ -139,7 +138,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
   :group 'editorconfig)
 
 (defcustom editorconfig-indentation-alist
-  ;; For contributors: Sort modes in alphabetical order, please :)
+  ;; For contributors: Sort modes in alphabetical order
   '((apache-mode apache-indent-level)
     (awk-mode c-basic-offset)
     (c++-mode c-basic-offset)
@@ -272,8 +271,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 (defcustom editorconfig-exclude-regexps
   (list (eval-when-compile
           (rx string-start (or "http" "https" "ftp" "sftp" "rsync") ":")))
-  "List of buffer filename prefix regexp patterns not to apply
-properties."
+  "List of buffer filename prefix regexp patterns not to apply properties."
   :type '(repeat string)
   :group 'editorconfig)
 
@@ -411,8 +409,10 @@ number - `lisp-indent-offset' is not set only if indent_size is
                                      nil t))))
 
 (defun editorconfig-set-trailing-nl (final-newline)
-  "Set up requiring final newline (`require-final-newline' and
-`mode-require-final-newline') by FINAL-NEWLINE."
+  "Set up requiring final newline by FINAL-NEWLINE.
+
+This function will set `require-final-newline' and `mode-require-final-newline'
+to non-nil when FINAL-NEWLINE is true."
   (cond
    ((equal final-newline "true")
     ;; keep prefs around how/when the nl is added, if set - otherwise add on save
@@ -557,8 +557,9 @@ EXT should be a string like `\"ini\"`, if not nil or empty string."
             (puthash key val properties)))))))
 
 (defun editorconfig-get-properties-from-exec ()
-  "Get EditorConfig properties of current buffer by calling
-`editorconfig-exec-path'."
+  "Get EditorConfig properties of current buffer.
+
+This function uses value of `editorconfig-exec-path' to get properties."
   (if (executable-find editorconfig-exec-path)
       (editorconfig-parse-properties (editorconfig-call-editorconfig-exec))
     (error "Unable to find editorconfig executable")))
@@ -663,7 +664,7 @@ in `editorconfig-exclude-modes'."
     (editorconfig-apply)))
 
 (defun editorconfig-format-buffer()
-  "Format buffer according to .editorconfig indent_style and indent_width"
+  "Format buffer according to .editorconfig indent_style and indent_width."
   (interactive)
   (if (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
       (tabify (point-min) (point-max)))
