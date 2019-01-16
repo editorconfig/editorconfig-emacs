@@ -1,6 +1,6 @@
 ;;; editorconfig-core-handle.el --- Handle Class for EditorConfig File
 
-;; Copyright (C) 2011-2017 EditorConfig Team
+;; Copyright (C) 2011-2019 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
