@@ -35,28 +35,35 @@
 
 (require 'editorconfig-fnmatch)
 
-;; For cl-defstruct
-(require 'cl-lib)
-
 (defvar editorconfig-core-handle--cache-hash
   (make-hash-table :test 'equal)
   "Hash of EditorConfig filename and its `editorconfig-core-handle' instance.")
 
+(cl-defstruct editorconfig-core-handle-section
+  ;; String of section name (glob string)
+  (name nil)
+  ;; Alist of properties
+  ;; (KEY . VALUE)
+  (props nil))
+
+(defun editorconfig-core-handle-section-get-properties (section file dir)
+  "Return properties alist when SECTION name matches FILE.
+
+DIR should be where the directory where .editorconfig which has SECTION exists.
+IF not match, return nil."
+  (when (editorconfig-core-handle--fnmatch-p
+         file
+         (editorconfig-core-handle-section-name section)
+         dir)
+    (editorconfig-core-handle-section-props section)))
+
 (cl-defstruct editorconfig-core-handle
   ;; Alist of top propetties
   ;; e.g. (("root" . "true"))
-  (top-prop nil)
+  (top-props nil)
 
-  ;; TODO: Define struct for section
-  ;; Alist of properties
-  ;; Key: Section name
-  ;; Value: Alist of properties for each section name
-  ;; e.g.
-  ;; (
-  ;;  ("*" ("end_of_line" . "lf") ("indent_style" . "space"))
-  ;;  ("Makefile" ("indent_style" . "tab"))
-  ;; )
-  (prop nil)
+  ;; List of editorconfig-core-handle-section
+  (sections nil)
 
   ;; e.g. (22310 59113 203882 991000)
   (mtime nil)
@@ -80,8 +87,8 @@ If CONF does not exist return nil."
           cached
         (let ((parsed (editorconfig-core-handle--parse-file conf)))
           (puthash conf
-                   (make-editorconfig-core-handle :top-prop (car parsed)
-                                                  :prop (cdr parsed)
+                   (make-editorconfig-core-handle :top-props (plist-get parsed :top-props)
+                                                  :sections (plist-get parsed :sections)
                                                   :mtime mtime
                                                   :path conf)
                    editorconfig-core-handle--cache-hash))))))
@@ -93,7 +100,7 @@ If HANDLE is nil return nil."
   (when handle
     (string-equal "true"
                   (downcase (or (cdr (assoc "root"
-                                            (editorconfig-core-handle-top-prop handle)))
+                                            (editorconfig-core-handle-top-props handle)))
                                 "")))))
 
 (defun editorconfig-core-handle-get-properties (handle file)
@@ -102,12 +109,12 @@ The list returned will be ordered by the lines they appear.
 
 If HANDLE is nil return nil."
   (when handle
-    (mapcar (lambda (prop) (copy-alist (cdr prop)))
-            (cl-remove-if-not (lambda (prop)
-                                (editorconfig-core-handle--fnmatch-p file
-                                                                     (car prop)
-                                                                     (file-name-directory (editorconfig-core-handle-path handle))))
-                              (editorconfig-core-handle-prop handle)))))
+    (let ((dir (file-name-directory (editorconfig-core-handle-path handle))))
+      (cl-loop for section in (editorconfig-core-handle-sections handle)
+               for props = (editorconfig-core-handle-section-get-properties section
+                                                                            file
+                                                                            dir)
+               when props collect (copy-alist props)))))
 (make-obsolete 'editorconfig-core-handle-get-properties
                'editorconfig-core-handle-get-properties-hash
                "0.8.0")
@@ -118,14 +125,12 @@ If HANDLE is nil return nil."
 
 If HANDLE is nil return nil."
   (when handle
-    (let ((hash (make-hash-table)))
-      (dolist (prop (editorconfig-core-handle-prop handle))
-        (when (editorconfig-core-handle--fnmatch-p file
-                                                   (car prop)
-                                                   (file-name-directory (editorconfig-core-handle-path
-                                                                         handle)))
-          (cl-loop for (key . value) in (cdr prop)
-                   do (puthash (intern key) value hash))))
+    (let ((hash (make-hash-table))
+          (dir (file-name-directory (editorconfig-core-handle-path
+                                     handle))))
+      (dolist (section (editorconfig-core-handle-sections handle))
+        (cl-loop for (key . value) in (editorconfig-core-handle-section-get-properties section file dir)
+                 do (puthash (intern key) value hash)))
       hash)))
 
 (defun editorconfig-core-handle--fnmatch-p (name pattern dir)
@@ -168,7 +173,7 @@ If CONF is not found return nil."
       (insert-file-contents conf)
       (goto-char (point-min))
       (let ((point-max (point-max))
-            (all-props ())
+            (sections ())
             (top-props nil)
 
             ;; String of current line
@@ -194,11 +199,15 @@ If CONF is not found return nil."
            ((string-equal "" line)
             nil)
 
+           ;; Start of section
            ((string-match "^\\[\\(.*\\)\\]$"
                           line)
             (when pattern
-              (setq all-props
-                    `(,@all-props (,pattern . ,props)))
+              (setq sections
+                    `(,@sections ,(make-editorconfig-core-handle-section
+                                   :name pattern
+                                   :props props)))
+              (setq pattern nil)
               (setq props nil))
             (setq pattern (match-string 1 line)))
 
@@ -234,10 +243,12 @@ If CONF is not found return nil."
           (forward-line (1- current-line-number))
           )
         (when pattern
-          (setq all-props
-                `(,@all-props (,pattern . ,props))))
-        (cons top-props
-              all-props)))))
+          (setq sections
+                `(,@sections ,(make-editorconfig-core-handle-section
+                               :name pattern
+                               :props props))))
+        (list :top-props top-props
+              :sections sections)))))
 
 (provide 'editorconfig-core-handle)
 
