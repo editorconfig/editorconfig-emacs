@@ -40,10 +40,16 @@
   "Hash of EditorConfig filename and its `editorconfig-core-handle' instance.")
 
 (cl-defstruct editorconfig-core-handle-section
-  ;; String of section name (glob string)
+  "Structure representing one section in a .editorconfig file.
+
+Slots:
+
+`name'
+  String of section name (glob string).
+
+`props'
+  Alist of properties: (KEY . VALUE)."
   (name nil)
-  ;; Alist of properties
-  ;; (KEY . VALUE)
   (props nil))
 
 (defun editorconfig-core-handle-section-get-properties (section file dir)
@@ -58,17 +64,24 @@ IF not match, return nil."
     (editorconfig-core-handle-section-props section)))
 
 (cl-defstruct editorconfig-core-handle
-  ;; Alist of top propetties
-  ;; e.g. (("root" . "true"))
+  "Structure representing an .editorconfig file.
+
+Slots:
+`top-props'
+  Alist of top propetties like ((\"root\" . \"true\"))
+
+`sections'
+  List of `editorconfig-core-hadnle-section' strucure object.
+
+`mtime'
+  Last modified time of .editorconfig file.
+
+`path'
+  Absolute path to .editorconfig file.'
+"
   (top-props nil)
-
-  ;; List of editorconfig-core-handle-section
   (sections nil)
-
-  ;; e.g. (22310 59113 203882 991000)
   (mtime nil)
-
-  ;; e.g. "/home/a/b/.editorconfig"
   (path nil))
 
 
