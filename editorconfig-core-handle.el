@@ -251,7 +251,6 @@ If CONF is not found return nil."
            )
           (setq current-line-number
                 (1+ current-line-number))
-          ;; Use  this code instead of goto-line for Lisp program
           (goto-char (point-min))
           (forward-line (1- current-line-number))
           )
