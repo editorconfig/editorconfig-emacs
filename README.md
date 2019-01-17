@@ -124,7 +124,7 @@ only blocks of `web-mode`: it can be achieved by adding following to your init.e
 
 ```emacs-lisp
 (add-hook 'editorconfig-after-apply-functions
-  (lambda (hash) (setq web-mode-block-padding 0)))
+  (lambda (props) (setq web-mode-block-padding 0)))
 ```
 
 You can also define your own custom properties and enable them here.

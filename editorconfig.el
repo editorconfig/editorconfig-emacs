@@ -61,9 +61,9 @@ coding styles between different editors and IDEs."
 
 (defcustom editorconfig-exec-path
   "editorconfig"
-  "EditorConfig executable name.
+  "Path to EditorConfig executable.
 
-This executable is invoked by `editorconfig-call-editorconfig-exec'."
+Used by `editorconfig-call-editorconfig-exec'."
   :type 'string
   :group 'editorconfig)
 (define-obsolete-variable-alias
@@ -77,16 +77,16 @@ This executable is invoked by `editorconfig-call-editorconfig-exec'."
 
 This function will be called with no argument and should return a
 hash object containing properties, or nil if any core program is
-not available.  The hash object should have symbols of property
-names as keys and strings of property values as values.
+not available.  Keys of this hash should be symbols of properties, and values
+should be strings of their values.
 
 
 For example, if you always want to use built-in core library instead
 of any EditorConfig executable to get properties, add following to
 your init.el:
 
-(set-variable 'editorconfig-get-properties-function
-              #'editorconfig-core-get-properties-hash)
+  (set-variable 'editorconfig-get-properties-function
+                #'editorconfig-core-get-properties-hash)
 
 Possible known values are:
 
@@ -106,7 +106,7 @@ Possible known values are:
   "0.5")
 
 (defcustom editorconfig-mode-lighter " EditorConfig"
-  "Lighter displayed in mode line when function `editorconfig-mode' is enabled."
+  "`editorconfig-mode' lighter string."
   :type 'string
   :group 'editorconfig)
 
@@ -254,23 +254,18 @@ If INDENT-SPEC-LIST is provided, each element of it must have one of the
 following forms:
 
  1. VARIABLE
-
     It means (VARIABLE . 1).
 
  2. (VARIABLE . SPEC)
-
     Setting VARIABLE according to the type of SPEC:
 
       - Integer
-
         The value is (* SPEC INDENT-SIZE);
 
       - Function
-
         The value is (funcall SPEC INDENT-SIZE);
 
       - Any other type.
-
         The value is SPEC.
 
 NOTE: Only the **buffer local** value of VARIABLE will be set."
@@ -283,14 +278,17 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   "0.5")
 
 (defcustom editorconfig-exclude-modes ()
-  "List of major mode symbols not to apply properties."
+  "Modes in which `editorconfig-mode-apply' will not run."
   :type '(repeat (symbol :tag "Major Mode"))
   :group 'editorconfig)
 
 (defcustom editorconfig-exclude-regexps
   (list (eval-when-compile
           (rx string-start (or "http" "https" "ftp" "sftp" "rsync") ":")))
-  "List of buffer filename prefix regexp patterns not to apply properties."
+  "List of regexp for buffer filenames `editorconfig-mode-apply' will not run.
+
+When variable `buffer-file-name' matches any of the regexps, then
+`editorconfig-mode-apply' will not do its work."
   :type '(repeat string)
   :group 'editorconfig)
 
@@ -303,7 +301,7 @@ Otherwise, use `delete-trailing-whitespace'."
   :group 'editorconfig)
 
 (defvar editorconfig-properties-hash nil
-  "Hash object of EditorConfig properties for current buffer.
+  "Hash object of EditorConfig properties that was enabled for current buffer.
 Set by `editorconfig-apply' and nil if that is not invoked in
 current buffer yet.")
 (make-variable-buffer-local 'editorconfig-properties-hash)
@@ -320,7 +318,7 @@ number - `lisp-indent-offset' is not set only if indent_size is
          `lisp-indent-offset'will not be set only if indent_size is 2.")
 
 (defconst editorconfig-unset-value "unset"
-  "String used to unset properties in .editorconfig .")
+  "String of value used to unset properties in .editorconfig .")
 
 (defun editorconfig-string-integer-p (string)
   "Return non-nil if STRING represents integer."
@@ -597,9 +595,9 @@ It calls `editorconfig-get-properties-from-exec' if
 
 ;;;###autoload
 (defun editorconfig-apply ()
-  "Apply EditorConfig properties for current buffer.
-This function ignores `editorconfig-exclude-modes' and always
-applies available properties."
+  "Get and apply EditorConfig properties to current buffer.
+This function ignores `editorconfig-exclude-modes' and
+`editorconfig-exclude-regexps', and always applies available properties."
   (interactive)
   (when buffer-file-name
     (condition-case err
@@ -641,9 +639,10 @@ applies available properties."
                         :error)))))
 
 (defun editorconfig-mode-apply ()
-  "Apply EditorConfig properties for current buffer.
-This function does the job only when the major mode is not listed
-in `editorconfig-exclude-modes'."
+  "Get and apply EditorConfig properties to current buffer.
+This function does nothing when the major mode is listed in
+`editorconfig-exclude-modes', or variable `buffer-file-name' matches
+any of regexps in `editorconfig-exclude-regexps'."
   (when (and major-mode
              (not (memq major-mode
                         editorconfig-exclude-modes))
@@ -656,9 +655,9 @@ in `editorconfig-exclude-modes'."
 ;;;###autoload
 (define-minor-mode editorconfig-mode
   "Toggle EditorConfig feature.
-When enabled EditorConfig properties will be applied to buffers
-when first visiting files or changing major modes if the major
-mode is not listed in `editorconfig-exclude-modes'."
+
+To disable EditorConfig in some buffers, modify
+`editorconfig-exclude-modes' or `editorconfig-exclude-regexps'."
   :global t
   :lighter editorconfig-mode-lighter
   ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why

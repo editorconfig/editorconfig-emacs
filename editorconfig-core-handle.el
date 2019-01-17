@@ -57,7 +57,7 @@ Slots:
 (defun editorconfig-core-handle-section-get-properties (section file dir)
   "Return properties alist when SECTION name match FILE.
 
-DIR should be where the directory where .editorconfig which has SECTION exists.
+DIR should be the directory where .editorconfig file which has SECTION lives.
 IF not match, return nil."
   (when (editorconfig-core-handle--fnmatch-p
          file
