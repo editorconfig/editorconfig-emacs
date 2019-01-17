@@ -1,10 +1,11 @@
-;;; editorconfig-conf-mode.el --- Major mode for editing .editorconfig files
+;;; editorconfig-conf-mode.el --- Major mode for editing .editorconfig files  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2011-2019 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
 ;; Version: 0.7.14
+;; Package-Requires: ((emacs "24"))
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
@@ -75,16 +76,18 @@
 
     ;; Highlight all key values
     (dolist (key-value key-value-list)
-      (add-to-list
-       'font-lock-value
+      (push
        `(,(format "[=:][ \t]*\\(%s\\)\\([ \t]\\|$\\)" key-value)
-         1 font-lock-constant-face)))
+         1 font-lock-constant-face)
+       font-lock-value
+       ))
     ;; Highlight all key properties
     (dolist (key-property key-property-list)
-      (add-to-list
-       'font-lock-value
+      (push
        `(,(format "^[ \t]*\\(%s\\)[ \t]*[=:]" key-property)
-         1 font-lock-builtin-face)))
+         1 font-lock-builtin-face)
+       font-lock-value
+       ))
 
     (conf-mode-initialize "#" font-lock-value)))
 
