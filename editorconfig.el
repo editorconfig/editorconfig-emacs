@@ -596,35 +596,6 @@ It calls `editorconfig-get-properties-from-exec' if
     (editorconfig-core-get-properties-hash)))
 
 ;;;###autoload
-(defun editorconfig-find-current-editorconfig ()
-  "Find the closest .editorconfig file for current file."
-  (interactive)
-  (eval-and-compile (require 'editorconfig-core))
-  (let ((file (editorconfig-core-get-nearest-editorconfig
-               default-directory)))
-    (when file
-      (find-file file))))
-
-;;;###autoload
-(defun editorconfig-display-current-properties ()
-  "Display EditorConfig properties extracted for current buffer."
-  (interactive)
-  (if editorconfig-properties-hash
-      (let (
-            (buf (get-buffer-create "*EditorConfig Properties*"))
-            (file buffer-file-name)
-            (props editorconfig-properties-hash))
-        (with-current-buffer buf
-          (erase-buffer)
-          (insert (format "# EditorConfig for %s\n" file))
-          (maphash (lambda (k v)
-                     (insert (format "%S = %s\n" k v)))
-                   props))
-        (display-buffer buf))
-    (message "Properties are not applied to current buffer yet.")
-    nil))
-
-;;;###autoload
 (defun editorconfig-apply ()
   "Apply EditorConfig properties for current buffer.
 This function ignores `editorconfig-exclude-modes' and always
@@ -682,16 +653,6 @@ in `editorconfig-exclude-modes'."
                            finally return nil)))
     (editorconfig-apply)))
 
-(defun editorconfig-format-buffer()
-  "Format buffer according to .editorconfig indent_style and indent_width."
-  (interactive)
-  (if (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
-      (tabify (point-min) (point-max)))
-  (if (string= (gethash 'indent_style editorconfig-properties-hash) "space")
-      (untabify (point-min) (point-max)))
-  (indent-region (point-min) (point-max)))
-
-
 ;;;###autoload
 (define-minor-mode editorconfig-mode
   "Toggle EditorConfig feature.
@@ -707,6 +668,53 @@ mode is not listed in `editorconfig-exclude-modes'."
     (if editorconfig-mode
         (add-hook hook 'editorconfig-mode-apply)
       (remove-hook hook 'editorconfig-mode-apply))))
+
+
+;; Tools
+;; Some useful commands for users, not required for EditorConfig to work
+
+;;;###autoload
+(defun editorconfig-find-current-editorconfig ()
+  "Find the closest .editorconfig file for current file."
+  (interactive)
+  (eval-and-compile (require 'editorconfig-core))
+  (let ((file (editorconfig-core-get-nearest-editorconfig
+               default-directory)))
+    (when file
+      (find-file file))))
+
+;;;###autoload
+(defun editorconfig-display-current-properties ()
+  "Display EditorConfig properties extracted for current buffer."
+  (interactive)
+  (if editorconfig-properties-hash
+      (let (
+            (buf (get-buffer-create "*EditorConfig Properties*"))
+            (file buffer-file-name)
+            (props editorconfig-properties-hash))
+        (with-current-buffer buf
+          (erase-buffer)
+          (insert (format "# EditorConfig for %s\n" file))
+          (maphash (lambda (k v)
+                     (insert (format "%S = %s\n" k v)))
+                   props))
+        (display-buffer buf))
+    (message "Properties are not applied to current buffer yet.")
+    nil))
+;;;###autoload
+(defalias 'describe-editorconfig-properties
+  'editorconfig-display-current-properties)
+
+;;;###autoload
+(defun editorconfig-format-buffer()
+  "Format buffer according to .editorconfig indent_style and indent_width."
+  (interactive)
+  (if (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
+      (tabify (point-min) (point-max)))
+  (if (string= (gethash 'indent_style editorconfig-properties-hash) "space")
+      (untabify (point-min) (point-max)))
+  (indent-region (point-min) (point-max)))
+
 
 (provide 'editorconfig)
 
