@@ -14,8 +14,7 @@ TRAVIS_FILE = .travis.yml
 BATCHFLAGS = -batch -q --no-site-file -L $(PROJECT_ROOT_DIR)
 
 MAIN_SRC = editorconfig.el
-SRCS = editorconfig.el editorconfig-core.el editorconfig-core-handle.el \
-	editorconfig-fnmatch.el
+SRCS = $(wildcard $(PROJECT_ROOT_DIR)/*.el)
 OBJS = $(SRCS:.el=.elc)
 
 $(OBJS): %.elc: %.el

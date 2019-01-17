@@ -195,7 +195,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
     (js3-mode js3-indent-level)
     (json-mode js-indent-level)
     (julia-mode julia-indent-offset)
-    (latex-mode . editorconfig-set-indentation/latex-mode)
+    (latex-mode . editorconfig-set-indentation-latex-mode)
     (lisp-mode lisp-indent-offset)
     (livescript-mode livescript-tab-width)
     (lua-mode lua-indent-level)
@@ -215,7 +215,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
     (ps-mode ps-mode-tab)
     (pug-mode pug-tab-width)
     (puppet-mode puppet-indent-level)
-    (python-mode . editorconfig-set-indentation/python-mode)
+    (python-mode . editorconfig-set-indentation-python-mode)
     (ruby-mode ruby-indent-level)
     (rust-mode rust-indent-offset)
     (scala-mode scala-indent:step)
@@ -327,7 +327,7 @@ number - `lisp-indent-offset' is not set only if indent_size is
   (and (stringp string)
        (string-match-p "\\`[0-9]+\\'" string)))
 
-(defun editorconfig-set-indentation/python-mode (size)
+(defun editorconfig-set-indentation-python-mode (size)
   "Set `python-mode' indent size to SIZE."
   (set (make-local-variable (if (or (> emacs-major-version 24)
                                     (and (= emacs-major-version 24)
@@ -339,7 +339,7 @@ number - `lisp-indent-offset' is not set only if indent_size is
   (when (boundp 'py-indent-offset)
     (set (make-local-variable 'py-indent-offset) size)))
 
-(defun editorconfig-set-indentation/latex-mode (size)
+(defun editorconfig-set-indentation-latex-mode (size)
   "Set `latex-mode' indent size to SIZE."
   (set (make-local-variable 'tex-indent-basic) size)
   (set (make-local-variable 'tex-indent-item) size)
@@ -484,7 +484,7 @@ FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
                                    "-mode")))))
     (when mode
       (if (fboundp mode)
-          (editorconig-apply-major-mode-safely mode)
+          (editorconfig-apply-major-mode-safely mode)
         (display-warning :error (format "Major-mode `%S' not found"
                                         mode))
         nil))))
@@ -496,7 +496,7 @@ FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
      'permanent-local
      t)
 
-(defun editorconig-apply-major-mode-safely (mode)
+(defun editorconfig-apply-major-mode-safely (mode)
   "Set `major-mode' to MODE.
 Normally `editorconfig-apply' will be hooked so that it runs when changing
 `major-mode', so there is a possibility that MODE is called infinitely if
