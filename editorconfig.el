@@ -545,7 +545,7 @@ EXT should be a string like `\"ini\"`, if not nil or empty string."
     (let ((mode (editorconfig--find-mode-from-ext ext
                                                   buffer-file-name)))
       (if mode
-            (editorconig-apply-major-mode-safely mode)
+          (editorconfig-apply-major-mode-safely mode)
         (display-warning :error (format "Major-mode for `%s' not found"
                                         ext))
         nil))))
