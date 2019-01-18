@@ -1,9 +1,11 @@
-;;; editorconfig-core.el --- EditorConfig Core library in Emacs Lisp
+;;; editorconfig-core.el --- EditorConfig Core library in Emacs Lisp  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2017 EditorConfig Team
+;; Copyright (C) 2011-2019 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
+;; Version: 0.7.14
+;; Package-Requires: ((emacs "24"))
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors

@@ -1,11 +1,11 @@
-;;; editorconfig.el --- EditorConfig Emacs Plugin
+;;; editorconfig.el --- EditorConfig Emacs Plugin  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2017 EditorConfig Team
+;; Copyright (C) 2011-2019 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.7.14
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
-;; Package-Requires: ((cl-lib "0.5"))
+;; Package-Requires: ((cl-lib "0.5") (emacs "24"))
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
@@ -61,9 +61,9 @@ coding styles between different editors and IDEs."
 
 (defcustom editorconfig-exec-path
   "editorconfig"
-  "EditorConfig executable name.
+  "Path to EditorConfig executable.
 
-This executable is invoked by `editorconfig-call-editorconfig-exec'."
+Used by `editorconfig-call-editorconfig-exec'."
   :type 'string
   :group 'editorconfig)
 (define-obsolete-variable-alias
@@ -77,8 +77,27 @@ This executable is invoked by `editorconfig-call-editorconfig-exec'."
 
 This function will be called with no argument and should return a
 hash object containing properties, or nil if any core program is
-not available.  The hash object should have symbols of property
-names as keys and strings of property values as values."
+not available.  Keys of this hash should be symbols of properties, and values
+should be strings of their values.
+
+
+For example, if you always want to use built-in core library instead
+of any EditorConfig executable to get properties, add following to
+your init.el:
+
+  (set-variable 'editorconfig-get-properties-function
+                #'editorconfig-core-get-properties-hash)
+
+Possible known values are:
+
+* `editorconfig-get-properties' (default)
+  * Use `editorconfig-get-properties-from-exec' when
+    `editorconfig-exec-path' executable executable is found, otherwise
+    use `editorconfig-core-get-properties-hash'
+* `editorconfig-get-properties-from-exec'
+  * Get properties by executing EditorConfig executable
+* `editorconfig-core-get-properties-hash'
+  * Always use built-in Emacs-Lisp implementation to get properties"
   :type 'function
   :group 'editorconfig)
 (define-obsolete-variable-alias
@@ -87,8 +106,7 @@ names as keys and strings of property values as values."
   "0.5")
 
 (defcustom editorconfig-mode-lighter " EditorConfig"
-  "Lighter displayed in mode line
-when `editorconfig-mode' is enabled."
+  "`editorconfig-mode' lighter string."
   :type 'string
   :group 'editorconfig)
 
@@ -139,7 +157,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
   :group 'editorconfig)
 
 (defcustom editorconfig-indentation-alist
-  ;; For contributors: Sort modes in alphabetical order, please :)
+  ;; For contributors: Sort modes in alphabetical order
   '((apache-mode apache-indent-level)
     (awk-mode c-basic-offset)
     (c++-mode c-basic-offset)
@@ -177,7 +195,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
     (js3-mode js3-indent-level)
     (json-mode js-indent-level)
     (julia-mode julia-indent-offset)
-    (latex-mode . editorconfig-set-indentation/latex-mode)
+    (latex-mode . editorconfig-set-indentation-latex-mode)
     (lisp-mode lisp-indent-offset)
     (livescript-mode livescript-tab-width)
     (lua-mode lua-indent-level)
@@ -197,7 +215,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
     (ps-mode ps-mode-tab)
     (pug-mode pug-tab-width)
     (puppet-mode puppet-indent-level)
-    (python-mode . editorconfig-set-indentation/python-mode)
+    (python-mode . editorconfig-set-indentation-python-mode)
     (ruby-mode ruby-indent-level)
     (rust-mode rust-indent-offset)
     (scala-mode scala-indent:step)
@@ -236,23 +254,18 @@ If INDENT-SPEC-LIST is provided, each element of it must have one of the
 following forms:
 
  1. VARIABLE
-
     It means (VARIABLE . 1).
 
  2. (VARIABLE . SPEC)
-
     Setting VARIABLE according to the type of SPEC:
 
       - Integer
-
         The value is (* SPEC INDENT-SIZE);
 
       - Function
-
         The value is (funcall SPEC INDENT-SIZE);
 
       - Any other type.
-
         The value is SPEC.
 
 NOTE: Only the **buffer local** value of VARIABLE will be set."
@@ -265,15 +278,17 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   "0.5")
 
 (defcustom editorconfig-exclude-modes ()
-  "List of major mode symbols not to apply properties."
+  "Modes in which `editorconfig-mode-apply' will not run."
   :type '(repeat (symbol :tag "Major Mode"))
   :group 'editorconfig)
 
 (defcustom editorconfig-exclude-regexps
   (list (eval-when-compile
           (rx string-start (or "http" "https" "ftp" "sftp" "rsync") ":")))
-  "List of buffer filename prefix regexp patterns not to apply
-properties."
+  "List of regexp for buffer filenames `editorconfig-mode-apply' will not run.
+
+When variable `buffer-file-name' matches any of the regexps, then
+`editorconfig-mode-apply' will not do its work."
   :type '(repeat string)
   :group 'editorconfig)
 
@@ -286,7 +301,7 @@ Otherwise, use `delete-trailing-whitespace'."
   :group 'editorconfig)
 
 (defvar editorconfig-properties-hash nil
-  "Hash object of EditorConfig properties for current buffer.
+  "Hash object of EditorConfig properties that was enabled for current buffer.
 Set by `editorconfig-apply' and nil if that is not invoked in
 current buffer yet.")
 (make-variable-buffer-local 'editorconfig-properties-hash)
@@ -303,14 +318,14 @@ number - `lisp-indent-offset' is not set only if indent_size is
          `lisp-indent-offset'will not be set only if indent_size is 2.")
 
 (defconst editorconfig-unset-value "unset"
-  "String used to unset properties in .editorconfig .")
+  "String of value used to unset properties in .editorconfig .")
 
 (defun editorconfig-string-integer-p (string)
   "Return non-nil if STRING represents integer."
   (and (stringp string)
        (string-match-p "\\`[0-9]+\\'" string)))
 
-(defun editorconfig-set-indentation/python-mode (size)
+(defun editorconfig-set-indentation-python-mode (size)
   "Set `python-mode' indent size to SIZE."
   (set (make-local-variable (if (or (> emacs-major-version 24)
                                     (and (= emacs-major-version 24)
@@ -322,7 +337,7 @@ number - `lisp-indent-offset' is not set only if indent_size is
   (when (boundp 'py-indent-offset)
     (set (make-local-variable 'py-indent-offset) size)))
 
-(defun editorconfig-set-indentation/latex-mode (size)
+(defun editorconfig-set-indentation-latex-mode (size)
   "Set `latex-mode' indent size to SIZE."
   (set (make-local-variable 'tex-indent-basic) size)
   (set (make-local-variable 'tex-indent-item) size)
@@ -411,8 +426,10 @@ number - `lisp-indent-offset' is not set only if indent_size is
                                      nil t))))
 
 (defun editorconfig-set-trailing-nl (final-newline)
-  "Set up requiring final newline (`require-final-newline' and
-`mode-require-final-newline') by FINAL-NEWLINE."
+  "Set up requiring final newline by FINAL-NEWLINE.
+
+This function will set `require-final-newline' and `mode-require-final-newline'
+to non-nil when FINAL-NEWLINE is true."
   (cond
    ((equal final-newline "true")
     ;; keep prefs around how/when the nl is added, if set - otherwise add on save
@@ -465,7 +482,7 @@ FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
                                    "-mode")))))
     (when mode
       (if (fboundp mode)
-          (editorconig-apply-major-mode-safely mode)
+          (editorconfig-apply-major-mode-safely mode)
         (display-warning :error (format "Major-mode `%S' not found"
                                         mode))
         nil))))
@@ -477,7 +494,7 @@ FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
      'permanent-local
      t)
 
-(defun editorconig-apply-major-mode-safely (mode)
+(defun editorconfig-apply-major-mode-safely (mode)
   "Set `major-mode' to MODE.
 Normally `editorconfig-apply' will be hooked so that it runs when changing
 `major-mode', so there is a possibility that MODE is called infinitely if
@@ -526,7 +543,7 @@ EXT should be a string like `\"ini\"`, if not nil or empty string."
     (let ((mode (editorconfig--find-mode-from-ext ext
                                                   buffer-file-name)))
       (if mode
-            (editorconig-apply-major-mode-safely mode)
+          (editorconfig-apply-major-mode-safely mode)
         (display-warning :error (format "Major-mode for `%s' not found"
                                         ext))
         nil))))
@@ -557,8 +574,9 @@ EXT should be a string like `\"ini\"`, if not nil or empty string."
             (puthash key val properties)))))))
 
 (defun editorconfig-get-properties-from-exec ()
-  "Get EditorConfig properties of current buffer by calling
-`editorconfig-exec-path'."
+  "Get EditorConfig properties of current buffer.
+
+This function uses value of `editorconfig-exec-path' to get properties."
   (if (executable-find editorconfig-exec-path)
       (editorconfig-parse-properties (editorconfig-call-editorconfig-exec))
     (error "Unable to find editorconfig executable")))
@@ -576,39 +594,10 @@ It calls `editorconfig-get-properties-from-exec' if
     (editorconfig-core-get-properties-hash)))
 
 ;;;###autoload
-(defun editorconfig-find-current-editorconfig ()
-  "Find the closest .editorconfig file for current file."
-  (interactive)
-  (eval-and-compile (require 'editorconfig-core))
-  (let ((file (editorconfig-core-get-nearest-editorconfig
-               default-directory)))
-    (when file
-      (find-file file))))
-
-;;;###autoload
-(defun editorconfig-display-current-properties ()
-  "Display EditorConfig properties extracted for current buffer."
-  (interactive)
-  (if editorconfig-properties-hash
-      (let (
-            (buf (get-buffer-create "*EditorConfig Properties*"))
-            (file buffer-file-name)
-            (props editorconfig-properties-hash))
-        (with-current-buffer buf
-          (erase-buffer)
-          (insert (format "# EditorConfig for %s\n" file))
-          (maphash (lambda (k v)
-                     (insert (format "%S = %s\n" k v)))
-                   props))
-        (display-buffer buf))
-    (message "Properties are not applied to current buffer yet.")
-    nil))
-
-;;;###autoload
 (defun editorconfig-apply ()
-  "Apply EditorConfig properties for current buffer.
-This function ignores `editorconfig-exclude-modes' and always
-applies available properties."
+  "Get and apply EditorConfig properties to current buffer.
+This function ignores `editorconfig-exclude-modes' and
+`editorconfig-exclude-regexps', and always applies available properties."
   (interactive)
   (when buffer-file-name
     (condition-case err
@@ -650,9 +639,10 @@ applies available properties."
                         :error)))))
 
 (defun editorconfig-mode-apply ()
-  "Apply EditorConfig properties for current buffer.
-This function does the job only when the major mode is not listed
-in `editorconfig-exclude-modes'."
+  "Get and apply EditorConfig properties to current buffer.
+This function does nothing when the major mode is listed in
+`editorconfig-exclude-modes', or variable `buffer-file-name' matches
+any of regexps in `editorconfig-exclude-regexps'."
   (when (and major-mode
              (not (memq major-mode
                         editorconfig-exclude-modes))
@@ -662,22 +652,12 @@ in `editorconfig-exclude-modes'."
                            finally return nil)))
     (editorconfig-apply)))
 
-(defun editorconfig-format-buffer()
-  "Format buffer according to .editorconfig indent_style and indent_width"
-  (interactive)
-  (if (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
-      (tabify (point-min) (point-max)))
-  (if (string= (gethash 'indent_style editorconfig-properties-hash) "space")
-      (untabify (point-min) (point-max)))
-  (indent-region (point-min) (point-max)))
-
-
 ;;;###autoload
 (define-minor-mode editorconfig-mode
   "Toggle EditorConfig feature.
-When enabled EditorConfig properties will be applied to buffers
-when first visiting files or changing major modes if the major
-mode is not listed in `editorconfig-exclude-modes'."
+
+To disable EditorConfig in some buffers, modify
+`editorconfig-exclude-modes' or `editorconfig-exclude-regexps'."
   :global t
   :lighter editorconfig-mode-lighter
   ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
@@ -687,6 +667,53 @@ mode is not listed in `editorconfig-exclude-modes'."
     (if editorconfig-mode
         (add-hook hook 'editorconfig-mode-apply)
       (remove-hook hook 'editorconfig-mode-apply))))
+
+
+;; Tools
+;; Some useful commands for users, not required for EditorConfig to work
+
+;;;###autoload
+(defun editorconfig-find-current-editorconfig ()
+  "Find the closest .editorconfig file for current file."
+  (interactive)
+  (eval-and-compile (require 'editorconfig-core))
+  (let ((file (editorconfig-core-get-nearest-editorconfig
+               default-directory)))
+    (when file
+      (find-file file))))
+
+;;;###autoload
+(defun editorconfig-display-current-properties ()
+  "Display EditorConfig properties extracted for current buffer."
+  (interactive)
+  (if editorconfig-properties-hash
+      (let (
+            (buf (get-buffer-create "*EditorConfig Properties*"))
+            (file buffer-file-name)
+            (props editorconfig-properties-hash))
+        (with-current-buffer buf
+          (erase-buffer)
+          (insert (format "# EditorConfig for %s\n" file))
+          (maphash (lambda (k v)
+                     (insert (format "%S = %s\n" k v)))
+                   props))
+        (display-buffer buf))
+    (message "Properties are not applied to current buffer yet.")
+    nil))
+;;;###autoload
+(defalias 'describe-editorconfig-properties
+  'editorconfig-display-current-properties)
+
+;;;###autoload
+(defun editorconfig-format-buffer()
+  "Format buffer according to .editorconfig indent_style and indent_width."
+  (interactive)
+  (if (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
+      (tabify (point-min) (point-max)))
+  (if (string= (gethash 'indent_style editorconfig-properties-hash) "space")
+      (untabify (point-min) (point-max)))
+  (indent-region (point-min) (point-max)))
+
 
 (provide 'editorconfig)
 

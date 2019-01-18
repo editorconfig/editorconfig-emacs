@@ -5,7 +5,7 @@
 
 ;; editorconfig-el --- EditorConfig Core executable in Emacs Lisp
 
-;; Copyright (C) 2011-2017 EditorConfig Team
+;; Copyright (C) 2011-2019 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme

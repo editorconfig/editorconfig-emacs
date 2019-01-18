@@ -1,9 +1,11 @@
-;;; editorconfig-core-handle.el --- Handle Class for EditorConfig File
+;;; editorconfig-core-handle.el --- Handle Class for EditorConfig File  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2017 EditorConfig Team
+;; Copyright (C) 2011-2019 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
+;; Version: 0.7.14
+;; Package-Requires: ((emacs "24"))
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
@@ -26,8 +28,8 @@
 
 ;;; Commentary:
 
-;; Handle class for EditorConfig config file.  This library is used internally
-;; from editorconfig-core.el .
+;; Handle structures for EditorConfig config file.  This library is used
+;; internally from editorconfig-core.el .
 
 ;;; Code:
 
@@ -40,16 +42,22 @@
   "Hash of EditorConfig filename and its `editorconfig-core-handle' instance.")
 
 (cl-defstruct editorconfig-core-handle-section
-  ;; String of section name (glob string)
+  "Structure representing one section in a .editorconfig file.
+
+Slots:
+
+`name'
+  String of section name (glob string).
+
+`props'
+  Alist of properties: (KEY . VALUE)."
   (name nil)
-  ;; Alist of properties
-  ;; (KEY . VALUE)
   (props nil))
 
 (defun editorconfig-core-handle-section-get-properties (section file dir)
-  "Return properties alist when SECTION name matches FILE.
+  "Return properties alist when SECTION name match FILE.
 
-DIR should be where the directory where .editorconfig which has SECTION exists.
+DIR should be the directory where .editorconfig file which has SECTION lives.
 IF not match, return nil."
   (when (editorconfig-core-handle--fnmatch-p
          file
@@ -58,17 +66,24 @@ IF not match, return nil."
     (editorconfig-core-handle-section-props section)))
 
 (cl-defstruct editorconfig-core-handle
-  ;; Alist of top propetties
-  ;; e.g. (("root" . "true"))
+  "Structure representing an .editorconfig file.
+
+Slots:
+`top-props'
+  Alist of top propetties like ((\"root\" . \"true\"))
+
+`sections'
+  List of `editorconfig-core-hadnle-section' strucure object.
+
+`mtime'
+  Last modified time of .editorconfig file.
+
+`path'
+  Absolute path to .editorconfig file.'
+"
   (top-props nil)
-
-  ;; List of editorconfig-core-handle-section
   (sections nil)
-
-  ;; e.g. (22310 59113 203882 991000)
   (mtime nil)
-
-  ;; e.g. "/home/a/b/.editorconfig"
   (path nil))
 
 
@@ -238,7 +253,6 @@ If CONF is not found return nil."
            )
           (setq current-line-number
                 (1+ current-line-number))
-          ;; Use  this code instead of goto-line for Lisp program
           (goto-char (point-min))
           (forward-line (1- current-line-number))
           )
