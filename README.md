@@ -10,7 +10,7 @@ This is an [EditorConfig][] plugin for [Emacs](https://www.gnu.org/software/emac
 
 ## Setup
 
-This package is available on [MELPA](https://melpa.org/#/editorconfig)
+This package is available from [MELPA](https://melpa.org/#/editorconfig)
 and [MELPA Stable](https://stable.melpa.org/#/editorconfig).
 Install from there and enable global minor-mode `editorconfig-mode`:
 
@@ -19,7 +19,7 @@ Install from there and enable global minor-mode `editorconfig-mode`:
 ```
 
 If you use [**use-package**](https://www.emacswiki.org/emacs/UsePackage),
-add the following:
+add the following to your `init.el` file:
 
 ```emacs-lisp
 (use-package editorconfig
@@ -29,8 +29,8 @@ add the following:
 ```
 
 
-To install manually copy all `.el` files in this repository to
-`~/.emacs.d/lisp`  and add the following to your `init.el` file:
+To install manually, copy all `.el` files in this repository to
+`~/.emacs.d/lisp` and add the following:
 
 ```emacs-lisp
 (add-to-list 'load-path "~/.emacs.d/lisp")
@@ -183,18 +183,21 @@ init.el:
       'ws-butler-mode)
 ```
 
-## Testing
-
-Make and [CMake](https://cmake.org) must be installed to run the tests.
-
-To run the tests:
-
-    $ make test
 
 ## Submitting Bugs and Feature Requests
 
 Bugs, feature requests, and other issues should be submitted to the issue
 tracker: https://github.com/editorconfig/editorconfig-emacs/issues
+
+
+### Development
+
+Make and [CMake](https://cmake.org) must be installed to run the tests
+locally:
+
+    $ make test
+
+
 
 ## License
 
