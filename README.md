@@ -5,21 +5,20 @@
 
 # EditorConfig Emacs Plugin
 
-This is an [EditorConfig][] plugin for [Emacs](https://www.gnu.org/software/emacs/).
+This is an [EditorConfig][] plugin for [Emacs][].
 
 
 ## Setup
 
-This package is available from [MELPA](https://melpa.org/#/editorconfig)
-and [MELPA Stable](https://stable.melpa.org/#/editorconfig).
+This package is available from [MELPA][] and [MELPA Stable][].
 Install from there and enable global minor-mode `editorconfig-mode`:
 
 ```emacs-lisp
 (editorconfig-mode 1)
 ```
 
-If you use [**use-package**](https://www.emacswiki.org/emacs/UsePackage),
-add the following to your `init.el` file:
+If you use [**use-package**][use-package], add the following to your
+`init.el` file:
 
 ```emacs-lisp
 (use-package editorconfig
@@ -192,7 +191,7 @@ tracker: https://github.com/editorconfig/editorconfig-emacs/issues
 
 ### Development
 
-Make and [CMake](https://cmake.org) must be installed to run the tests
+Make and [CMake][] must be installed to run the tests
 locally:
 
     $ make test
@@ -214,6 +213,13 @@ General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
+
+[Emacs]: https://www.gnu.org/software/emacs/
+[MELPA]: https://melpa.org/#/editorconfig
+[MELPA Stable]: https://stable.melpa.org/#/editorconfig
+[use-package]: https://www.emacswiki.org/emacs/UsePackage
 [EditorConfig]: https://editorconfig.org
 [EditorConfig C Core]: https://github.com/editorconfig/editorconfig-core-c
 [properties]: https://editorconfig.org/#supported-properties
+[CMake]: https://cmake.org
