@@ -47,7 +47,7 @@ test-travis:
 
 # ert test
 test-ert: $(ERT_TESTS) $(OBJS)
-	git submodule update --init
+	git submodule init
 	$(EMACS) $(BATCHFLAGS) \
 		--eval "(setq debug-on-error t)" \
 		--eval "(require 'ert)" \
@@ -59,7 +59,7 @@ test-ert: $(ERT_TESTS) $(OBJS)
 
 # Core test
 core-test/CMakeLists.txt:
-	git submodule update --init
+	git submodule init
 
 test-core: core-test/CMakeLists.txt $(OBJS)
 	cd $(PROJECT_ROOT_DIR)/core-test && \
