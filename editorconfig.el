@@ -719,7 +719,10 @@ To disable EditorConfig in some buffers, modify
   (eval-when-compile
     (require 'package)
     (let* ((pkg (with-temp-buffer
-                  (insert-file-contents load-file-name)
+                  (insert-file-contents (or ;; byte-compile-current-file  ; OK to use this variable?
+                                         buffer-file-name
+                                         load-file-name
+                                         ))
                   (package-buffer-info)))
            (version (package-version-join (package-desc-version pkg))))
       version))
