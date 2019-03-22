@@ -727,10 +727,10 @@ and the library version, if both a present and different."
   (interactive (list t))
   (require 'package)
   (let* ((pkg (with-temp-buffer
-                (insert-file-contents load-file-name)
+                (insert-file-contents (symbol-file 'editorconfig-version))
                 (package-buffer-info)))
          (version (package-version-join (package-desc-version pkg))))
-    (when t ;show-version
+    (when show-version
       (message "EditorConfig-Emacs %s" version))
     version))
 
