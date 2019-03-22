@@ -715,6 +715,16 @@ To disable EditorConfig in some buffers, modify
   (indent-region (point-min) (point-max)))
 
 
+(defvar editorconfig--version
+  (eval-when-compile
+    (require 'package)
+    (let* ((pkg (with-temp-buffer
+                  (insert-file-contents load-file-name)
+                  (package-buffer-info)))
+           (version (package-version-join (package-desc-version pkg))))
+      version))
+  "EditorConfig version.")
+
 ;;;###autoload
 (defun  editorconfig-version (&optional show-version)
   "Get EditorConfig version as string.
@@ -726,13 +736,13 @@ The returned string includes both, the version from package.el
 and the library version, if both a present and different."
   (interactive (list t))
   (require 'package)
-  (let* ((pkg (with-temp-buffer
-                (insert-file-contents (symbol-file 'editorconfig-version))
-                (package-buffer-info)))
-         (version (package-version-join (package-desc-version pkg))))
-    (when show-version
-      (message "EditorConfig-Emacs %s" version))
-    version))
+  ;; (let* ((pkg (with-temp-buffer
+  ;;               (insert-file-contents (symbol-file 'editorconfig-version))
+  ;;               (package-buffer-info)))
+  ;;        (version (package-version-join (package-desc-version pkg))))
+  (when show-version
+    (message "EditorConfig-Emacs %s" editorconfig--version))
+  editorconfig--version)
 
 (provide 'editorconfig)
 
