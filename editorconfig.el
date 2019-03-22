@@ -715,6 +715,23 @@ To disable EditorConfig in some buffers, modify
   (indent-region (point-min) (point-max)))
 
 
+;;;###autoload
+(defun  editorconfig-version (&optional show-version)
+  "Get EditorConfig version as string.
+
+If called interactively or if SHOW-VERSION is non-nil, show the
+version in the echo area and the messages buffer.
+
+The returned string includes both, the version from package.el
+and the library version, if both a present and different."
+  (interactive (list t))
+  (if (require 'pkg-info nil t)
+      (let ((version (pkg-info-version-info 'editorconfig)))
+        (when show-version
+          (message "EditorConfig-Emacs %s" version))
+        version)
+    (error "Cannot determine version without package pkg-info")))
+
 (provide 'editorconfig)
 
 ;;; editorconfig.el ends here

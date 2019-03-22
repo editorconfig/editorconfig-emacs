@@ -72,10 +72,6 @@
 (require 'editorconfig-core-handle)
 
 
-(defconst editorconfig-core-version
-  "0.7.14"
-  "EditorConfig core version.")
-
 (defun editorconfig-core--get-handles (dir confname &optional result)
   "Get list of EditorConfig handlers for DIR from CONFNAME.
 
