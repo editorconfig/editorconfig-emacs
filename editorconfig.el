@@ -725,9 +725,11 @@ version in the echo area and the messages buffer.
 The returned string includes both, the version from package.el
 and the library version, if both a present and different."
   (interactive (list t))
-  (if (require 'pkg-info nil t)
-      (let ((version (pkg-info-version-info 'editorconfig)))
-        (when show-version
+  ;; TODO: use load-file-name?
+  (if (require 'package nil t)
+      (let* ((pkg (cdr (assq 'editorconfig package-alist)))
+             (version (package-version-join (package-desc-version (car pkg)))))
+        (when t ;show-version
           (message "EditorConfig-Emacs %s" version))
         version)
     (error "Cannot determine version without package pkg-info")))
