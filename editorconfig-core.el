@@ -3,9 +3,6 @@
 ;; Copyright (C) 2011-2019 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
-;; Version: 0.7.14
-;; Package-Requires: ((emacs "24"))
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
@@ -71,10 +68,6 @@
 
 (require 'editorconfig-core-handle)
 
-
-(defconst editorconfig-core-version
-  "0.7.14"
-  "EditorConfig core version.")
 
 (defun editorconfig-core--get-handles (dir confname &optional result)
   "Get list of EditorConfig handlers for DIR from CONFNAME.

@@ -715,6 +715,34 @@ To disable EditorConfig in some buffers, modify
   (indent-region (point-min) (point-max)))
 
 
+
+;; (defconst editorconfig--version
+;;   (eval-when-compile
+;;     (require 'lisp-mnt)
+;;     (declare-function lm-version "lisp-mnt" nil)
+;;     (lm-version))
+;;   "EditorConfig version.")
+
+(declare-function find-library-name "find-func" (library))
+(declare-function lm-version "lisp-mnt" nil)
+
+;;;###autoload
+(defun  editorconfig-version (&optional show-version)
+  "Get EditorConfig version as string.
+
+If called interactively or if SHOW-VERSION is non-nil, show the
+version in the echo area and the messages buffer."
+  (interactive (list t))
+  (with-temp-buffer
+    (require 'find-func)
+    (insert-file-contents (find-library-name "editorconfig"))
+    (require 'lisp-mnt)
+    (let ((version (lm-version)))
+      (when show-version
+        (message "EditorConfig Emacs v%s"
+                 version))
+      version)))
+
 (provide 'editorconfig)
 
 ;;; editorconfig.el ends here
