@@ -81,9 +81,8 @@ with required output."
      (message editorconfig-bin-help-message)
      (kill-emacs 0))
     ((-v --version)
-     (princ (format "EditorConfig-EmacsLisp Version %s %s\n"
-                    (editorconfig-version)
-                    editorconfig--version))
+     (princ (format "EditorConfig-EmacsLisp Version %s\n"
+                    (editorconfig-version)))
      (kill-emacs 0))
 
     (otherwise
