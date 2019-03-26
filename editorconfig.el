@@ -733,15 +733,27 @@ To disable EditorConfig in some buffers, modify
 If called interactively or if SHOW-VERSION is non-nil, show the
 version in the echo area and the messages buffer."
   (interactive (list t))
-  (with-temp-buffer
-    (require 'find-func)
-    (insert-file-contents (find-library-name "editorconfig"))
-    (require 'lisp-mnt)
-    (let ((version (lm-version)))
-      (when show-version
+  (let* ((version
+          (with-temp-buffer
+            (require 'find-func)
+            (insert-file-contents (find-library-name "editorconfig"))
+            (require 'lisp-mnt)
+            (lm-version)))
+         (pkg
+          (and (require 'package nil t)
+               (cadr (assq 'editorconfig
+                           package-alist))))
+         (pkg-version
+          (and pkg
+               (package-version-join (package-desc-version pkg)))))
+    (when show-version
+      (if pkg-version
+          (message "EditorConfig Emacs: v%s  (package version: %s)"
+                   version
+                   pkg-version)
         (message "EditorConfig Emacs v%s"
-                 version))
-      version)))
+                 version)))
+    version))
 
 (provide 'editorconfig)
 
