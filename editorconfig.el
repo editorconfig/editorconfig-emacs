@@ -745,15 +745,16 @@ version in the echo area and the messages buffer."
                            package-alist))))
          (pkg-version
           (and pkg
-               (package-version-join (package-desc-version pkg)))))
+               (package-version-join (package-desc-version pkg))))
+         (version-full (if (and pkg-version
+                                (not (string= version
+                                              pkg-version)))
+                           (concat version "-" pkg-version)
+                         version)))
     (when show-version
-      (if pkg-version
-          (message "EditorConfig Emacs: v%s  (package version: %s)"
-                   version
-                   pkg-version)
-        (message "EditorConfig Emacs v%s"
-                 version)))
-    version))
+      (message "EditorConfig Emacs v%s"
+               version-full))
+    version-full))
 
 (provide 'editorconfig)
 
