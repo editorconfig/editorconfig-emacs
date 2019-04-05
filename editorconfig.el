@@ -169,6 +169,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
     (csharp-mode c-basic-offset)
     (css-mode css-indent-offset)
     (emacs-lisp-mode lisp-indent-offset)
+    (enh-ruby-mode enh-ruby-indent-level)
     (erlang-mode erlang-indent-level)
     (ess-mode ess-indent-offset)
     (feature-mode feature-indent-offset
@@ -185,6 +186,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
                   haskell-indentation-where-post-offset
                   haskell-indentation-where-pre-offset
                   shm-indent-spaces)
+    (haxor-mode haxor-tab-width)
     (idl-mode c-basic-offset)
     (jade-mode jade-tab-width)
     (java-mode c-basic-offset)
@@ -195,12 +197,15 @@ overwrite \"indent_style\" property when current `major-mode' is a
     (js3-mode js3-indent-level)
     (json-mode js-indent-level)
     (julia-mode julia-indent-offset)
+    (kotlin-mode kotlin-tab-width)
     (latex-mode . editorconfig-set-indentation-latex-mode)
     (lisp-mode lisp-indent-offset)
     (livescript-mode livescript-tab-width)
     (lua-mode lua-indent-level)
     (matlab-mode matlab-indent-level)
+    (mips-mode mips-tab-width)
     (mustache-mode mustache-basic-offset)
+    (nasm-mode nasm-basic-offset)
     (nginx-mode nginx-indent-level)
     (nxml-mode nxml-child-indent (nxml-attribute-indent . 2))
     (objc-mode c-basic-offset)
@@ -225,6 +230,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
     (slim-mode slim-indent-offset)
     (tcl-mode tcl-indent-level
               tcl-continued-indent-level)
+    (terra-mode terra-indent-level)
     (typescript-mode typescript-indent-level)
     (verilog-mode verilog-indent-level
                   verilog-indent-level-behavioral
