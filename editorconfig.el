@@ -197,6 +197,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
     (js3-mode js3-indent-level)
     (json-mode js-indent-level)
     (julia-mode julia-indent-offset)
+    (kotlin-mode kotlin-tab-width)
     (latex-mode . editorconfig-set-indentation-latex-mode)
     (lisp-mode lisp-indent-offset)
     (livescript-mode livescript-tab-width)
