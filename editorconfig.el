@@ -672,7 +672,13 @@ To disable EditorConfig in some buffers, modify
   ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
   ;; not `after-change-major-mode-hook'
   (dolist (hook '(change-major-mode-after-body-hook
-                  read-only-mode-hook))
+                  read-only-mode-hook
+                  ;; Some modes call `kill-all-local-variables' in their init
+                  ;; code, which clears some values set by editorconfig.
+                  ;; For those modes, editorconfig-apply need to be called
+                  ;; explicitly through their hooks.
+                  rpm-spec-mode-hook
+                  ))
     (if editorconfig-mode
         (add-hook hook 'editorconfig-mode-apply)
       (remove-hook hook 'editorconfig-mode-apply))))
