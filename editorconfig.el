@@ -311,6 +311,9 @@ Otherwise, use `delete-trailing-whitespace'."
 Set by `editorconfig-apply' and nil if that is not invoked in
 current buffer yet.")
 (make-variable-buffer-local 'editorconfig-properties-hash)
+(put 'editorconfig-properties-hash
+     'permanent-local
+     t)
 
 (defvar editorconfig-lisp-use-default-indent nil
   "Selectively ignore the value of indent_sizefor Lisp files.
