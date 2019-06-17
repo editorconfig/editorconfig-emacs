@@ -160,6 +160,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
   ;; For contributors: Sort modes in alphabetical order
   '((apache-mode apache-indent-level)
     (awk-mode c-basic-offset)
+    (bpftrace-mode c-basic-offset)
     (c++-mode c-basic-offset)
     (c-mode c-basic-offset)
     (cmake-mode cmake-tab-width)
