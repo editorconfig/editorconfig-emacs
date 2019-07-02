@@ -173,6 +173,13 @@ overwrite \"indent_style\" property when current `major-mode' is a
     (enh-ruby-mode enh-ruby-indent-level)
     (erlang-mode erlang-indent-level)
     (ess-mode ess-indent-offset)
+    (f90-mode f90-associate-indent
+              f90-continuation-indent
+              f90-critical-indent
+              f90-do-indent
+              f90-if-indent
+              f90-program-indent
+              f90-type-indent)
     (feature-mode feature-indent-offset
                   feature-indent-level)
     (fsharp-mode fsharp-continuation-offset
