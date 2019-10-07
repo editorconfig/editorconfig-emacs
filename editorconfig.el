@@ -488,6 +488,10 @@ to non-nil when FINAL-NEWLINE is true."
              (> (string-to-number length) 0))
     (setq fill-column (string-to-number length))))
 
+(defvar editorconfig-file-type-emacs-whitelist
+  '()
+  "List of known `major-mode' that can be used for file_type_emacs value.")
+
 (defun editorconfig-set-major-mode-from-name (filetype)
   "Set buffer `major-mode' by FILETYPE.
 
@@ -499,7 +503,12 @@ FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
                                    "-mode")))))
     (when mode
       (if (fboundp mode)
-          (editorconfig-apply-major-mode-safely mode)
+          (if (apply 'provided-mode-derived-p mode
+                     editorconfig-file-type-emacs-whitelist)
+              (editorconfig-apply-major-mode-safely mode)
+            (display-warning :error (format "Major-mode `%S' is not listed in `%S'"
+                                            mode
+                                            'editorconfig-file-type-emacs-whitelist)))
         (display-warning :error (format "Major-mode `%S' not found"
                                         mode))
         nil))))
