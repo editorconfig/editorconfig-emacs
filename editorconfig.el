@@ -489,7 +489,9 @@ to non-nil when FINAL-NEWLINE is true."
     (setq fill-column (string-to-number length))))
 
 (defvar editorconfig-file-type-emacs-whitelist
-  '()
+  (append (mapcar 'car
+                  editorconfig-indentation-alist)
+          '(conf-mode))
   "List of known `major-mode' that can be used for file_type_emacs value.")
 
 (defun editorconfig-set-major-mode-from-name (filetype)
