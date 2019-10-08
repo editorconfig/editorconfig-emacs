@@ -494,6 +494,18 @@ to non-nil when FINAL-NEWLINE is true."
           '(conf-mode))
   "List of known `major-mode' that can be used for file_type_emacs value.")
 
+;; Emacs<26 does not have provided-mode-derived-p
+(defun editorconfig--provided-mode-derived-p (mode &rest modes)
+  "Non-nil if MODE is derived from one of MODES.
+Uses the `derived-mode-parent' property of the symbol to trace backwards.
+If you just want to check `major-mode', use `derived-mode-p'."
+  (if (fboundp 'provided-mode-derived-p)
+      (apply 'provided-mode-derived-p mode modes)
+    (while (and (not (memq mode modes))
+                (setq mode (get mode 'derived-mode-parent))))
+    mode))
+
+
 (defun editorconfig-set-major-mode-from-name (filetype)
   "Set buffer `major-mode' by FILETYPE.
 
@@ -505,7 +517,7 @@ FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
                                    "-mode")))))
     (when mode
       (if (fboundp mode)
-          (if (apply 'provided-mode-derived-p mode
+          (if (apply 'editorconfig--provided-mode-derived-p mode
                      editorconfig-file-type-emacs-whitelist)
               (editorconfig-apply-major-mode-safely mode)
             (display-warning :error (format "Major-mode `%S' is not listed in `%S'"
