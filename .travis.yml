@@ -1,5 +1,5 @@
 language: generic
-sudo: false
+dist: trusty
 
 env:
   matrix:
