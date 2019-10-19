@@ -231,6 +231,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
     (python-mode . editorconfig-set-indentation-python-mode)
     (ruby-mode ruby-indent-level)
     (rust-mode rust-indent-offset)
+    (rustic-mode rustic-indent-offset)
     (scala-mode scala-indent:step)
     (scss-mode css-indent-offset)
     (sgml-mode sgml-basic-offset)
