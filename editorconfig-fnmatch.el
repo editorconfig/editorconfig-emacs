@@ -167,7 +167,7 @@ translation is found for PATTERN."
              (setq result `(,@result "[^/]*"))))
 
           (??
-           (setq result `(,@result ".")))
+           (setq result `(,@result "[^/]")))
 
           (?\[
            (if in-brackets
