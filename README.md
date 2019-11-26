@@ -76,7 +76,7 @@ Not yet covered properties marked with <del>over-strike</del>
 Typically, you will want to tie these to native functionality,
 or the configuration of existing packages handling the feature.
 
-As several packages have their own handling of, say, indention,
+As several packages have their own handling of, say, indentation,
 we might not yet cover some mode you use, but we try to add the
 ones that show up on our radar. Similarly, we don't yet hook
 in to all different packages for whitespace trimming to inform
