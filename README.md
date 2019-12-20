@@ -37,18 +37,18 @@ To install manually, copy all `.el` files in this repository to
 (editorconfig-mode 1)
 ```
 
-### Install a Core Program
+### (Optional) Install a Core Program
 
-This package requires a Core program.
-The officially recommended one is [EditorConfig C Core][],
-follow the instructions in the README and INSTALL files to install it.
+This package uses a Core program.
+A core implemented in Emacs Lisp is include in this plugin,
+so usually you don't need to install any other core programs.
 
-Though using C Core is recommended, but this plugin also
-includes a core library implemented in Emacs Lisp.
-This plugin uses this as a fallback method when no core executable
-is found, so it works out-of-the-box without explicitly installing
-any other core program.
-
+Optionally, you can install and use other core programs.
+One such example is [EditorConfig C Core][], follow the instructions
+in the README and INSTALL files to install it.
+To use them instead of the default elisp core, you need to configure
+`editorconfig-get-properties-function`
+(read the docstring for details).
 
 
 ## Supported properties
@@ -106,7 +106,7 @@ future updates. When both are specified, `file_type_ext` takes precedence.
 
 `editorconfig-emacs` provides some customize variables.
 
-Here are some of these variables: for the full list of available variables, 
+Here are some of these variables: for the full list of available variables,
 type <kbd>M-x customize-group [RET] editorconfig [RET]</kbd>.
 
 
