@@ -106,7 +106,7 @@ future updates. When both are specified, `file_type_ext` takes precedence.
 
 `editorconfig-emacs` provides some customize variables.
 
-Here are some of these variables: for the full list of available variables, 
+Here are some of these variables: for the full list of available variables,
 type <kbd>M-x customize-group [RET] editorconfig [RET]</kbd>.
 
 
