@@ -637,8 +637,10 @@ It calls `editorconfig-get-properties-from-exec' if
 ;;;###autoload
 (defun editorconfig-apply ()
   "Get and apply EditorConfig properties to current buffer.
-This function ignores `editorconfig-exclude-modes' and
-`editorconfig-exclude-regexps', and always applies available properties."
+
+This function does not respect the values of `editorconfig-exclude-modes' and
+`editorconfig-exclude-regexps' and always applies available properties.
+Use `editorconfig-mode-apply' instead to make use of these variables."
   (interactive)
   (when buffer-file-name
     (condition-case err
@@ -681,9 +683,11 @@ This function ignores `editorconfig-exclude-modes' and
 
 (defun editorconfig-mode-apply ()
   "Get and apply EditorConfig properties to current buffer.
+
 This function does nothing when the major mode is listed in
 `editorconfig-exclude-modes', or variable `buffer-file-name' matches
 any of regexps in `editorconfig-exclude-regexps'."
+  (interactive)
   (when (and major-mode
              (not (memq major-mode
                         editorconfig-exclude-modes))
