@@ -126,7 +126,10 @@ show line numbers on the left:
     '(lambda (props)
        (let ((show-line-num (gethash 'emacs_linum props)))
          (cond ((equal show-line-num \"true\") (linum-mode 1))
-           ((equal show-line-num \"false\") (linum-mode 0))))))"
+           ((equal show-line-num \"false\") (linum-mode 0))))))
+
+This hook will be run even when there are no matching sections in
+\".editorconfig\", or no \".editorconfig\" file was found at all."
   :type 'hook
   :group 'editorconfig)
 (define-obsolete-variable-alias
@@ -152,7 +155,10 @@ overwrite \"indent_style\" property when current `major-mode' is a
   (add-hook 'editorconfig-hack-properties-functions
             '(lambda (props)
                (when (derived-mode-p 'makefile-mode)
-                 (puthash 'indent_style \"tab\" props))))"
+                 (puthash 'indent_style \"tab\" props))))
+
+This hook will be run even when there are no matching sections in
+\".editorconfig\", or no \".editorconfig\" file was found at all."
   :type 'hook
   :group 'editorconfig)
 
