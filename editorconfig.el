@@ -72,7 +72,7 @@ Used by `editorconfig-call-editorconfig-exec'."
   "0.5")
 
 (defcustom editorconfig-get-properties-function
-  'editorconfig-get-properties
+  'editorconfig-core-get-properties-hash
   "A function which gets EditorConofig properties for current buffer.
 
 This function will be called with no argument and should return a
@@ -90,14 +90,14 @@ your init.el:
 
 Possible known values are:
 
-* `editorconfig-get-properties' (default)
+* `editorconfig-core-get-properties-hash' (default)
+  * Always use built-in Emacs-Lisp implementation to get properties
+* `editorconfig-get-properties'
   * Use `editorconfig-get-properties-from-exec' when
     `editorconfig-exec-path' executable executable is found, otherwise
     use `editorconfig-core-get-properties-hash'
 * `editorconfig-get-properties-from-exec'
-  * Get properties by executing EditorConfig executable
-* `editorconfig-core-get-properties-hash'
-  * Always use built-in Emacs-Lisp implementation to get properties"
+  * Get properties by executing EditorConfig executable"
   :type 'function
   :group 'editorconfig)
 (define-obsolete-variable-alias
