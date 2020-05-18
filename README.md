@@ -37,6 +37,12 @@ To install manually, copy all `.el` files in this repository to
 (editorconfig-mode 1)
 ```
 
+`editorconfig-mode` will setup hooks so that EditorConfig properties will be
+loaded and applied to the new buffers automatically when visiting files.
+Only enabling this mode is required for this plugin to work, and all other
+configurations are optional.
+
+
 ### (Optional) Install a Core Program
 
 This package uses a Core program.
@@ -78,11 +84,8 @@ or the configuration of existing packages handling the feature.
 
 As several packages have their own handling of, say, indentation,
 we might not yet cover some mode you use, but we try to add the
-ones that show up on our radar. Similarly, we don't yet hook
-in to all different packages for whitespace trimming to inform
-them about editorconfig settings, but aim for better coverage
-of things like
-[ws-trim](ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el).
+ones that show up on our radar.
+
 
 
 ### File Type
@@ -181,6 +184,34 @@ init.el:
 (setq editorconfig-trim-whitespaces-mode
       'ws-butler-mode)
 ```
+
+
+## Troubleshooting
+
+Normally, enabling `editorconfig-mode` should be enough for this plugin to work.
+
+When EditorConfig properties were not effective for unknown reason, you can
+first try a debugging command: `editorconfig-display-current-properties`.
+
+This command will open a new buffer and display the EditorConfig properties
+loaded for current buffer by this plugin.
+You can check if EditorConfig properties were not read for buffers at all,
+or they were loaded but did not take effect for some other reasons.
+
+
+### Indentation for new major-modes
+
+Because Emacs major-modes have their own indentation settings, this plugin
+requires explicit support for each major-mode for `indent_size` property.
+
+By default this plugin ships with settings for many major-modes, but,
+sorry to say, it cannot be perfect. Especially it is difficult to support
+brand-new major-modes.
+Please feel free to submit issue or pull-request for such major-mode!
+
+You can get the list of supported major-modes by getting the value of
+`editorconfig-indentation-alist`.
+
 
 
 ## Submitting Bugs and Feature Requests
