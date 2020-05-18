@@ -1,6 +1,6 @@
 ;;; editorconfig.el --- EditorConfig Emacs Plugin  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2019 EditorConfig Team
+;; Copyright (C) 2011-2020 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.8.1
@@ -126,7 +126,10 @@ show line numbers on the left:
     '(lambda (props)
        (let ((show-line-num (gethash 'emacs_linum props)))
          (cond ((equal show-line-num \"true\") (linum-mode 1))
-           ((equal show-line-num \"false\") (linum-mode 0))))))"
+           ((equal show-line-num \"false\") (linum-mode 0))))))
+
+This hook will be run even when there are no matching sections in
+\".editorconfig\", or no \".editorconfig\" file was found at all."
   :type 'hook
   :group 'editorconfig)
 (define-obsolete-variable-alias
@@ -152,7 +155,10 @@ overwrite \"indent_style\" property when current `major-mode' is a
   (add-hook 'editorconfig-hack-properties-functions
             '(lambda (props)
                (when (derived-mode-p 'makefile-mode)
-                 (puthash 'indent_style \"tab\" props))))"
+                 (puthash 'indent_style \"tab\" props))))
+
+This hook will be run even when there are no matching sections in
+\".editorconfig\", or no \".editorconfig\" file was found at all."
   :type 'hook
   :group 'editorconfig)
 
@@ -637,8 +643,10 @@ It calls `editorconfig-get-properties-from-exec' if
 ;;;###autoload
 (defun editorconfig-apply ()
   "Get and apply EditorConfig properties to current buffer.
-This function ignores `editorconfig-exclude-modes' and
-`editorconfig-exclude-regexps', and always applies available properties."
+
+This function does not respect the values of `editorconfig-exclude-modes' and
+`editorconfig-exclude-regexps' and always applies available properties.
+Use `editorconfig-mode-apply' instead to make use of these variables."
   (interactive)
   (when buffer-file-name
     (condition-case err
@@ -681,9 +689,11 @@ This function ignores `editorconfig-exclude-modes' and
 
 (defun editorconfig-mode-apply ()
   "Get and apply EditorConfig properties to current buffer.
+
 This function does nothing when the major mode is listed in
 `editorconfig-exclude-modes', or variable `buffer-file-name' matches
 any of regexps in `editorconfig-exclude-regexps'."
+  (interactive)
   (when (and major-mode
              (not (memq major-mode
                         editorconfig-exclude-modes))
