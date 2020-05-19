@@ -37,6 +37,10 @@
     table)
   "Syntax table in use in `editorconfig-conf-mode' buffers.")
 
+(defvar editorconfig-conf-mode-abbrev-table nil
+  "Abbrev table in use in `editorconfig-conf-mode' buffers.")
+(define-abbrev-table 'editorconfig-conf-mode-abbrev-table ())
+
 ;;;###autoload
 (define-derived-mode editorconfig-conf-mode conf-unix-mode "Conf[EditorConfig]"
   "Major mode for editing .editorconfig files."
