@@ -1,6 +1,6 @@
 ;;; editorconfig.el --- EditorConfig Emacs Plugin  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2019 EditorConfig Team
+;; Copyright (C) 2011-2020 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.8.1
@@ -72,7 +72,7 @@ Used by `editorconfig-call-editorconfig-exec'."
   "0.5")
 
 (defcustom editorconfig-get-properties-function
-  'editorconfig-get-properties
+  'editorconfig-core-get-properties-hash
   "A function which gets EditorConofig properties for current buffer.
 
 This function will be called with no argument and should return a
@@ -90,14 +90,14 @@ your init.el:
 
 Possible known values are:
 
-* `editorconfig-get-properties' (default)
+* `editorconfig-core-get-properties-hash' (default)
+  * Always use built-in Emacs-Lisp implementation to get properties
+* `editorconfig-get-properties'
   * Use `editorconfig-get-properties-from-exec' when
     `editorconfig-exec-path' executable executable is found, otherwise
     use `editorconfig-core-get-properties-hash'
 * `editorconfig-get-properties-from-exec'
-  * Get properties by executing EditorConfig executable
-* `editorconfig-core-get-properties-hash'
-  * Always use built-in Emacs-Lisp implementation to get properties"
+  * Get properties by executing EditorConfig executable"
   :type 'function
   :group 'editorconfig)
 (define-obsolete-variable-alias
@@ -126,7 +126,10 @@ show line numbers on the left:
     '(lambda (props)
        (let ((show-line-num (gethash 'emacs_linum props)))
          (cond ((equal show-line-num \"true\") (linum-mode 1))
-           ((equal show-line-num \"false\") (linum-mode 0))))))"
+           ((equal show-line-num \"false\") (linum-mode 0))))))
+
+This hook will be run even when there are no matching sections in
+\".editorconfig\", or no \".editorconfig\" file was found at all."
   :type 'hook
   :group 'editorconfig)
 (define-obsolete-variable-alias
@@ -152,7 +155,10 @@ overwrite \"indent_style\" property when current `major-mode' is a
   (add-hook 'editorconfig-hack-properties-functions
             '(lambda (props)
                (when (derived-mode-p 'makefile-mode)
-                 (puthash 'indent_style \"tab\" props))))"
+                 (puthash 'indent_style \"tab\" props))))
+
+This hook will be run even when there are no matching sections in
+\".editorconfig\", or no \".editorconfig\" file was found at all."
   :type 'hook
   :group 'editorconfig)
 
@@ -231,6 +237,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
     (python-mode . editorconfig-set-indentation-python-mode)
     (ruby-mode ruby-indent-level)
     (rust-mode rust-indent-offset)
+    (rustic-mode rustic-indent-offset)
     (scala-mode scala-indent:step)
     (scss-mode css-indent-offset)
     (sgml-mode sgml-basic-offset)
@@ -539,7 +546,7 @@ FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
 Normally `editorconfig-apply' will be hooked so that it runs when changing
 `major-mode', so there is a possibility that MODE is called infinitely if
 MODE is called naively from inside of `editorconfig-apply'.
-This funcion will avoid such cases and set `major-mode' safely.
+This function will avoid such cases and set `major-mode' safely.
 
 Just checking current `major-mode' value is not enough, because it can be
 different from MODE value (for example, `conf-mode' will set `major-mode' to
@@ -636,8 +643,10 @@ It calls `editorconfig-get-properties-from-exec' if
 ;;;###autoload
 (defun editorconfig-apply ()
   "Get and apply EditorConfig properties to current buffer.
-This function ignores `editorconfig-exclude-modes' and
-`editorconfig-exclude-regexps', and always applies available properties."
+
+This function does not respect the values of `editorconfig-exclude-modes' and
+`editorconfig-exclude-regexps' and always applies available properties.
+Use `editorconfig-mode-apply' instead to make use of these variables."
   (interactive)
   (when buffer-file-name
     (condition-case err
@@ -680,9 +689,11 @@ This function ignores `editorconfig-exclude-modes' and
 
 (defun editorconfig-mode-apply ()
   "Get and apply EditorConfig properties to current buffer.
+
 This function does nothing when the major mode is listed in
 `editorconfig-exclude-modes', or variable `buffer-file-name' matches
 any of regexps in `editorconfig-exclude-regexps'."
+  (interactive)
   (when (and major-mode
              (not (memq major-mode
                         editorconfig-exclude-modes))

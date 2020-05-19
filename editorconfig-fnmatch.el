@@ -1,6 +1,6 @@
 ;;; editorconfig-fnmatch.el --- Glob pattern matching in Emacs lisp  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2019 EditorConfig Team
+;; Copyright (C) 2011-2020 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 
@@ -167,7 +167,7 @@ translation is found for PATTERN."
              (setq result `(,@result "[^/]*"))))
 
           (??
-           (setq result `(,@result ".")))
+           (setq result `(,@result "[^/]")))
 
           (?\[
            (if in-brackets
