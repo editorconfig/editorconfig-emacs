@@ -18,7 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix so that "?" does not match "/" (#211)
 - Fix document typo (#213)
 
-
 ### Changed
 
 - Define -mode-apply as an interactive command (#216)
@@ -52,7 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `editorconfig-version()` was added and `editorconfig-core-version` removed
 - Update docs and metadata to follow MELPA guidelines (#189)
 - Refactor (#188, #191)
-
 
 
 ## [0.7.14] - 2018-12-25
