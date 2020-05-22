@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add rustic-mode to editorconfig-indentation-alist (#208)
+- Add conf-mode abbrev-table definitions (#220)
+
+### Fixed
+
+- Fix so that "?" does not match "/" (#211)
+- Fix document typo (#213)
+
+
+### Changed
+
+- Define -mode-apply as an interactive command (#216)
+- Use elisp core by default (#209)
+
 
 ## [0.8.1] - 2019-10-10
 
