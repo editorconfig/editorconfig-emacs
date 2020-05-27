@@ -37,10 +37,11 @@ To install manually, copy all `.el` files in this repository to
 (editorconfig-mode 1)
 ```
 
-`editorconfig-mode` will setup hooks so that EditorConfig properties will be
+
+Normally, enabling `editorconfig-mode` should be enough for this plugin to work:
+all other configurations are optional.
+This mode sets up hooks so that EditorConfig properties will be
 loaded and applied to the new buffers automatically when visiting files.
-Only enabling this mode is required for this plugin to work, and all other
-configurations are optional.
 
 
 ### (Optional) Install a Core Program
@@ -188,10 +189,10 @@ init.el:
 
 ## Troubleshooting
 
-Normally, enabling `editorconfig-mode` should be enough for this plugin to work.
+Enabling `editorconfig-mode` should be enough for normal usages.
 
 When EditorConfig properties were not effective for unknown reason, you can
-first try a debugging command: `editorconfig-display-current-properties`.
+first try a debugging command `editorconfig-display-current-properties`.
 
 This command will open a new buffer and display the EditorConfig properties
 loaded for current buffer by this plugin.
