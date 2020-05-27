@@ -191,7 +191,7 @@ init.el:
 
 Enabling `editorconfig-mode` should be enough for normal usages.
 
-When EditorConfig properties were not effective for unknown reason, you can
+When EditorConfig properties are not effective for unknown reason, you can
 first try a debugging command `editorconfig-display-current-properties`.
 
 This command will open a new buffer and display the EditorConfig properties
