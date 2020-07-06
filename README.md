@@ -8,14 +8,25 @@
 This is an [EditorConfig][] plugin for [Emacs][].
 
 
-## Setup
+## Getting Started
+
+
+### Install from MELPA
 
 This package is available from [MELPA][] and [MELPA Stable][].
-Install from there and enable global minor-mode `editorconfig-mode`:
+Install from these repositories and enable global minor-mode `editorconfig-mode`:
 
 ```emacs-lisp
 (editorconfig-mode 1)
 ```
+
+Normally, enabling `editorconfig-mode` should be enough for this plugin to work:
+all other configurations are optional.
+This mode sets up hooks so that EditorConfig properties will be
+loaded and applied to the new buffers automatically when visiting files.
+
+
+### use-package
 
 If you use [**use-package**][use-package], add the following to your
 `init.el` file:
@@ -28,8 +39,10 @@ If you use [**use-package**][use-package], add the following to your
 ```
 
 
-To install manually, copy all `.el` files in this repository to
-`~/.emacs.d/lisp` and add the following:
+### Manual installation
+
+Copy all `.el` files in this repository to `~/.emacs.d/lisp` and add the
+following:
 
 ```emacs-lisp
 (add-to-list 'load-path "~/.emacs.d/lisp")
@@ -37,25 +50,6 @@ To install manually, copy all `.el` files in this repository to
 (editorconfig-mode 1)
 ```
 
-
-Normally, enabling `editorconfig-mode` should be enough for this plugin to work:
-all other configurations are optional.
-This mode sets up hooks so that EditorConfig properties will be
-loaded and applied to the new buffers automatically when visiting files.
-
-
-### (Optional) Install a Core Program
-
-This package uses a Core program.
-A core implemented in Emacs Lisp is include in this plugin,
-so usually you don't need to install any other core programs.
-
-Optionally, you can install and use other core programs.
-One such example is [EditorConfig C Core][], follow the instructions
-in the README and INSTALL files to install it.
-To use them instead of the default elisp core, you need to configure
-`editorconfig-get-properties-function`
-(read the docstring for details).
 
 
 ## Supported properties
@@ -189,20 +183,20 @@ init.el:
 
 ## Troubleshooting
 
-Enabling `editorconfig-mode` should be enough for normal usages.
+Enabling `editorconfig-mode` should be enough for normal cases.
 
-When EditorConfig properties are not effective for unknown reason, you can
-first try a debugging command `editorconfig-display-current-properties`.
+When EditorConfig properties are not effective for unknown reason, we recommend
+executing `M-x editorconfig-display-current-properties` first.
 
 This command will open a new buffer and display the EditorConfig properties
-loaded for current buffer by this plugin.
+loaded for current buffer.
 You can check if EditorConfig properties were not read for buffers at all,
 or they were loaded but did not take effect for some other reasons.
 
 
 ### Indentation for new major-modes
 
-Because Emacs major-modes have their own indentation settings, this plugin
+Because most Emacs major-modes have their own indentation settings, this plugin
 requires explicit support for each major-mode for `indent_size` property.
 
 By default this plugin ships with settings for many major-modes, but,
@@ -210,7 +204,7 @@ sorry to say, it cannot be perfect. Especially it is difficult to support
 brand-new major-modes.
 Please feel free to submit issue or pull-request for such major-mode!
 
-You can get the list of supported major-modes by getting the value of
+Supported major-modes and their indentation configs are defined in the variable
 `editorconfig-indentation-alist`.
 
 
