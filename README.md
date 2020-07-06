@@ -186,7 +186,7 @@ init.el:
 Enabling `editorconfig-mode` should be enough for normal cases.
 
 When EditorConfig properties are not effective for unknown reason, we recommend
-executing `M-x editorconfig-display-current-properties` first.
+first trying `M-x editorconfig-display-current-properties`.
 
 This command will open a new buffer and display the EditorConfig properties
 loaded for current buffer.
