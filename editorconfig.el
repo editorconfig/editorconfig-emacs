@@ -614,7 +614,7 @@ EXT should be a string like `\"ini\"`, if not nil or empty string."
   "Create properties hash table from PROPS-STRING."
   (let (props-list properties)
     (setq props-list (split-string props-string "\n")
-          properties (make-hash-table :test 'equal))
+          properties (make-hash-table))
     (dolist (prop props-list properties)
       (let ((key-val (split-string prop " *= *")))
         (when (> (length key-val) 1)
