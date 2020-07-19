@@ -73,7 +73,7 @@ Used by `editorconfig-call-editorconfig-exec'."
 
 (defcustom editorconfig-get-properties-function
   'editorconfig-core-get-properties-hash
-  "A function which gets EditorConofig properties for current buffer.
+  "A function which gets EditorConfig properties for current buffer.
 
 This function will be called with no argument and should return a
 hash object containing properties, or nil if any core program is
@@ -94,7 +94,7 @@ Possible known values are:
   * Always use built-in Emacs-Lisp implementation to get properties
 * `editorconfig-get-properties'
   * Use `editorconfig-get-properties-from-exec' when
-    `editorconfig-exec-path' executable executable is found, otherwise
+    `editorconfig-exec-path' executable is found, otherwise
     use `editorconfig-core-get-properties-hash'
 * `editorconfig-get-properties-from-exec'
   * Get properties by executing EditorConfig executable"
@@ -333,7 +333,7 @@ current buffer yet.")
      t)
 
 (defvar editorconfig-lisp-use-default-indent nil
-  "Selectively ignore the value of indent_sizefor Lisp files.
+  "Selectively ignore the value of indent_size for Lisp files.
 Prevents `lisp-indent-offset' from being set selectively.
 
 nil - `lisp-indent-offset' is always set normally.
@@ -341,7 +341,7 @@ t   - `lisp-indent-offset' is never set normally
        (always use default indent for lisps).
 number - `lisp-indent-offset' is not set only if indent_size is
          equal to this number.  For example, if this is set to 2,
-         `lisp-indent-offset'will not be set only if indent_size is 2.")
+         `lisp-indent-offset' will not be set only if indent_size is 2.")
 
 (defconst editorconfig-unset-value "unset"
   "String of value used to unset properties in .editorconfig .")
@@ -786,7 +786,7 @@ To disable EditorConfig in some buffers, modify
 (declare-function lm-version "lisp-mnt" nil)
 
 ;;;###autoload
-(defun  editorconfig-version (&optional show-version)
+(defun editorconfig-version (&optional show-version)
   "Get EditorConfig version as string.
 
 If called interactively or if SHOW-VERSION is non-nil, show the
