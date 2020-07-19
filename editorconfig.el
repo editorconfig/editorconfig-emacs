@@ -343,9 +343,6 @@ number - `lisp-indent-offset' is not set only if indent_size is
          equal to this number.  For example, if this is set to 2,
          `lisp-indent-offset' will not be set only if indent_size is 2.")
 
-(defconst editorconfig-unset-value "unset"
-  "String of value used to unset properties in .editorconfig .")
-
 (defun editorconfig-string-integer-p (string)
   "Return non-nil if STRING represents integer."
   (and (stringp string)
@@ -586,8 +583,7 @@ If FILENAME is omitted filename of current buffer is used."
 EXT should be a string like `\"ini\"`, if not nil or empty string."
   (cl-assert buffer-file-name)
   (when (and ext
-             (not (string= ext ""))
-             (not (string= ext editorconfig-unset-value)))
+             (not (string= ext "")))
 
     (let ((mode (editorconfig--find-mode-from-ext ext
                                                   buffer-file-name)))
@@ -656,33 +652,34 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
           (unless (functionp editorconfig-get-properties-function)
             (error "Invalid editorconfig-get-properties-function value"))
           (let ((props (funcall editorconfig-get-properties-function)))
-            (progn
-              (condition-case err
-                  (run-hook-with-args 'editorconfig-hack-properties-functions props)
-                (error
-                 (display-warning 'editorconfig-hack-properties-functions
-                                  (concat (error-message-string err)
-                                          ". Abort running hook.")
-                                  :warning)))
-              (setq editorconfig-properties-hash props)
-              (editorconfig-set-indentation (gethash 'indent_style props)
-                                            (gethash 'indent_size props)
-                                            (gethash 'tab_width props))
-              (editorconfig-set-coding-system
-               (gethash 'end_of_line props)
-               (gethash 'charset props))
-              (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
-              (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
-              (editorconfig-set-line-length (gethash 'max_line_length props))
-              (editorconfig-set-major-mode-from-name (gethash 'file_type_emacs props))
-              (editorconfig-set-major-mode-from-ext (gethash 'file_type_ext props))
-              (condition-case err
-                  (run-hook-with-args 'editorconfig-after-apply-functions props)
-                (error
-                 (display-warning 'editorconfig-after-apply-functions
-                                  (concat (error-message-string err)
-                                          ". Stop running hook.")
-                                  :warning))))))
+            (cl-loop for k being the hash-keys of props using (hash-values v)
+                     when (equal v "unset") do (remhash k props))
+            (condition-case err
+                (run-hook-with-args 'editorconfig-hack-properties-functions props)
+              (error
+               (display-warning 'editorconfig-hack-properties-functions
+                                (concat (error-message-string err)
+                                        ". Abort running hook.")
+                                :warning)))
+            (setq editorconfig-properties-hash props)
+            (editorconfig-set-indentation (gethash 'indent_style props)
+                                          (gethash 'indent_size props)
+                                          (gethash 'tab_width props))
+            (editorconfig-set-coding-system
+             (gethash 'end_of_line props)
+             (gethash 'charset props))
+            (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
+            (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
+            (editorconfig-set-line-length (gethash 'max_line_length props))
+            (editorconfig-set-major-mode-from-name (gethash 'file_type_emacs props))
+            (editorconfig-set-major-mode-from-ext (gethash 'file_type_ext props))
+            (condition-case err
+                (run-hook-with-args 'editorconfig-after-apply-functions props)
+              (error
+               (display-warning 'editorconfig-after-apply-functions
+                                (concat (error-message-string err)
+                                        ". Stop running hook.")
+                                :warning)))))
       (error
        (display-warning 'editorconfig
                         (concat (error-message-string err)

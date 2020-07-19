@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Define -mode-apply as an interactive command (#216)
 - Use elisp core by default (#209)
+- User functions in the hooks `editorconfig-hack-properties-functions` and
+  `editorconfig-after-apply-functions` can no longer distinguish explicitly
+  unset properties from ones that were never set in the first place.  (#222)
 
 
 ## [0.8.1] - 2019-10-10
