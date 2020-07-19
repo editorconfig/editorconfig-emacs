@@ -799,7 +799,7 @@ version in the echo area and the messages buffer."
             (require 'lisp-mnt)
             (lm-version)))
          (pkg
-          (and (require 'package nil t)
+          (and (eval-and-compile (require 'package nil t))
                (cadr (assq 'editorconfig
                            package-alist))))
          (pkg-version
