@@ -175,6 +175,7 @@ This hook will be run even when there are no matching sections in
     (crystal-mode crystal-indent-level)
     (csharp-mode c-basic-offset)
     (css-mode css-indent-offset)
+    (d-mode c-basic-offset)
     (emacs-lisp-mode lisp-indent-offset)
     (enh-ruby-mode enh-ruby-indent-level)
     (erlang-mode erlang-indent-level)
@@ -243,6 +244,7 @@ This hook will be run even when there are no matching sections in
     (sgml-mode sgml-basic-offset)
     (sh-mode sh-basic-offset sh-indentation)
     (slim-mode slim-indent-offset)
+    (sml-mode sml-indent-level)
     (tcl-mode tcl-indent-level
               tcl-continued-indent-level)
     (terra-mode terra-indent-level)
