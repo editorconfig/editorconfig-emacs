@@ -388,14 +388,13 @@ number - `lisp-indent-offset' is not set only if indent_size is
 
 (defun editorconfig-set-indentation (style &optional size tab_width)
   "Set indentation type from STYLE, SIZE and TAB_WIDTH."
-  (make-local-variable 'indent-tabs-mode)
-  (make-local-variable 'tab-width)
   (if (editorconfig-string-integer-p size)
       (setq size (string-to-number size))
     (when (not (equal size "tab")) (setq size nil)))
-  (setq tab-width (cond (tab_width (string-to-number tab_width))
-                        ((numberp size) size)
-                        (t tab-width)))
+  (cond (tab_width
+         (setq tab-width (string-to-number tab_width)))
+        ((numberp size)
+         (setq tab-width size)))
   (when (equal size "tab")
     (setq size tab-width))
   (cond ((equal style "space")
