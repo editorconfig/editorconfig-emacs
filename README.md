@@ -8,14 +8,25 @@
 This is an [EditorConfig][] plugin for [Emacs][].
 
 
-## Setup
+## Getting Started
+
+
+### Install from MELPA
 
 This package is available from [MELPA][] and [MELPA Stable][].
-Install from there and enable global minor-mode `editorconfig-mode`:
+Install from these repositories and enable global minor-mode `editorconfig-mode`:
 
 ```emacs-lisp
 (editorconfig-mode 1)
 ```
+
+Normally, enabling `editorconfig-mode` should be enough for this plugin to work:
+all other configurations are optional.
+This mode sets up hooks so that EditorConfig properties will be
+loaded and applied to the new buffers automatically when visiting files.
+
+
+### use-package
 
 If you use [**use-package**][use-package], add the following to your
 `init.el` file:
@@ -28,8 +39,10 @@ If you use [**use-package**][use-package], add the following to your
 ```
 
 
-To install manually, copy all `.el` files in this repository to
-`~/.emacs.d/lisp` and add the following:
+### Manual installation
+
+Copy all `.el` files in this repository to `~/.emacs.d/lisp` and add the
+following:
 
 ```emacs-lisp
 (add-to-list 'load-path "~/.emacs.d/lisp")
@@ -37,18 +50,6 @@ To install manually, copy all `.el` files in this repository to
 (editorconfig-mode 1)
 ```
 
-### (Optional) Install a Core Program
-
-This package uses a Core program.
-A core implemented in Emacs Lisp is include in this plugin,
-so usually you don't need to install any other core programs.
-
-Optionally, you can install and use other core programs.
-One such example is [EditorConfig C Core][], follow the instructions
-in the README and INSTALL files to install it.
-To use them instead of the default elisp core, you need to configure
-`editorconfig-get-properties-function`
-(read the docstring for details).
 
 
 ## Supported properties
@@ -78,11 +79,8 @@ or the configuration of existing packages handling the feature.
 
 As several packages have their own handling of, say, indentation,
 we might not yet cover some mode you use, but we try to add the
-ones that show up on our radar. Similarly, we don't yet hook
-in to all different packages for whitespace trimming to inform
-them about editorconfig settings, but aim for better coverage
-of things like
-[ws-trim](ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el).
+ones that show up on our radar.
+
 
 
 ### File Type
@@ -181,6 +179,34 @@ init.el:
 (setq editorconfig-trim-whitespaces-mode
       'ws-butler-mode)
 ```
+
+
+## Troubleshooting
+
+Enabling `editorconfig-mode` should be enough for normal cases.
+
+When EditorConfig properties are not effective for unknown reason, we recommend
+first trying `M-x editorconfig-display-current-properties`.
+
+This command will open a new buffer and display the EditorConfig properties
+loaded for current buffer.
+You can check if EditorConfig properties were not read for buffers at all,
+or they were loaded but did not take effect for some other reasons.
+
+
+### Indentation for new major-modes
+
+Because most Emacs major-modes have their own indentation settings, this plugin
+requires explicit support for each major-mode for `indent_size` property.
+
+By default this plugin ships with settings for many major-modes, but,
+sorry to say, it cannot be perfect. Especially it is difficult to support
+brand-new major-modes.
+Please feel free to submit issue or pull-request for such major-mode!
+
+Supported major-modes and their indentation configs are defined in the variable
+`editorconfig-indentation-alist`.
+
 
 
 ## Submitting Bugs and Feature Requests
