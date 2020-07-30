@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix so that "?" does not match "/" (#211)
 - Fix document typo (#213)
+- Don't make unchanged vars buffer-local (#222)
 
 ### Changed
 
