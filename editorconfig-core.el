@@ -118,7 +118,7 @@ This functions returns alist of properties.  Each element will look like
     result))
 
 (defun editorconfig-core--hash-merge (into update)
-  "Merge to hashes INTO and UPDATE.
+  "Merge two hashes INTO and UPDATE.
 
 This is a destructive function, hash INTO will be modified.
 When the same key exists in both two hashes, values of UPDATE takes precedence."
