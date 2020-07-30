@@ -222,6 +222,12 @@ locally:
 
     $ make test
 
+To start a new Emacs process with current `*.el` and without loading user init
+file, run:
+
+    $ make sandbox
+
+
 
 
 ## License
