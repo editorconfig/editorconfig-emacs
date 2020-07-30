@@ -72,7 +72,7 @@
 
 (defconst editorconfig-fnmatch--numeric-range-regexp
   "\\([+-]?[0-9]+\\)\\.\\.\\([+-]?[0-9]+\\)"
-  "Regular expression for numaric range (like {-3..+3}).")
+  "Regular expression for numeric range (like {-3..+3}).")
 
 (defun editorconfig-fnmatch--match-num (regexp string)
   "Return how many times REGEXP is found in STRING."

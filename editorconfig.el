@@ -73,7 +73,7 @@ Used by `editorconfig-call-editorconfig-exec'."
 
 (defcustom editorconfig-get-properties-function
   'editorconfig-core-get-properties-hash
-  "A function which gets EditorConofig properties for current buffer.
+  "A function which gets EditorConfig properties for current buffer.
 
 This function will be called with no argument and should return a
 hash object containing properties, or nil if any core program is
@@ -94,7 +94,7 @@ Possible known values are:
   * Always use built-in Emacs-Lisp implementation to get properties
 * `editorconfig-get-properties'
   * Use `editorconfig-get-properties-from-exec' when
-    `editorconfig-exec-path' executable executable is found, otherwise
+    `editorconfig-exec-path' executable is found, otherwise
     use `editorconfig-core-get-properties-hash'
 * `editorconfig-get-properties-from-exec'
   * Get properties by executing EditorConfig executable"
@@ -333,7 +333,7 @@ current buffer yet.")
      t)
 
 (defvar editorconfig-lisp-use-default-indent nil
-  "Selectively ignore the value of indent_sizefor Lisp files.
+  "Selectively ignore the value of indent_size for Lisp files.
 Prevents `lisp-indent-offset' from being set selectively.
 
 nil - `lisp-indent-offset' is always set normally.
@@ -341,10 +341,7 @@ t   - `lisp-indent-offset' is never set normally
        (always use default indent for lisps).
 number - `lisp-indent-offset' is not set only if indent_size is
          equal to this number.  For example, if this is set to 2,
-         `lisp-indent-offset'will not be set only if indent_size is 2.")
-
-(defconst editorconfig-unset-value "unset"
-  "String of value used to unset properties in .editorconfig .")
+         `lisp-indent-offset' will not be set only if indent_size is 2.")
 
 (defun editorconfig-string-integer-p (string)
   "Return non-nil if STRING represents integer."
@@ -391,14 +388,13 @@ number - `lisp-indent-offset' is not set only if indent_size is
 
 (defun editorconfig-set-indentation (style &optional size tab_width)
   "Set indentation type from STYLE, SIZE and TAB_WIDTH."
-  (make-local-variable 'indent-tabs-mode)
-  (make-local-variable 'tab-width)
   (if (editorconfig-string-integer-p size)
       (setq size (string-to-number size))
     (when (not (equal size "tab")) (setq size nil)))
-  (setq tab-width (cond (tab_width (string-to-number tab_width))
-                        ((numberp size) size)
-                        (t tab-width)))
+  (cond (tab_width
+         (setq tab-width (string-to-number tab_width)))
+        ((numberp size)
+         (setq tab-width size)))
   (when (equal size "tab")
     (setq size tab-width))
   (cond ((equal style "space")
@@ -586,8 +582,7 @@ If FILENAME is omitted filename of current buffer is used."
 EXT should be a string like `\"ini\"`, if not nil or empty string."
   (cl-assert buffer-file-name)
   (when (and ext
-             (not (string= ext ""))
-             (not (string= ext editorconfig-unset-value)))
+             (not (string= ext "")))
 
     (let ((mode (editorconfig--find-mode-from-ext ext
                                                   buffer-file-name)))
@@ -614,7 +609,7 @@ EXT should be a string like `\"ini\"`, if not nil or empty string."
   "Create properties hash table from PROPS-STRING."
   (let (props-list properties)
     (setq props-list (split-string props-string "\n")
-          properties (make-hash-table :test 'equal))
+          properties (make-hash-table))
     (dolist (prop props-list properties)
       (let ((key-val (split-string prop " *= *")))
         (when (> (length key-val) 1)
@@ -656,33 +651,34 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
           (unless (functionp editorconfig-get-properties-function)
             (error "Invalid editorconfig-get-properties-function value"))
           (let ((props (funcall editorconfig-get-properties-function)))
-            (progn
-              (condition-case err
-                  (run-hook-with-args 'editorconfig-hack-properties-functions props)
-                (error
-                 (display-warning 'editorconfig-hack-properties-functions
-                                  (concat (error-message-string err)
-                                          ". Abort running hook.")
-                                  :warning)))
-              (setq editorconfig-properties-hash props)
-              (editorconfig-set-indentation (gethash 'indent_style props)
-                                            (gethash 'indent_size props)
-                                            (gethash 'tab_width props))
-              (editorconfig-set-coding-system
-               (gethash 'end_of_line props)
-               (gethash 'charset props))
-              (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
-              (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
-              (editorconfig-set-line-length (gethash 'max_line_length props))
-              (editorconfig-set-major-mode-from-name (gethash 'file_type_emacs props))
-              (editorconfig-set-major-mode-from-ext (gethash 'file_type_ext props))
-              (condition-case err
-                  (run-hook-with-args 'editorconfig-after-apply-functions props)
-                (error
-                 (display-warning 'editorconfig-after-apply-functions
-                                  (concat (error-message-string err)
-                                          ". Stop running hook.")
-                                  :warning))))))
+            (cl-loop for k being the hash-keys of props using (hash-values v)
+                     when (equal v "unset") do (remhash k props))
+            (condition-case err
+                (run-hook-with-args 'editorconfig-hack-properties-functions props)
+              (error
+               (display-warning 'editorconfig-hack-properties-functions
+                                (concat (error-message-string err)
+                                        ". Abort running hook.")
+                                :warning)))
+            (setq editorconfig-properties-hash props)
+            (editorconfig-set-indentation (gethash 'indent_style props)
+                                          (gethash 'indent_size props)
+                                          (gethash 'tab_width props))
+            (editorconfig-set-coding-system
+             (gethash 'end_of_line props)
+             (gethash 'charset props))
+            (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
+            (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
+            (editorconfig-set-line-length (gethash 'max_line_length props))
+            (editorconfig-set-major-mode-from-name (gethash 'file_type_emacs props))
+            (editorconfig-set-major-mode-from-ext (gethash 'file_type_ext props))
+            (condition-case err
+                (run-hook-with-args 'editorconfig-after-apply-functions props)
+              (error
+               (display-warning 'editorconfig-after-apply-functions
+                                (concat (error-message-string err)
+                                        ". Stop running hook.")
+                                :warning)))))
       (error
        (display-warning 'editorconfig
                         (concat (error-message-string err)
@@ -786,7 +782,7 @@ To disable EditorConfig in some buffers, modify
 (declare-function lm-version "lisp-mnt" nil)
 
 ;;;###autoload
-(defun  editorconfig-version (&optional show-version)
+(defun editorconfig-version (&optional show-version)
   "Get EditorConfig version as string.
 
 If called interactively or if SHOW-VERSION is non-nil, show the
@@ -799,7 +795,7 @@ version in the echo area and the messages buffer."
             (require 'lisp-mnt)
             (lm-version)))
          (pkg
-          (and (require 'package nil t)
+          (and (eval-and-compile (require 'package nil t))
                (cadr (assq 'editorconfig
                            package-alist))))
          (pkg-version

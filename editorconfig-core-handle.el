@@ -67,10 +67,10 @@ IF not match, return nil."
 
 Slots:
 `top-props'
-  Alist of top propetties like ((\"root\" . \"true\"))
+  Alist of top properties like ((\"root\" . \"true\"))
 
 `sections'
-  List of `editorconfig-core-hadnle-section' strucure object.
+  List of `editorconfig-core-handle-section' structure objects.
 
 `mtime'
   Last modified time of .editorconfig file.
