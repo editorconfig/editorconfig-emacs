@@ -108,6 +108,25 @@ Here are some of these variables: for the full list of available variables,
 type <kbd>M-x customize-group [RET] editorconfig [RET]</kbd>.
 
 
+### `editorconfig-trim-whitespaces-mode`
+
+Buffer local minor-mode to use to trim trailing whitespaces.
+
+If set, enable/disable that mode in accord with `trim_trailing_whitespace`
+property in `.editorconfig`.
+Otherwise, use Emacs built-in `delete-trailing-whitespace` function.
+
+One possible value is
+[`ws-butler-mode`](https://github.com/lewang/ws-butler), with which
+only lines touched get trimmed. To use it, add following to your
+init.el:
+
+``` emacs-lisp
+(setq editorconfig-trim-whitespaces-mode
+      'ws-butler-mode)
+```
+
+
 ### `editorconfig-after-apply-functions`
 
 (Formerly `editorconfig-custom-hooks`)
@@ -148,39 +167,6 @@ overwrite \"indent_style\" property when current `major-mode` is a
 ```
 
 
-### `editorconfig-indentation-alist`
-
-Alist of indentation setting methods by modes.
-
-For the easiest case to add a new support for a major-mode, you just need to
-add a pair of major-mode symbol and its indentation variables:
-
-```emacs-lisp
-(add-to-list 'editorconfig-indentation-alist
-  ;; Just an example, of course EditorConfig has already included this setting!
-  '(c-mode c-basic-offset))
-```
-
-
-### `editorconfig-trim-whitespaces-mode`
-
-Buffer local minor-mode to use to trim trailing whitespaces.
-
-If set, enable/disable that mode in accord with `trim_trailing_whitespace`
-property in `.editorconfig`.
-Otherwise, use Emacs built-in `delete-trailing-whitespace` function.
-
-One possible value is
-[`ws-butler-mode`](https://github.com/lewang/ws-butler), with which
-only lines touched get trimmed. To use it, add following to your
-init.el:
-
-``` emacs-lisp
-(setq editorconfig-trim-whitespaces-mode
-      'ws-butler-mode)
-```
-
-
 ## Troubleshooting
 
 Enabling `editorconfig-mode` should be enough for normal cases.
@@ -192,6 +178,7 @@ This command will open a new buffer and display the EditorConfig properties
 loaded for current buffer.
 You can check if EditorConfig properties were not read for buffers at all,
 or they were loaded but did not take effect for some other reasons.
+
 
 
 ### Indentation for new major-modes
@@ -206,6 +193,20 @@ Please feel free to submit issue or pull-request for such major-mode!
 
 Supported major-modes and their indentation configs are defined in the variable
 `editorconfig-indentation-alist`.
+
+
+### Not work at all for FOO-mode!
+
+Most cases properties are loaded just after visiting files when
+`editorconfig-mode` is enabled.
+But it is known that there are major-modes that this mechanism does not work
+and requires explicit call of `editorconfig-apply`.
+
+Typically it will occur when the major-mode is not defined using
+`define-derived-mode`:
+for these major-mode this plugin needs explicit support (`rpm-spec-mode-hook`
+is an example for this), so please feel free submit an issue for such case!
+
 
 
 
