@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - kotlin-mode
   - bpftrace-mode ([#199])
   - f90-mode ([#200])
-- Add explicit support for rpm-spec-mode (efc1ff4b1c3422d6e231b1c01138becab4b9eded, see [#197] )
+- Add explicit support for rpm-spec-mode ([efc1ff4], see [#197] )
 - Add whitelist for file_type_emacs value ([#204])
 
 
@@ -68,13 +68,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Make conf-mode used when a file has .editorconfig extension 01a064015ed8d00f2853f966f07d2be5b97bfe5e
+- Make conf-mode used when a file has .editorconfig extension [01a0640]
 - Fix tests
 - Fix docs
 
 ### Changed
 
-- Change hook name -custom-hooks -> -after-apply-functions bb4bc4497783e6607480cd0b761f974136784fdd
+- Change hook name -custom-hooks -> -after-apply-functions [bb4bc44]
 
 
 ## [0.7.13] - 2018-08-23
@@ -259,3 +259,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#154]: https://github.com/editorconfig/editorconfig-emacs/issues/154
 [#151]: https://github.com/editorconfig/editorconfig-emacs/issues/151
 [#149]: https://github.com/editorconfig/editorconfig-emacs/issues/149
+[01a0640]: https://github.com/editorconfig/editorconfig-emacs/commit/01a064015ed8d00f2853f966f07d2be5b97bfe5e
+[efc1ff4]: https://github.com/editorconfig/editorconfig-emacs/commit/efc1ff4b1c3422d6e231b1c01138becab4b9eded
+[bb4bc44]: https://github.com/editorconfig/editorconfig-emacs/commit/bb4bc4497783e6607480cd0b761f974136784fdd
