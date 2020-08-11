@@ -3,13 +3,15 @@ dist: trusty
 
 env:
   matrix:
+    - EMACS_VERSION=git-snapshot
+    - EMACS_VERSION=27.1
     - EMACS_VERSION=26.3
     - EMACS_VERSION=25.3
     - EMACS_VERSION=24.5
 
-# matrix:
-#   allow_failures:
-#     - env: EMACS_VERSION=26-pretest
+matrix:
+  allow_failures:
+    - env: EMACS_VERSION=git-snapshot
 
 before_install:
   - git clone --depth=1 https://github.com/rejeep/evm.git ./.evm
