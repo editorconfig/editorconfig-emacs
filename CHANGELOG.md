@@ -10,22 +10,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add rustic-mode to editorconfig-indentation-alist (#208)
-- Add conf-mode abbrev-table definitions (#220)
+- Add rustic-mode to editorconfig-indentation-alist ([#208])
+- Add conf-mode abbrev-table definitions ([#220])
 
 ### Fixed
 
-- Fix so that "?" does not match "/" (#211)
-- Fix document typo (#213)
-- Don't make unchanged vars buffer-local (#222)
+- Fix so that "?" does not match "/" ([#211])
+- Fix document typo ([#213])
+- Don't make unchanged vars buffer-local ([#222])
 
 ### Changed
 
-- Define -mode-apply as an interactive command (#216)
-- Use elisp core by default (#209)
+- Define -mode-apply as an interactive command ([#216])
+- Use elisp core by default ([#209])
 - User functions in the hooks `editorconfig-hack-properties-functions` and
   `editorconfig-after-apply-functions` can no longer distinguish explicitly
-  unset properties from ones that were never set in the first place.  (#222)
+  unset properties from ones that were never set in the first place.  ([#222])
 
 
 ## [0.8.1] - 2019-10-10
@@ -33,57 +33,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add indentation support
-  - #196
+  - [#196]
     - enh-ruby-mode
     - haxor-mode
     - mips-mode
     - nasm-mode
     - terra-mode
     - kotlin-mode
-  - bpftrace-mode (#199)
-  - f90-mode (#200)
-- Add explicit support for rpm-spec-mode (efc1ff4b1c3422d6e231b1c01138becab4b9eded, see #197 )
-- Add whitelist for file_type_emacs value (#204)
+  - bpftrace-mode ([#199])
+  - f90-mode ([#200])
+- Add explicit support for rpm-spec-mode ([efc1ff4], see [#197] )
+- Add whitelist for file_type_emacs value ([#204])
 
 
 ## [0.8.0] - 2019-03-26
 
 ### Fixed
 
-- Allow library forget properties order (#187)
-- Use API to get version info (#193)
+- Allow library forget properties order ([#187])
+- Use API to get version info ([#193])
   - `editorconfig-version()` was added and `editorconfig-core-version` removed
-- Update docs and metadata to follow MELPA guidelines (#189)
-- Refactor (#188, #191)
+- Update docs and metadata to follow MELPA guidelines ([#189])
+- Refactor ([#188], [#191])
 
 
 ## [0.7.14] - 2018-12-25
 
 ### Added
 
-- Add feature to decide major-mode from file_type_ext [EXPERIMENTAL] #175 (#178) (#179) (#180)
-- Add feature to hack properties before applying #182
-- Add variable editorconfig-trim-whitespaces-mode #183
+- Add feature to decide major-mode from file_type_ext [EXPERIMENTAL] [#175] ([#178]) ([#179]) ([#180])
+- Add feature to hack properties before applying [#182]
+- Add variable editorconfig-trim-whitespaces-mode [#183]
   - Useful when you want to use non-default mode like `ws-butler` to trim spaces
 
 ### Fixed
 
-- Make conf-mode used when a file has .editorconfig extension 01a064015ed8d00f2853f966f07d2be5b97bfe5e
+- Make conf-mode used when a file has .editorconfig extension [01a0640]
 - Fix tests
 - Fix docs
 
 ### Changed
 
-- Change hook name -custom-hooks -> -after-apply-functions bb4bc4497783e6607480cd0b761f974136784fdd
+- Change hook name -custom-hooks -> -after-apply-functions [bb4bc44]
 
 
 ## [0.7.13] - 2018-08-23
 
 ### Fixed
 
-- Check editorconfig configs when read only state changes (#168)
-- use CURDIR instead of PWD in Makefile (#170)
-- Refactor fnmatch-p (#171)
+- Check editorconfig configs when read only state changes ([#168])
+- use CURDIR instead of PWD in Makefile ([#170])
+- Refactor fnmatch-p ([#171])
 - Update tests
 
 
@@ -92,16 +92,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add /Fix major-mode support
-  - pug-mode #149
-  - csharp-mode #154
-- Add variable to disable lisp-indent-offset sometimes #155
-- Add texinfo doc #159
+  - pug-mode [#149]
+  - csharp-mode [#154]
+- Add variable to disable lisp-indent-offset sometimes [#155]
+- Add texinfo doc [#159]
 
 ### Fixed
 
-- Avoid passing a non-absolute file path to editorconfig(1)  #151
-- Use "-with-signature" coding systems for all UTF-16 charsets #158
-- Allow normal whitespace when reading EditorConfig settings file #162
+- Avoid passing a non-absolute file path to editorconfig(1)  [#151]
+- Use "-with-signature" coding systems for all UTF-16 charsets [#158]
+- Allow normal whitespace when reading EditorConfig settings file [#162]
 - Add some fixes to tests
 
 
@@ -225,3 +225,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.2...v0.3
 [0.2]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.1...v0.2
 [0.1]: https://github.com/editorconfig/editorconfig-emacs/releases/tag/v0.1
+[#222]: https://github.com/editorconfig/editorconfig-emacs/issues/222
+[#222]: https://github.com/editorconfig/editorconfig-emacs/issues/222
+[#220]: https://github.com/editorconfig/editorconfig-emacs/issues/220
+[#216]: https://github.com/editorconfig/editorconfig-emacs/issues/216
+[#213]: https://github.com/editorconfig/editorconfig-emacs/issues/213
+[#211]: https://github.com/editorconfig/editorconfig-emacs/issues/211
+[#209]: https://github.com/editorconfig/editorconfig-emacs/issues/209
+[#208]: https://github.com/editorconfig/editorconfig-emacs/issues/208
+[#204]: https://github.com/editorconfig/editorconfig-emacs/issues/204
+[#200]: https://github.com/editorconfig/editorconfig-emacs/issues/200
+[#199]: https://github.com/editorconfig/editorconfig-emacs/issues/199
+[#197]: https://github.com/editorconfig/editorconfig-emacs/issues/197
+[#196]: https://github.com/editorconfig/editorconfig-emacs/issues/196
+[#193]: https://github.com/editorconfig/editorconfig-emacs/issues/193
+[#191]: https://github.com/editorconfig/editorconfig-emacs/issues/191
+[#189]: https://github.com/editorconfig/editorconfig-emacs/issues/189
+[#188]: https://github.com/editorconfig/editorconfig-emacs/issues/188
+[#187]: https://github.com/editorconfig/editorconfig-emacs/issues/187
+[#183]: https://github.com/editorconfig/editorconfig-emacs/issues/183
+[#182]: https://github.com/editorconfig/editorconfig-emacs/issues/182
+[#180]: https://github.com/editorconfig/editorconfig-emacs/issues/180
+[#179]: https://github.com/editorconfig/editorconfig-emacs/issues/179
+[#178]: https://github.com/editorconfig/editorconfig-emacs/issues/178
+[#175]: https://github.com/editorconfig/editorconfig-emacs/issues/175
+[#171]: https://github.com/editorconfig/editorconfig-emacs/issues/171
+[#170]: https://github.com/editorconfig/editorconfig-emacs/issues/170
+[#168]: https://github.com/editorconfig/editorconfig-emacs/issues/168
+[#162]: https://github.com/editorconfig/editorconfig-emacs/issues/162
+[#159]: https://github.com/editorconfig/editorconfig-emacs/issues/159
+[#158]: https://github.com/editorconfig/editorconfig-emacs/issues/158
+[#155]: https://github.com/editorconfig/editorconfig-emacs/issues/155
+[#154]: https://github.com/editorconfig/editorconfig-emacs/issues/154
+[#151]: https://github.com/editorconfig/editorconfig-emacs/issues/151
+[#149]: https://github.com/editorconfig/editorconfig-emacs/issues/149
+[01a0640]: https://github.com/editorconfig/editorconfig-emacs/commit/01a064015ed8d00f2853f966f07d2be5b97bfe5e
+[efc1ff4]: https://github.com/editorconfig/editorconfig-emacs/commit/efc1ff4b1c3422d6e231b1c01138becab4b9eded
+[bb4bc44]: https://github.com/editorconfig/editorconfig-emacs/commit/bb4bc4497783e6607480cd0b761f974136784fdd
