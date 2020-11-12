@@ -307,7 +307,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
 
 (defcustom editorconfig-exclude-regexps
   (list (eval-when-compile
-          (rx string-start (or "http" "https" "ftp" "sftp" "rsync") ":")))
+          (rx string-start "/" (or "http" "https" "ftp" "sftp" "rsync") ":")))
   "List of regexp for buffer filenames `editorconfig-mode-apply' will not run.
 
 When variable `buffer-file-name' matches any of the regexps, then
