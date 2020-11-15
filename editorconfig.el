@@ -59,6 +59,10 @@ coding styles between different editors and IDEs."
   :prefix "editorconfig-"
   :group 'tools)
 
+(define-obsolete-variable-alias
+  'edconf-exec-path
+  'editorconfig-exec-path
+  "0.5")
 (defcustom editorconfig-exec-path
   "editorconfig"
   "Path to EditorConfig executable.
@@ -66,11 +70,11 @@ coding styles between different editors and IDEs."
 Used by `editorconfig-call-editorconfig-exec'."
   :type 'string
   :group 'editorconfig)
-(define-obsolete-variable-alias
-  'edconf-exec-path
-  'editorconfig-exec-path
-  "0.5")
 
+(define-obsolete-variable-alias
+  'edconf-get-properties-function
+  'editorconfig-get-properties-function
+  "0.5")
 (defcustom editorconfig-get-properties-function
   'editorconfig-core-get-properties-hash
   "A function which gets EditorConfig properties for current buffer.
@@ -100,16 +104,20 @@ Possible known values are:
   * Get properties by executing EditorConfig executable"
   :type 'function
   :group 'editorconfig)
-(define-obsolete-variable-alias
-  'edconf-get-properties-function
-  'editorconfig-get-properties-function
-  "0.5")
 
 (defcustom editorconfig-mode-lighter " EditorConfig"
   "`editorconfig-mode' lighter string."
   :type 'string
   :group 'editorconfig)
 
+(define-obsolete-variable-alias
+  'edconf-custom-hooks
+  'editorconfig-after-apply-functions
+  "0.5")
+(define-obsolete-variable-alias
+  'editorconfig-custom-hooks
+  'editorconfig-after-apply-functions
+  "0.7.14")
 (defcustom editorconfig-after-apply-functions ()
   "A list of functions after loading common EditorConfig settings.
 
@@ -132,14 +140,6 @@ This hook will be run even when there are no matching sections in
 \".editorconfig\", or no \".editorconfig\" file was found at all."
   :type 'hook
   :group 'editorconfig)
-(define-obsolete-variable-alias
-  'edconf-custom-hooks
-  'editorconfig-after-apply-functions
-  "0.5")
-(define-obsolete-variable-alias
-  'editorconfig-custom-hooks
-  'editorconfig-after-apply-functions
-  "0.7.14")
 
 (defcustom editorconfig-hack-properties-functions ()
   "A list of function to alter property values before applying them.
@@ -162,6 +162,10 @@ This hook will be run even when there are no matching sections in
   :type 'hook
   :group 'editorconfig)
 
+(define-obsolete-variable-alias
+  'edconf-indentation-alist
+  'editorconfig-indentation-alist
+  "0.5")
 (defcustom editorconfig-indentation-alist
   ;; For contributors: Sort modes in alphabetical order
   '((apache-mode apache-indent-level)
@@ -295,10 +299,6 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   :type '(alist :key-type symbol :value-type sexp)
   :risky t
   :group 'editorconfig)
-(define-obsolete-variable-alias
-  'edconf-indentation-alist
-  'editorconfig-indentation-alist
-  "0.5")
 
 (defcustom editorconfig-exclude-modes ()
   "Modes in which `editorconfig-mode-apply' will not run."
