@@ -451,13 +451,15 @@ number - `lisp-indent-offset' is not set only if indent_size is
     (unless (eq coding-system 'undecided)
       (unless (eq coding-system
                   editorconfig--apply-coding-system-currently)
+        ;; Revert functions might call editorconfig-apply again
         (unwind-protect
             (progn
               (setq editorconfig--apply-coding-system-currently
                     coding-system)
-              ;; Revert might call editorconfig-apply again
-              (revert-buffer-with-coding-system (merge-coding-systems cs
-                                                                      eol)))
+              ;; Revert without query if buffer is not modified
+              (let ((revert-without-query '(".")))
+                (revert-buffer-with-coding-system (merge-coding-systems cs
+                                                                        eol))))
           (setq editorconfig--apply-coding-system-currently
                 nil))))))
 
