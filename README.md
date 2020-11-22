@@ -200,12 +200,12 @@ Supported major-modes and their indentation configs are defined in the variable
 Most cases properties are loaded just after visiting files when
 `editorconfig-mode` is enabled.
 But it is known that there are major-modes that this mechanism does not work
-and requires explicit call of `editorconfig-apply`.
+for and requires explicit call of `editorconfig-apply`.
 
 Typically it will occur when the major-mode is not defined using
-`define-derived-mode`:
-for these major-mode this plugin needs explicit support (`rpm-spec-mode-hook`
-is an example for this), so please feel free submit an issue for such case!
+`define-derived-mode`: this plugin needs explicit support for these major-modes 
+(`rpm-spec-mode-hook` is an example for this). Please feel free to submit issues
+for these modes!
 
 
 
