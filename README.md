@@ -203,8 +203,8 @@ But it is known that there are major-modes that this mechanism does not work
 for and require explicit call of `editorconfig-apply`.
 
 Typically it will occur when the major-mode is not defined using
-`define-derived-mode` (`rpm-spec-mode-hook` is an example for this).
-Please feel free to submit issues for these modes!
+`define-derived-mode` (`rpm-spec-mode` is an example for this).
+Please feel free to submit issues if you find these modes!
 
 
 
