@@ -426,24 +426,40 @@ number - `lisp-indent-offset' is not set only if indent_size is
                                        ((integerp spec) (* spec size))
                                        (t spec))))))))))))))
 
+(defvar editorconfig--apply-coding-system-currently nil
+  "Used internally.")
+(make-variable-buffer-local 'editorconfig--apply-coding-system-currently)
+(put 'editorconfig--apply-coding-system-currently
+     'permanent-local
+     t)
+
 (defun editorconfig-set-coding-system (end-of-line charset)
   "Set buffer coding system by END-OF-LINE and CHARSET."
-  (let ((eol (cond
-              ((equal end-of-line "lf") 'undecided-unix)
-              ((equal end-of-line "cr") 'undecided-mac)
-              ((equal end-of-line "crlf") 'undecided-dos)
+  (let* ((eol (cond
+               ((equal end-of-line "lf") 'undecided-unix)
+               ((equal end-of-line "cr") 'undecided-mac)
+               ((equal end-of-line "crlf") 'undecided-dos)
+               (t 'undecided)))
+         (cs (cond
+              ((equal charset "latin1") 'iso-latin-1)
+              ((equal charset "utf-8") 'utf-8)
+              ((equal charset "utf-8-bom") 'utf-8-with-signature)
+              ((equal charset "utf-16be") 'utf-16be-with-signature)
+              ((equal charset "utf-16le") 'utf-16le-with-signature)
               (t 'undecided)))
-        (cs (cond
-             ((equal charset "latin1") 'iso-latin-1)
-             ((equal charset "utf-8") 'utf-8)
-             ((equal charset "utf-8-bom") 'utf-8-with-signature)
-             ((equal charset "utf-16be") 'utf-16be-with-signature)
-             ((equal charset "utf-16le") 'utf-16le-with-signature)
-             (t 'undecided))))
-    (unless (and (eq eol 'undecided)
-                 (eq cs 'undecided))
-      (revert-buffer-with-coding-system (merge-coding-systems cs
-                                                              eol)))))
+         (coding-system (merge-coding-systems cs eol)))
+    (unless (eq coding-system 'undecided)
+      (unless (eq coding-system
+                  editorconfig--apply-coding-system-currently)
+        (unwind-protect
+            (progn
+              (setq editorconfig--apply-coding-system-currently
+                    coding-system)
+              ;; Revert might call editorconfig-apply again
+              (revert-buffer-with-coding-system (merge-coding-systems cs
+                                                                      eol)))
+          (setq editorconfig--apply-coding-system-currently
+                nil))))))
 
 (defun editorconfig-set-trailing-nl (final-newline)
   "Set up requiring final newline by FINAL-NEWLINE.
