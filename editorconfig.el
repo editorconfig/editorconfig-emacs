@@ -702,27 +702,37 @@ any of regexps in `editorconfig-exclude-regexps'."
     (editorconfig-apply)))
 
 ;;;###autoload
-(define-minor-mode editorconfig-mode
+(define-minor-mode editorconfig-local-mode
   "Toggle EditorConfig feature.
 
 To disable EditorConfig in some buffers, modify
 `editorconfig-exclude-modes' or `editorconfig-exclude-regexps'."
-  :global t
   :lighter editorconfig-mode-lighter
-  ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
-  ;; not `after-change-major-mode-hook'
-  (dolist (hook '(change-major-mode-after-body-hook
-                  read-only-mode-hook
-                  ;; Some modes call `kill-all-local-variables' in their init
-                  ;; code, which clears some values set by editorconfig.
-                  ;; For those modes, editorconfig-apply need to be called
-                  ;; explicitly through their hooks.
-                  rpm-spec-mode-hook
-                  ))
-    (if editorconfig-mode
-        (add-hook hook 'editorconfig-mode-apply)
-      (remove-hook hook 'editorconfig-mode-apply))))
+  (when editorconfig-local-mode
+    (editorconfig-apply)))
 
+
+(defun editorconfig-local-mode-may-enable ()
+  "Check if editorconfig should run for this buffer."
+  (and major-mode
+       (not (memq major-mode
+                  editorconfig-exclude-modes))
+       buffer-file-name
+       (not (cl-loop for regexp in editorconfig-exclude-regexps
+                     if (string-match regexp buffer-file-name) return t
+                     finally return nil))))
+
+
+(defun editorconfig-local-mode-maybe-enable ()
+  "Enable `editorconfig-local-mode' if `editorconfig-local-mode-may-enable' return non-nil."
+  (when (editorconfig-local-mode-may-enable)
+    (editorconfig-local-mode 1)))
+
+
+;;;###autoload
+(define-globalized-minor-mode editorconfig-mode editorconfig-local-mode
+  editorconfig-local-mode-maybe-enable
+  :init-value nil)
 
 ;; Tools
 ;; Some useful commands for users, not required for EditorConfig to work
