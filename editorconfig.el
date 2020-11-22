@@ -442,10 +442,8 @@ number - `lisp-indent-offset' is not set only if indent_size is
              (t 'undecided))))
     (unless (and (eq eol 'undecided)
                  (eq cs 'undecided))
-      (set-buffer-file-coding-system (merge-coding-systems
-                                      cs
-                                      eol)
-                                     nil t))))
+      (revert-buffer-with-coding-system (merge-coding-systems cs
+                                                              eol)))))
 
 (defun editorconfig-set-trailing-nl (final-newline)
   "Set up requiring final newline by FINAL-NEWLINE.
