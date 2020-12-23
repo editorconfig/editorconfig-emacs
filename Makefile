@@ -47,7 +47,6 @@ test-travis:
 
 # ert test
 test-ert: $(ERT_TESTS) $(OBJS)
-	git submodule init
 	$(EMACS) $(BATCHFLAGS) \
 		--eval "(setq debug-on-error t)" \
 		--eval "(require 'ert)" \
