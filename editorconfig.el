@@ -450,6 +450,9 @@ number - `lisp-indent-offset' is not set only if indent_size is
          (coding-system (merge-coding-systems cs eol)))
     (when (eq coding-system 'undecided)
       (cl-return-from editorconfig-set-coding-system))
+    (unless (file-readable-p buffer-file-name)
+      (set-buffer-file-coding-system coding-system)
+      (cl-return-from editorconfig-set-coding-system))
     (unless (eq coding-system
                 editorconfig--apply-coding-system-currently)
       ;; Revert functions might call editorconfig-apply again
