@@ -133,7 +133,7 @@ init.el:
 (Formerly `editorconfig-custom-hooks`)
 
 A list of functions which will be called after loading common EditorConfig settings,
-when you can set some custom variables or overwrite existing properties.
+when you can set some custom variables.
 
 For example, `web-mode` has several variables for indentation offset size and
 EditorConfig sets them at once by `indent_size`. You can stop indenting
