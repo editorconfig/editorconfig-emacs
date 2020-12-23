@@ -433,7 +433,7 @@ number - `lisp-indent-offset' is not set only if indent_size is
      'permanent-local
      t)
 
-(defun editorconfig-set-coding-system (end-of-line charset)
+(cl-defun editorconfig-set-coding-system (end-of-line charset)
   "Set buffer coding system by END-OF-LINE and CHARSET."
   (let* ((eol (cond
                ((equal end-of-line "lf") 'undecided-unix)
@@ -448,20 +448,21 @@ number - `lisp-indent-offset' is not set only if indent_size is
               ((equal charset "utf-16le") 'utf-16le-with-signature)
               (t 'undecided)))
          (coding-system (merge-coding-systems cs eol)))
-    (unless (eq coding-system 'undecided)
-      (unless (eq coding-system
-                  editorconfig--apply-coding-system-currently)
-        ;; Revert functions might call editorconfig-apply again
-        (unwind-protect
-            (progn
-              (setq editorconfig--apply-coding-system-currently
-                    coding-system)
-              ;; Revert without query if buffer is not modified
-              (let ((revert-without-query '(".")))
-                (revert-buffer-with-coding-system (merge-coding-systems cs
-                                                                        eol))))
-          (setq editorconfig--apply-coding-system-currently
-                nil))))))
+    (when (eq coding-system 'undecided)
+      (cl-return-from editorconfig-set-coding-system))
+    (unless (eq coding-system
+                editorconfig--apply-coding-system-currently)
+      ;; Revert functions might call editorconfig-apply again
+      (unwind-protect
+          (progn
+            (setq editorconfig--apply-coding-system-currently
+                  coding-system)
+            ;; Revert without query if buffer is not modified
+            (let ((revert-without-query '(".")))
+              (revert-buffer-with-coding-system (merge-coding-systems cs
+                                                                      eol))))
+        (setq editorconfig--apply-coding-system-currently
+              nil)))))
 
 (defun editorconfig-set-trailing-nl (final-newline)
   "Set up requiring final newline by FINAL-NEWLINE.
