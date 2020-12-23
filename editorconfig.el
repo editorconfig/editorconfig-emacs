@@ -462,8 +462,7 @@ number - `lisp-indent-offset' is not set only if indent_size is
                   coding-system)
             ;; Revert without query if buffer is not modified
             (let ((revert-without-query '(".")))
-              (revert-buffer-with-coding-system (merge-coding-systems cs
-                                                                      eol))))
+              (revert-buffer-with-coding-system coding-system)))
         (setq editorconfig--apply-coding-system-currently
               nil)))))
 
