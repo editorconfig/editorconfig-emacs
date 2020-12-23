@@ -113,8 +113,8 @@ type <kbd>M-x customize-group [RET] editorconfig [RET]</kbd>.
 
 Buffer local minor-mode to use to trim trailing whitespaces.
 
-If set, enable/disable that mode in accord with `trim_trailing_whitespace`
-property in `.editorconfig`.
+If set, editorconfig will enable/disable this mode in accord with
+`trim_trailing_whitespace` property in `.editorconfig`.
 Otherwise, use Emacs built-in `delete-trailing-whitespace` function.
 
 One possible value is
@@ -132,32 +132,30 @@ init.el:
 
 (Formerly `editorconfig-custom-hooks`)
 
-A list of functions after loading common EditorConfig settings, where you can
-set some custom variables or overwrite existing properties.
+A list of functions which will be called after loading common EditorConfig settings,
+when you can set some custom variables or overwrite existing properties.
 
 For example, `web-mode` has several variables for indentation offset size and
-EditorConfig sets them at once by `indent_size`. You may want to stop indenting
-only blocks of `web-mode`: it can be achieved by adding following to your init.el:
+EditorConfig sets them at once by `indent_size`. You can stop indenting
+only blocks of `web-mode` by adding following to your init.el:
 
 ```emacs-lisp
 (add-hook 'editorconfig-after-apply-functions
   (lambda (props) (setq web-mode-block-padding 0)))
 ```
 
-You can also define your own custom properties and enable them here.
-
 
 ### `editorconfig-hack-properties-functions`
 
-A list of function to alter property values before applying them.
+A list of functions to alter property values before applying them.
 
 These functions will be run after loading \".editorconfig\" files and before
 applying them to current buffer, so that you can alter some properties from
 \".editorconfig\" before they take effect.
 
-For example, Makefiles always use tab characters for indentation: you can
-overwrite \"indent_style\" property when current `major-mode` is a
-`makefile-mode` with following code:
+For example, Makefile files always use tab characters for indentation: you can
+overwrite \"indent_style\" property when current `major-mode` is
+`makefile-mode`:
 
 ``` emacs-lisp
 (add-hook 'editorconfig-hack-properties-functions
