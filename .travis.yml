@@ -3,18 +3,20 @@ dist: trusty
 
 env:
   matrix:
-    - EMACS_VERSION=26.3
-    - EMACS_VERSION=25.3
-    - EMACS_VERSION=24.5
+    - EVM_EMACS_VERSION=git-snapshot-travis
+    - EVM_EMACS_VERSION=27.1-travis-linux-trusty
+    - EVM_EMACS_VERSION=26.3-travis
+    - EVM_EMACS_VERSION=25.3-travis
+    - EVM_EMACS_VERSION=24.5-travis
 
-# matrix:
-#   allow_failures:
-#     - env: EMACS_VERSION=26-pretest
+matrix:
+  allow_failures:
+    - env: EVM_EMACS_VERSION=git-snapshot
 
 before_install:
   - git clone --depth=1 https://github.com/rejeep/evm.git ./.evm
   - ./.evm/bin/evm config path /tmp
-  - ./.evm/bin/evm install emacs-$EMACS_VERSION-travis --use
+  - ./.evm/bin/evm install emacs-$EVM_EMACS_VERSION --use
   - ./.evm/bin/emacs --version
 
 script:
