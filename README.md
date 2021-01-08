@@ -109,66 +109,12 @@ Here are some of these variables: for the full list of available variables,
 type <kbd>M-x customize-group [RET] editorconfig [RET]</kbd>.
 
 
-### `editorconfig-after-apply-functions`
-
-(Formerly `editorconfig-custom-hooks`)
-
-A list of functions after loading common EditorConfig settings, where you can
-set some custom variables or overwrite existing properties.
-
-For example, `web-mode` has several variables for indentation offset size and
-EditorConfig sets them at once by `indent_size`. You may want to stop indenting
-only blocks of `web-mode`: it can be achieved by adding following to your init.el:
-
-```emacs-lisp
-(add-hook 'editorconfig-after-apply-functions
-  (lambda (props) (setq web-mode-block-padding 0)))
-```
-
-You can also define your own custom properties and enable them here.
-
-
-### `editorconfig-hack-properties-functions`
-
-A list of function to alter property values before applying them.
-
-These functions will be run after loading \".editorconfig\" files and before
-applying them to current buffer, so that you can alter some properties from
-\".editorconfig\" before they take effect.
-
-For example, Makefiles always use tab characters for indentation: you can
-overwrite \"indent_style\" property when current `major-mode` is a
-`makefile-mode` with following code:
-
-``` emacs-lisp
-(add-hook 'editorconfig-hack-properties-functions
-          '(lambda (props)
-             (when (derived-mode-p 'makefile-mode)
-               (puthash 'indent_style "tab" props))))
-
-```
-
-
-### `editorconfig-indentation-alist`
-
-Alist of indentation setting methods by modes.
-
-For the easiest case to add a new support for a major-mode, you just need to
-add a pair of major-mode symbol and its indentation variables:
-
-```emacs-lisp
-(add-to-list 'editorconfig-indentation-alist
-  ;; Just an example, of course EditorConfig has already included this setting!
-  '(c-mode c-basic-offset))
-```
-
-
 ### `editorconfig-trim-whitespaces-mode`
 
 Buffer local minor-mode to use to trim trailing whitespaces.
 
-If set, enable/disable that mode in accord with `trim_trailing_whitespace`
-property in `.editorconfig`.
+If set, editorconfig will enable/disable this mode in accord with
+`trim_trailing_whitespace` property in `.editorconfig`.
 Otherwise, use Emacs built-in `delete-trailing-whitespace` function.
 
 One possible value is
@@ -179,6 +125,44 @@ init.el:
 ``` emacs-lisp
 (setq editorconfig-trim-whitespaces-mode
       'ws-butler-mode)
+```
+
+
+### `editorconfig-after-apply-functions`
+
+(Formerly `editorconfig-custom-hooks`)
+
+A list of functions which will be called after loading common EditorConfig settings,
+when you can set some custom variables.
+
+For example, `web-mode` has several variables for indentation offset size and
+EditorConfig sets them at once by `indent_size`. You can stop indenting
+only blocks of `web-mode` by adding following to your init.el:
+
+```emacs-lisp
+(add-hook 'editorconfig-after-apply-functions
+  (lambda (props) (setq web-mode-block-padding 0)))
+```
+
+
+### `editorconfig-hack-properties-functions`
+
+A list of functions to alter property values before applying them.
+
+These functions will be run after loading \".editorconfig\" files and before
+applying them to current buffer, so that you can alter some properties from
+\".editorconfig\" before they take effect.
+
+For example, Makefile files always use tab characters for indentation: you can
+overwrite \"indent_style\" property when current `major-mode` is
+`makefile-mode`:
+
+``` emacs-lisp
+(add-hook 'editorconfig-hack-properties-functions
+          '(lambda (props)
+             (when (derived-mode-p 'makefile-mode)
+               (puthash 'indent_style "tab" props))))
+
 ```
 
 
@@ -195,6 +179,7 @@ You can check if EditorConfig properties were not read for buffers at all,
 or they were loaded but did not take effect for some other reasons.
 
 
+
 ### Indentation for new major-modes
 
 Because most Emacs major-modes have their own indentation settings, this plugin
@@ -207,6 +192,19 @@ Please feel free to submit issue or pull-request for such major-mode!
 
 Supported major-modes and their indentation configs are defined in the variable
 `editorconfig-indentation-alist`.
+
+
+### Not work at all for FOO-mode!
+
+Most cases properties are loaded just after visiting files when
+`editorconfig-mode` is enabled.
+But it is known that there are major-modes that this mechanism does not work
+for and require explicit call of `editorconfig-apply`.
+
+Typically it will occur when the major-mode is not defined using
+`define-derived-mode` (`rpm-spec-mode` is an example for this).
+Please feel free to submit issues if you find such modes!
+
 
 
 
