@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/editorconfig/editorconfig-emacs.svg?branch=master)](https://travis-ci.org/editorconfig/editorconfig-emacs)
 ![build](https://github.com/editorconfig/editorconfig-emacs/workflows/build/badge.svg)
 [![MELPA](https://melpa.org/packages/editorconfig-badge.svg)](http://melpa.org/#/editorconfig)
 [![MELPA Stable](https://stable.melpa.org/packages/editorconfig-badge.svg)](https://stable.melpa.org/#/editorconfig)
