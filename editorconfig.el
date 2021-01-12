@@ -314,6 +314,11 @@ When variable `buffer-file-name' matches any of the regexps, then
 `editorconfig-mode-apply' will not do its work."
   :type '(repeat string)
   :group 'editorconfig)
+(with-eval-after-load 'recentf
+  (add-to-list 'editorconfig-exclude-regexps
+               (rx-to-string '(seq string-start
+                                   (eval (expand-file-name recentf-save-file)))
+                             t)))
 
 (defcustom editorconfig-trim-whitespaces-mode nil
   "Buffer local minor-mode to use to trim trailing whitespaces.
