@@ -715,6 +715,7 @@ This function does nothing when the major mode is listed in
 any of regexps in `editorconfig-exclude-regexps'."
   (interactive)
   (when (and major-mode
+             (not (derived-mode-p 'special-mode))
              (not (memq major-mode
                         editorconfig-exclude-modes))
              buffer-file-name
