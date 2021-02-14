@@ -305,9 +305,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   :type '(repeat (symbol :tag "Major Mode"))
   :group 'editorconfig)
 
-(defcustom editorconfig-exclude-regexps
-  (list (eval-when-compile
-          (rx string-start "/" (or "http" "https" "ftp" "sftp" "rsync" "ssh") ":")))
+(defcustom editorconfig-exclude-regexps ()
   "List of regexp for buffer filenames `editorconfig-mode-apply' will not run.
 
 When variable `buffer-file-name' matches any of the regexps, then
