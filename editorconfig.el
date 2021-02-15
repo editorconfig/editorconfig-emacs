@@ -515,12 +515,6 @@ to non-nil when FINAL-NEWLINE is true."
              (> (string-to-number length) 0))
     (setq fill-column (string-to-number length))))
 
-(defvar editorconfig-file-type-emacs-whitelist
-  (append (mapcar 'car
-                  editorconfig-indentation-alist)
-          '(conf-mode))
-  "List of known `major-mode' that can be used for file_type_emacs value.")
-
 ;; Emacs<26 does not have provided-mode-derived-p
 (defun editorconfig--provided-mode-derived-p (mode &rest modes)
   "Non-nil if MODE is derived from one of MODES.
@@ -532,87 +526,6 @@ If you just want to check `major-mode', use `derived-mode-p'."
                 (setq mode (get mode 'derived-mode-parent))))
     mode))
 
-
-(defun editorconfig-set-major-mode-from-name (filetype)
-  "Set buffer `major-mode' by FILETYPE.
-
-FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
-  (let ((mode (and filetype
-                   (not (string= filetype
-                                 ""))
-                   (intern (concat filetype
-                                   "-mode")))))
-    (when mode
-      (if (fboundp mode)
-          (if (apply 'editorconfig--provided-mode-derived-p mode
-                     editorconfig-file-type-emacs-whitelist)
-              (editorconfig-apply-major-mode-safely mode)
-            (display-warning :error (format "Major-mode `%S' is not listed in `%S'"
-                                            mode
-                                            'editorconfig-file-type-emacs-whitelist)))
-        (display-warning :error (format "Major-mode `%S' not found"
-                                        mode))
-        nil))))
-
-(defvar editorconfig--apply-major-mode-currently nil
-  "Used internally.")
-(make-variable-buffer-local 'editorconfig--apply-major-mode-currently)
-(put 'editorconfig--apply-major-mode-currently
-     'permanent-local
-     t)
-
-(defun editorconfig-apply-major-mode-safely (mode)
-  "Set `major-mode' to MODE.
-Normally `editorconfig-apply' will be hooked so that it runs when changing
-`major-mode', so there is a possibility that MODE is called infinitely if
-MODE is called naively from inside of `editorconfig-apply'.
-This function will avoid such cases and set `major-mode' safely.
-
-Just checking current `major-mode' value is not enough, because it can be
-different from MODE value (for example, `conf-mode' will set `major-mode' to
-`conf-unix-mode' or another conf mode)."
-  (cl-assert mode)
-  (when (and (not (eq mode
-                      editorconfig--apply-major-mode-currently))
-             (not (eq mode
-                      major-mode))
-             (not (derived-mode-p mode)))
-    (unwind-protect
-        (progn
-          (setq editorconfig--apply-major-mode-currently
-                mode)
-          (funcall mode))
-      (setq editorconfig--apply-major-mode-currently
-            nil))))
-
-(defun editorconfig--find-mode-from-ext (ext &optional filename)
-  "Get suitable `major-mode' from EXT and FILENAME.
-If FILENAME is omitted filename of current buffer is used."
-  (cl-assert ext)
-  (cl-assert (not (string= ext "")))
-  (let* ((name (concat (or filename
-                           buffer-file-name)
-                       "."
-                       ext)))
-    (assoc-default name
-                   auto-mode-alist
-                   'string-match)))
-
-(defun editorconfig-set-major-mode-from-ext (ext)
-  "Set buffer `major-mode' by EXT.
-
-EXT should be a string like `\"ini\"`, if not nil or empty string."
-  (cl-assert buffer-file-name)
-  (when (and ext
-             (not (string= ext "")))
-
-    (let ((mode (editorconfig--find-mode-from-ext ext
-                                                  buffer-file-name)))
-      (if mode
-          (editorconfig-apply-major-mode-safely mode)
-        (display-warning :error (format "Major-mode for `%s' not found"
-                                        ext))
-        nil))))
 
 (defun editorconfig-call-editorconfig-exec ()
   "Call EditorConfig core and return output."
@@ -692,8 +605,6 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
             (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
             (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
             (editorconfig-set-line-length (gethash 'max_line_length props))
-            (editorconfig-set-major-mode-from-name (gethash 'file_type_emacs props))
-            (editorconfig-set-major-mode-from-ext (gethash 'file_type_ext props))
             (condition-case err
                 (run-hook-with-args 'editorconfig-after-apply-functions props)
               (error
