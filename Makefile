@@ -17,12 +17,12 @@ MAIN_SRC = editorconfig.el
 SRCS = $(wildcard $(PROJECT_ROOT_DIR)/*.el)
 OBJS = $(SRCS:.el=.elc)
 
-$(OBJS): %.elc: %.el
-	$(EMACS) $(BATCHFLAGS) -f batch-byte-compile $^
-
 .PHONY: all clean test test-travis test-ert test-core test-metadata sandbox doc info
 
 all: $(OBJS)
+
+$(OBJS): %.elc: %.el
+	$(EMACS) $(BATCHFLAGS) -f batch-byte-compile $^
 
 clean:
 	-rm -f $(OBJS)

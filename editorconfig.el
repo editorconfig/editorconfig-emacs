@@ -436,9 +436,9 @@ number - `lisp-indent-offset' is not set only if indent_size is
      'permanent-local
      t)
 
-(cl-defun editorconfig-set-coding-system (end-of-line charset)
-  "Set buffer coding system by END-OF-LINE and CHARSET."
-  (let* ((eol (cond
+(defun editorconfig-merge-coding-systems (end-of-line charset)
+  "Return merged coding system symbol of END-OF-LINE and CHARSET."
+  (let ((eol (cond
                ((equal end-of-line "lf") 'undecided-unix)
                ((equal end-of-line "cr") 'undecided-mac)
                ((equal end-of-line "crlf") 'undecided-dos)
@@ -449,8 +449,13 @@ number - `lisp-indent-offset' is not set only if indent_size is
               ((equal charset "utf-8-bom") 'utf-8-with-signature)
               ((equal charset "utf-16be") 'utf-16be-with-signature)
               ((equal charset "utf-16le") 'utf-16le-with-signature)
-              (t 'undecided)))
-         (coding-system (merge-coding-systems cs eol)))
+              (t 'undecided))))
+    (merge-coding-systems cs eol)))
+
+(cl-defun editorconfig-set-coding-system (end-of-line charset)
+  "Set buffer coding system by END-OF-LINE and CHARSET."
+  (let ((coding-system (editorconfig-merge-coding-systems end-of-line
+                                                          charset)))
     (when (eq coding-system 'undecided)
       (cl-return-from editorconfig-set-coding-system))
     (unless (file-readable-p buffer-file-name)
@@ -572,6 +577,25 @@ It calls `editorconfig-get-properties-from-exec' if
     (require 'editorconfig-core)
     (editorconfig-core-get-properties-hash)))
 
+(defun editorconfig-get-properties-call ()
+  "Call `editorconfig-get-properties-function' and return result.
+
+This function also removes 'unset'ted properties and calls
+`editorconfig-hack-properties-functions'."
+  (unless (functionp editorconfig-get-properties-function)
+    (error "Invalid editorconfig-get-properties-function value"))
+  (let ((props (funcall editorconfig-get-properties-function)))
+    (cl-loop for k being the hash-keys of props using (hash-values v)
+             when (equal v "unset") do (remhash k props))
+    (condition-case err
+        (run-hook-with-args 'editorconfig-hack-properties-functions props)
+      (error
+       (display-warning 'editorconfig-hack-properties-functions
+                        (concat (error-message-string err)
+                                ". Abort running hook.")
+                        :warning)))
+    props))
+
 ;;;###autoload
 (defun editorconfig-apply ()
   "Get and apply EditorConfig properties to current buffer.
@@ -583,18 +607,7 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
   (when buffer-file-name
     (condition-case err
         (progn
-          (unless (functionp editorconfig-get-properties-function)
-            (error "Invalid editorconfig-get-properties-function value"))
-          (let ((props (funcall editorconfig-get-properties-function)))
-            (cl-loop for k being the hash-keys of props using (hash-values v)
-                     when (equal v "unset") do (remhash k props))
-            (condition-case err
-                (run-hook-with-args 'editorconfig-hack-properties-functions props)
-              (error
-               (display-warning 'editorconfig-hack-properties-functions
-                                (concat (error-message-string err)
-                                        ". Abort running hook.")
-                                :warning)))
+          (let ((props (editorconfig-get-properties-call)))
             (setq editorconfig-properties-hash props)
             (editorconfig-set-indentation (gethash 'indent_style props)
                                           (gethash 'indent_size props)
