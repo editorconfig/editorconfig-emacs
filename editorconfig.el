@@ -598,6 +598,15 @@ This function also removes 'unset'ted properties and calls
                         :warning)))
     props))
 
+(defun editorconfig-set-variables (props)
+  "Set buffer variables according to EditorConfig PROPS."
+  (editorconfig-set-indentation (gethash 'indent_style props)
+                                (gethash 'indent_size props)
+                                (gethash 'tab_width props))
+  (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
+  (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
+  (editorconfig-set-line-length (gethash 'max_line_length props)))
+
 ;;;###autoload
 (defun editorconfig-apply ()
   "Get and apply EditorConfig properties to current buffer.
@@ -611,15 +620,10 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
         (progn
           (let ((props (editorconfig-get-properties-call buffer-file-name)))
             (setq editorconfig-properties-hash props)
-            (editorconfig-set-indentation (gethash 'indent_style props)
-                                          (gethash 'indent_size props)
-                                          (gethash 'tab_width props))
+            (editorconfig-set-variables props)
             (editorconfig-set-coding-system
              (gethash 'end_of_line props)
              (gethash 'charset props))
-            (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
-            (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
-            (editorconfig-set-line-length (gethash 'max_line_length props))
             (condition-case err
                 (run-hook-with-args 'editorconfig-after-apply-functions props)
               (error
@@ -649,6 +653,33 @@ any of regexps in `editorconfig-exclude-regexps'."
                            if (string-match regexp buffer-file-name) return t
                            finally return nil)))
     (editorconfig-apply)))
+
+(defun editorconfig--advice-find-file-noselect (f filename &rest args)
+  "Get EditorConfig properties and apply them to buffer to be visited.
+
+This function should be hooked to `find-file-noselect'.
+F is this function, and FILENAME and ARGS are arguments passed to F."
+  ;; TODO: Catch editorconfig errors
+  (if (and (stringp filename)
+           (not (cl-loop for regexp in editorconfig-exclude-regexps
+                         if (string-match regexp filename) return t
+                         finally return nil)))
+      (let* ((props (editorconfig-get-properties-call filename))
+             (coding-system (editorconfig-merge-coding-systems
+                             (gethash 'end_of_line props)
+                             (gethash 'charset props)))
+             (coding-system-for-read (if (or (not coding-system)
+                                             (eq coding-system
+                                                 'undecided))
+                                         coding-system-for-read
+                                       coding-system))
+             (ret nil))
+        (setq ret (apply f filename args))
+        (with-current-buffer ret
+          (editorconfig-set-variables props)
+          (run-hook-with-args 'editorconfig-after-apply-functions props))
+        ret)
+    (apply f filename args)))
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
