@@ -48,7 +48,7 @@
 
 (declare-function editorconfig-core-get-properties-hash
                   "editorconfig-core"
-                  nil)
+                  (&optional file confname confversion))
 
 (defgroup editorconfig nil
   "EditorConfig Emacs Plugin.
@@ -67,7 +67,7 @@ coding styles between different editors and IDEs."
   "editorconfig"
   "Path to EditorConfig executable.
 
-Used by `editorconfig-call-editorconfig-exec'."
+Used by `editorconfig--execute-editorconfig-exec'."
   :type 'string
   :group 'editorconfig)
 
@@ -77,12 +77,12 @@ Used by `editorconfig-call-editorconfig-exec'."
   "0.5")
 (defcustom editorconfig-get-properties-function
   'editorconfig-core-get-properties-hash
-  "A function which gets EditorConfig properties for current buffer.
+  "A function which gets EditorConfig properties for specified file.
 
-This function will be called with no argument and should return a
-hash object containing properties, or nil if any core program is
-not available.  Keys of this hash should be symbols of properties, and values
-should be strings of their values.
+This function will be called with one argument, full path of the target file,
+and should return a hash object containing properties, or nil if any core
+program is not available.  Keys of this hash should be symbols of properties,
+and values should be strings of their values.
 
 
 For example, if you always want to use built-in core library instead
@@ -532,20 +532,18 @@ If you just want to check `major-mode', use `derived-mode-p'."
     mode))
 
 
-(defun editorconfig-call-editorconfig-exec ()
-  "Call EditorConfig core and return output."
-  (let* ((filename (buffer-file-name))
-         (filename (and filename (expand-file-name filename))))
-    (if filename
-        (with-temp-buffer
-          (setq default-directory "/")
-          (if (eq 0
-                  (call-process editorconfig-exec-path nil t nil filename))
-              (buffer-string)
-            (error (buffer-string))))
-      "")))
+(defun editorconfig--execute-editorconfig-exec (filename)
+  "Execute EditorConfig core with FILENAME and return output."
+  (if filename
+      (with-temp-buffer
+        (setq default-directory "/")
+        (if (eq 0
+                (call-process editorconfig-exec-path nil t nil filename))
+            (buffer-string)
+          (error (buffer-string))))
+    ""))
 
-(defun editorconfig-parse-properties (props-string)
+(defun editorconfig--parse-properties (props-string)
   "Create properties hash table from PROPS-STRING."
   (let (props-list properties)
     (setq props-list (split-string props-string "\n")
@@ -557,34 +555,38 @@ If you just want to check `major-mode', use `derived-mode-p'."
                 (val (mapconcat 'identity (cdr key-val) "")))
             (puthash key val properties)))))))
 
-(defun editorconfig-get-properties-from-exec ()
-  "Get EditorConfig properties of current buffer.
+(defun editorconfig-get-properties-from-exec (filename)
+  "Get EditorConfig properties of file FILENAME.
 
 This function uses value of `editorconfig-exec-path' to get properties."
   (if (executable-find editorconfig-exec-path)
-      (editorconfig-parse-properties (editorconfig-call-editorconfig-exec))
+      (editorconfig--parse-properties (editorconfig--execute-editorconfig-exec filename))
     (error "Unable to find editorconfig executable")))
 
-(defun editorconfig-get-properties ()
-  "Get EditorConfig properties of current buffer.
+(defun editorconfig-get-properties (filename)
+  "Get EditorConfig properties for file FILENAME.
 
 It calls `editorconfig-get-properties-from-exec' if
 `editorconfig-exec-path' is found, otherwise
 `editorconfig-core-get-properties-hash'."
   (if (and (executable-find editorconfig-exec-path)
            (not (file-remote-p buffer-file-name)))
-      (editorconfig-get-properties-from-exec)
+      (editorconfig-get-properties-from-exec filename)
     (require 'editorconfig-core)
-    (editorconfig-core-get-properties-hash)))
+    (editorconfig-core-get-properties-hash filename)))
 
-(defun editorconfig-get-properties-call ()
-  "Call `editorconfig-get-properties-function' and return result.
+(defun editorconfig-get-properties-call (filename)
+  "Call `editorconfig-get-properties-function' with FILENAME and return result.
 
 This function also removes 'unset'ted properties and calls
 `editorconfig-hack-properties-functions'."
   (unless (functionp editorconfig-get-properties-function)
     (error "Invalid editorconfig-get-properties-function value"))
-  (let ((props (funcall editorconfig-get-properties-function)))
+  (if (stringp filename)
+      (setq filename (expand-file-name filename))
+    (error "Invalid argument: %S" filename))
+  (let ((props (funcall editorconfig-get-properties-function
+                        filename)))
     (cl-loop for k being the hash-keys of props using (hash-values v)
              when (equal v "unset") do (remhash k props))
     (condition-case err
@@ -607,7 +609,7 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
   (when buffer-file-name
     (condition-case err
         (progn
-          (let ((props (editorconfig-get-properties-call)))
+          (let ((props (editorconfig-get-properties-call buffer-file-name)))
             (setq editorconfig-properties-hash props)
             (editorconfig-set-indentation (gethash 'indent_style props)
                                           (gethash 'indent_size props)
