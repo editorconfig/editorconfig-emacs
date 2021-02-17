@@ -583,7 +583,7 @@ It calls `editorconfig-get-properties-from-exec' if
     (require 'editorconfig-core)
     (editorconfig-core-get-properties-hash filename)))
 
-(defun editorconfig-get-properties-call (filename)
+(defun editorconfig-call-get-properties-function (filename)
   "Call `editorconfig-get-properties-function' with FILENAME and return result.
 
 This function also removes 'unset'ted properties and calls
@@ -631,7 +631,7 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
   (when buffer-file-name
     (condition-case err
         (progn
-          (let ((props (editorconfig-get-properties-call buffer-file-name)))
+          (let ((props (editorconfig-call-get-properties-function buffer-file-name)))
             (setq editorconfig-properties-hash props)
             (editorconfig-set-variables props)
             (editorconfig-set-coding-system
@@ -703,7 +703,7 @@ F is this function, and FILENAME and ARGS are arguments passed to F."
             (coding-system nil)
             (ret nil))
         (condition-case err
-            (setq props (editorconfig-get-properties-call filename))
+            (setq props (editorconfig-call-get-properties-function filename))
           (error
            (display-warning 'editorconfig
                             (format "Failed to get properties, styles will not be applied: %S"
