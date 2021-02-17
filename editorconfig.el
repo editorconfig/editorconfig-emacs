@@ -346,6 +346,14 @@ number - `lisp-indent-offset' is not set only if indent_size is
          equal to this number.  For example, if this is set to 2,
          `lisp-indent-offset' will not be set only if indent_size is 2.")
 
+(define-error 'editorconfig-error
+  "Error thrown from editorconfig lib")
+
+(defun editorconfig-error (&rest args)
+  "Signal an `editorconfig-error'.
+Make a message by passing ARGS to `format-message'."
+  (signal 'editorconfig-error (list (apply #'format-message args))))
+
 (defun editorconfig-string-integer-p (string)
   "Return non-nil if STRING represents integer."
   (and (stringp string)
@@ -540,7 +548,7 @@ If you just want to check `major-mode', use `derived-mode-p'."
         (if (eq 0
                 (call-process editorconfig-exec-path nil t nil filename))
             (buffer-string)
-          (error (buffer-string))))
+          (editorconfig-error (buffer-string))))
     ""))
 
 (defun editorconfig--parse-properties (props-string)
@@ -561,7 +569,7 @@ If you just want to check `major-mode', use `derived-mode-p'."
 This function uses value of `editorconfig-exec-path' to get properties."
   (if (executable-find editorconfig-exec-path)
       (editorconfig--parse-properties (editorconfig--execute-editorconfig-exec filename))
-    (error "Unable to find editorconfig executable")))
+    (editorconfig-error "Unable to find editorconfig executable")))
 
 (defun editorconfig-get-properties (filename)
   "Get EditorConfig properties for file FILENAME.
@@ -581,12 +589,17 @@ It calls `editorconfig-get-properties-from-exec' if
 This function also removes 'unset'ted properties and calls
 `editorconfig-hack-properties-functions'."
   (unless (functionp editorconfig-get-properties-function)
-    (error "Invalid editorconfig-get-properties-function value"))
+    (editorconfig-error "Invalid editorconfig-get-properties-function value"))
   (if (stringp filename)
       (setq filename (expand-file-name filename))
-    (error "Invalid argument: %S" filename))
-  (let ((props (funcall editorconfig-get-properties-function
-                        filename)))
+    (editorconfig-error "Invalid argument: %S" filename))
+  (let ((props nil))
+    (condition-case err
+        (setq props (funcall editorconfig-get-properties-function
+                             filename))
+      (error
+       (editorconfig-error "Error from editorconfig-get-properties-function: %S"
+                           err)))
     (cl-loop for k being the hash-keys of props using (hash-values v)
              when (equal v "unset") do (remhash k props))
     (condition-case err
