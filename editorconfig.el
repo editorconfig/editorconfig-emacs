@@ -730,11 +730,17 @@ F is this function, and FILENAME and ARGS are arguments passed to F."
               (when (and props
                          ;; filename has already been checked
                          (not (editorconfig--disabled-for-majormode major-mode)))
+                (setq editorconfig-properties-hash props)
                 (editorconfig-set-variables props)
-                (run-hook-with-args 'editorconfig-after-apply-functions props)))
+                (condition-case err
+                    (run-hook-with-args 'editorconfig-after-apply-functions props)
+                  (error
+                   (display-warning 'editorconfig
+                                    (format "Error while running `editorconfig-after-apply-functions': %S"
+                                            err))))))
           (error
            (display-warning 'editorconfig
-                            (format "Error: %S" err))))
+                            (format "Error while setting variables from EditorConfig: %S" err))))
         ret)
     (apply f filename args)))
 ;; (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
