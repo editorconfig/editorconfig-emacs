@@ -354,6 +354,20 @@ number - `lisp-indent-offset' is not set only if indent_size is
 Make a message by passing ARGS to `format-message'."
   (signal 'editorconfig-error (list (apply #'format-message args))))
 
+(defun editorconfig--disabled-for-filename (filename)
+  "Return non-nil when EditorConfig is disabled for FILENAME."
+  (cl-assert (stringp filename))
+  (cl-loop for regexp in editorconfig-exclude-regexps
+           if (string-match regexp filename) return t
+           finally return nil))
+
+(defun editorconfig--disabled-for-majormode (majormode)
+  "Return non-nil when Editorconfig is disabled for MAJORMODE."
+  (cl-assert majormode)
+  (or (editorconfig--provided-mode-derived-p majormode 'special-mode)
+      (memq majormode
+            editorconfig-exclude-modes)))
+
 (defun editorconfig-string-integer-p (string)
   "Return non-nil if STRING represents integer."
   (and (stringp string)
@@ -658,13 +672,9 @@ This function does nothing when the major mode is listed in
 any of regexps in `editorconfig-exclude-regexps'."
   (interactive)
   (when (and major-mode
-             (not (derived-mode-p 'special-mode))
-             (not (memq major-mode
-                        editorconfig-exclude-modes))
+             (not (editorconfig--disabled-for-majormode major-mode))
              buffer-file-name
-             (not (cl-loop for regexp in editorconfig-exclude-regexps
-                           if (string-match regexp buffer-file-name) return t
-                           finally return nil)))
+             (not (editorconfig--disabled-for-filename buffer-file-name)))
     (editorconfig-apply)))
 
 (defvar editorconfig--cons-filename-codingsystem nil
@@ -696,9 +706,7 @@ This function should be adviced to `insert-file-contents'"
 This function should be adviced to `find-file-noselect'.
 F is this function, and FILENAME and ARGS are arguments passed to F."
   (if (and (stringp filename)
-           (not (cl-loop for regexp in editorconfig-exclude-regexps
-                         if (string-match regexp filename) return t
-                         finally return nil)))
+           (not (editorconfig--disabled-for-filename filename)))
       (let ((props nil)
             (coding-system nil)
             (ret nil))
@@ -718,8 +726,10 @@ F is this function, and FILENAME and ARGS are arguments passed to F."
           (setq ret (apply f filename args)))
         ;; TODO: Catch editorconfig errors
         (condition-case err
-            (when props
-              (with-current-buffer ret
+            (with-current-buffer ret
+              (when (and props
+                         ;; filename has already been checked
+                         (not (editorconfig--disabled-for-majormode major-mode)))
                 (editorconfig-set-variables props)
                 (run-hook-with-args 'editorconfig-after-apply-functions props)))
           (error
