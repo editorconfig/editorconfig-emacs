@@ -667,32 +667,64 @@ any of regexps in `editorconfig-exclude-regexps'."
                            finally return nil)))
     (editorconfig-apply)))
 
+(defvar editorconfig--cons-filename-codingsystem nil
+  "Used interally.")
+
+(defun editorconfig--advice-insert-file-contents (f filename &rest args)
+  "Set `coding-system-for-read'.
+This function should be adviced to `insert-file-contents'"
+  (message "editorconfig--acvice-insert-file-contents: %S %S %S"
+           filename args
+           editorconfig--cons-filename-codingsystem)
+  (if (and (stringp filename)
+           (stringp (car editorconfig--cons-filename-codingsystem))
+           (string= (expand-file-name filename)
+                    (car editorconfig--cons-filename-codingsystem))
+           (cdr editorconfig--cons-filename-codingsystem)
+           (not (eq (cdr editorconfig--cons-filename-codingsystem)
+                    'undecided)))
+      (let (
+            (coding-system-for-read (cdr editorconfig--cons-filename-codingsystem))
+            ;; (coding-system-for-read 'undecided)
+            )
+        (apply f filename args))
+    (apply f filename args)))
+
 (defun editorconfig--advice-find-file-noselect (f filename &rest args)
   "Get EditorConfig properties and apply them to buffer to be visited.
 
-This function should be hooked to `find-file-noselect'.
+This function should be adviced to `find-file-noselect'.
 F is this function, and FILENAME and ARGS are arguments passed to F."
-  ;; TODO: Catch editorconfig errors
   (if (and (stringp filename)
            (not (cl-loop for regexp in editorconfig-exclude-regexps
                          if (string-match regexp filename) return t
                          finally return nil)))
-      (let* ((props (editorconfig-get-properties-call filename))
-             (coding-system (editorconfig-merge-coding-systems
-                             (gethash 'end_of_line props)
-                             (gethash 'charset props)))
-             (coding-system-for-read (if (or (not coding-system)
-                                             (eq coding-system
-                                                 'undecided))
-                                         coding-system-for-read
-                                       coding-system))
-             (ret nil))
-        (setq ret (apply f filename args))
+      (let ((props nil)
+            (coding-system nil)
+            (ret nil))
+        (condition-case err
+            (progn
+              (setq props (editorconfig-get-properties-call filename))
+              (setq coding-system
+                    (editorconfig-merge-coding-systems (gethash 'end_of_line props)
+                                                       (gethash 'charset props)))
+              )
+          (error
+           (display-warning 'editorconfig
+                            (format-message "Failed to get properties, styles will not be applied: %S"
+                                            err)
+                            :warning)))
+        (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
+                                                              coding-system)))
+          (setq ret (apply f filename args)))
+        ;; TODO: Catch editorconfig errors
         (with-current-buffer ret
           (editorconfig-set-variables props)
           (run-hook-with-args 'editorconfig-after-apply-functions props))
         ret)
     (apply f filename args)))
+;; (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
+;; (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
