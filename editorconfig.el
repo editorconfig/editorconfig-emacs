@@ -703,24 +703,28 @@ F is this function, and FILENAME and ARGS are arguments passed to F."
             (coding-system nil)
             (ret nil))
         (condition-case err
-            (progn
-              (setq props (editorconfig-get-properties-call filename))
-              (setq coding-system
-                    (editorconfig-merge-coding-systems (gethash 'end_of_line props)
-                                                       (gethash 'charset props)))
-              )
+            (setq props (editorconfig-get-properties-call filename))
           (error
            (display-warning 'editorconfig
-                            (format-message "Failed to get properties, styles will not be applied: %S"
-                                            err)
+                            (format "Failed to get properties, styles will not be applied: %S"
+                                    err)
                             :warning)))
+        (when props
+          (setq coding-system
+                (editorconfig-merge-coding-systems (gethash 'end_of_line props)
+                                                   (gethash 'charset props))))
         (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
                                                               coding-system)))
           (setq ret (apply f filename args)))
         ;; TODO: Catch editorconfig errors
-        (with-current-buffer ret
-          (editorconfig-set-variables props)
-          (run-hook-with-args 'editorconfig-after-apply-functions props))
+        (condition-case err
+            (when props
+              (with-current-buffer ret
+                (editorconfig-set-variables props)
+                (run-hook-with-args 'editorconfig-after-apply-functions props)))
+          (error
+           (display-warning 'editorconfig
+                            (format "Error: %S" err))))
         ret)
     (apply f filename args)))
 ;; (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
