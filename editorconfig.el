@@ -5,7 +5,7 @@
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.8.1
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
-;; Package-Requires: ((cl-lib "0.5") (emacs "24"))
+;; Package-Requires: ((cl-lib "0.5") (nadvice "0.3") (emacs "24"))
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
@@ -39,6 +39,7 @@
 
 ;;; Code:
 (require 'cl-lib)
+(require 'nadvice)
 (eval-when-compile
   (require 'rx)
   (defvar tex-indent-basic)
