@@ -684,9 +684,11 @@ any of regexps in `editorconfig-exclude-regexps'."
 (defun editorconfig--advice-insert-file-contents (f filename &rest args)
   "Set `coding-system-for-read'.
 This function should be adviced to `insert-file-contents'"
-  (message "editorconfig--acvice-insert-file-contents: %S %S %S"
-           filename args
-           editorconfig--cons-filename-codingsystem)
+  (display-warning '(editorconfig editorconfig--advice-insert-file-contents)
+                   (format ": %S %S %S"
+                           filename args
+                           editorconfig--cons-filename-codingsystem)
+                   :debug)
   (if (and (stringp filename)
            (stringp (car editorconfig--cons-filename-codingsystem))
            (string= (expand-file-name filename)
