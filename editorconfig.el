@@ -705,44 +705,43 @@ This function should be adviced to `insert-file-contents'"
 
 This function should be adviced to `find-file-noselect'.
 F is this function, and FILENAME and ARGS are arguments passed to F."
-  (if (and (stringp filename)
-           (not (editorconfig--disabled-for-filename filename)))
-      (let ((props nil)
-            (coding-system nil)
-            (ret nil))
-        (condition-case err
-            (setq props (editorconfig-call-get-properties-function filename))
-          (error
-           (display-warning 'editorconfig
-                            (format "Failed to get properties, styles will not be applied: %S"
-                                    err)
-                            :warning)))
-        (when props
+  (let ((props nil)
+        (coding-system nil)
+        (ret nil))
+    (condition-case err
+        (when (and (stringp filename)
+                   (not (editorconfig--disabled-for-filename filename)))
+          (setq props (editorconfig-call-get-properties-function filename))
           (setq coding-system
                 (editorconfig-merge-coding-systems (gethash 'end_of_line props)
                                                    (gethash 'charset props))))
-        (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
-                                                              coding-system)))
-          (setq ret (apply f filename args)))
-        ;; TODO: Catch editorconfig errors
-        (condition-case err
-            (with-current-buffer ret
-              (when (and props
-                         ;; filename has already been checked
-                         (not (editorconfig--disabled-for-majormode major-mode)))
-                (setq editorconfig-properties-hash props)
-                (editorconfig-set-variables props)
-                (condition-case err
-                    (run-hook-with-args 'editorconfig-after-apply-functions props)
-                  (error
-                   (display-warning 'editorconfig
-                                    (format "Error while running `editorconfig-after-apply-functions': %S"
-                                            err))))))
-          (error
-           (display-warning 'editorconfig
-                            (format "Error while setting variables from EditorConfig: %S" err))))
-        ret)
-    (apply f filename args)))
+      (error
+       (display-warning 'editorconfig
+                        (format "Failed to get properties, styles will not be applied: %S"
+                                err)
+                        :warning)))
+
+    (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
+                                                            coding-system)))
+      (setq ret (apply f filename args)))
+
+    (condition-case err
+        (with-current-buffer ret
+          (when (and props
+                     ;; filename has already been checked
+                     (not (editorconfig--disabled-for-majormode major-mode)))
+            (setq editorconfig-properties-hash props)
+            (editorconfig-set-variables props)
+            (condition-case err
+                (run-hook-with-args 'editorconfig-after-apply-functions props)
+              (error
+               (display-warning 'editorconfig
+                                (format "Error while running `editorconfig-after-apply-functions': %S"
+                                        err))))))
+      (error
+       (display-warning 'editorconfig
+                        (format "Error while setting variables from EditorConfig: %S" err))))
+    ret))
 ;; (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
 ;; (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
 
