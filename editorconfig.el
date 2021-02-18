@@ -742,8 +742,6 @@ F is this function, and FILENAME and ARGS are arguments passed to F."
        (display-warning 'editorconfig
                         (format "Error while setting variables from EditorConfig: %S" err))))
     ret))
-;; (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
-;; (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
@@ -766,6 +764,22 @@ To disable EditorConfig in some buffers, modify
     (if editorconfig-mode
         (add-hook hook 'editorconfig-mode-apply)
       (remove-hook hook 'editorconfig-mode-apply))))
+
+(define-minor-mode editorconfig-2-mode
+  "Toggle EditorConfig feature.
+
+This function is provided temporarily for beta testing, and not well tested yet.
+Currently this can cause unexpected behaviors like kill emacs processes and
+destroying your files, so please use with caution if you enable this instead of
+ `editorconfig-mode'."
+  :global t
+  :lighter editorconfig-mode-lighter
+  (if editorconfig-2-mode
+      (progn
+        (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
+        (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents))
+    (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
+    (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)))
 
 
 ;; Tools
