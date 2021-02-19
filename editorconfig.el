@@ -685,9 +685,10 @@ any of regexps in `editorconfig-exclude-regexps'."
   "Set `coding-system-for-read'.
 This function should be adviced to `insert-file-contents'"
   (display-warning '(editorconfig editorconfig--advice-insert-file-contents)
-                   (format ": %S %S %S"
+                   (format "filename: %S args: %S codingsystem: %S bufferfilename: %S"
                            filename args
-                           editorconfig--cons-filename-codingsystem)
+                           editorconfig--cons-filename-codingsystem
+                           buffer-file-name)
                    :debug)
   (if (and (stringp filename)
            (stringp (car editorconfig--cons-filename-codingsystem))
