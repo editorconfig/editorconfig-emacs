@@ -559,9 +559,28 @@ If you just want to check `major-mode', use `derived-mode-p'."
   "Execute EditorConfig core with FILENAME and return output."
   (if filename
       (with-temp-buffer
-        (setq default-directory "/")
+        (let ((remote (file-remote-p filename))
+              (remote-localname (file-remote-p filename
+                                               'localname)))
+          (display-warning '(editorconfig editorconfig--execute-editorconfig-exec)
+                           (format "filename: %S | remote: %S | remote-localname: %S"
+                                   filename
+                                   remote
+                                   remote-localname)
+                           :debug)
+          (if remote
+              (progn
+                (cd (concat remote "/"))
+                (setq filename remote-localname))
+            (cd "/")))
+        (display-warning '(editorconfig editorconfig--execute-editorconfig-exec)
+                         (format "default-directory: %S | filename: %S"
+                                 default-directory
+                                 filename
+                                 )
+                         :debug)
         (if (eq 0
-                (call-process editorconfig-exec-path nil t nil filename))
+                (process-file editorconfig-exec-path nil t nil filename))
             (buffer-string)
           (editorconfig-error (buffer-string))))
     ""))
