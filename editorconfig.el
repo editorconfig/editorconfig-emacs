@@ -107,7 +107,7 @@ Possible known values are:
   :group 'editorconfig)
 
 (defcustom editorconfig-mode-lighter " EditorConfig"
-  "`editorconfig-mode' lighter string."
+  "Command `editorconfig-mode' lighter string."
   :type 'string
   :group 'editorconfig)
 
@@ -683,7 +683,9 @@ any of regexps in `editorconfig-exclude-regexps'."
 
 (defun editorconfig--advice-insert-file-contents (f filename &rest args)
   "Set `coding-system-for-read'.
-This function should be adviced to `insert-file-contents'"
+
+This function should be added as an advice function to `insert-file-contents'.
+F is that function, and FILENAME and ARGS are arguments passed to F."
   (display-warning '(editorconfig editorconfig--advice-insert-file-contents)
                    (format "filename: %S args: %S codingsystem: %S bufferfilename: %S"
                            filename args
@@ -707,8 +709,8 @@ This function should be adviced to `insert-file-contents'"
 (defun editorconfig--advice-find-file-noselect (f filename &rest args)
   "Get EditorConfig properties and apply them to buffer to be visited.
 
-This function should be adviced to `find-file-noselect'.
-F is this function, and FILENAME and ARGS are arguments passed to F."
+This function should be added as an advice function to `find-file-noselect'.
+F is that function, and FILENAME and ARGS are arguments passed to F."
   (let ((props nil)
         (coding-system nil)
         (ret nil))
