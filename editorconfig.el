@@ -690,19 +690,25 @@ This function should be adviced to `insert-file-contents'"
                            editorconfig--cons-filename-codingsystem
                            buffer-file-name)
                    :debug)
-  (if (and (stringp filename)
-           (stringp (car editorconfig--cons-filename-codingsystem))
-           (string= (expand-file-name filename)
-                    (car editorconfig--cons-filename-codingsystem))
-           (cdr editorconfig--cons-filename-codingsystem)
-           (not (eq (cdr editorconfig--cons-filename-codingsystem)
-                    'undecided)))
-      (let (
-            (coding-system-for-read (cdr editorconfig--cons-filename-codingsystem))
-            ;; (coding-system-for-read 'undecided)
-            )
-        (apply f filename args))
-    (apply f filename args)))
+  (display-warning '(editorconfig editorconfig--advice-insert-file-contents)
+                   (format "file-coding-system-alist: %S"
+                           file-coding-system-alist)
+                   :debug)
+  ;; (if (and (stringp filename)
+  ;;          (stringp (car editorconfig--cons-filename-codingsystem))
+  ;;          (string= (expand-file-name filename)
+  ;;                   (car editorconfig--cons-filename-codingsystem))
+  ;;          (cdr editorconfig--cons-filename-codingsystem)
+  ;;          (not (eq (cdr editorconfig--cons-filename-codingsystem)
+  ;;                   'undecided)))
+  ;;     (let (
+  ;;           (coding-system-for-read (cdr editorconfig--cons-filename-codingsystem))
+  ;;           ;; (coding-system-for-read 'undecided)
+  ;;           )
+  ;;       (apply f filename args))
+  ;;   (apply f filename args))
+  (apply f filename args)
+  )
 
 (defun editorconfig--advice-find-file-noselect (f filename &rest args)
   "Get EditorConfig properties and apply them to buffer to be visited.
@@ -726,7 +732,14 @@ F is this function, and FILENAME and ARGS are arguments passed to F."
                         :warning)))
 
     (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
-                                                            coding-system)))
+                                                          coding-system))
+          (file-coding-system-alist (cl-copy-list file-coding-system-alist)))
+      (when coding-system
+        (push (cons (concat "\\`"
+                            (regexp-quote (expand-file-name filename))
+                            "\\'")
+                    coding-system)
+              file-coding-system-alist))
       (setq ret (apply f filename args)))
 
     (condition-case err
