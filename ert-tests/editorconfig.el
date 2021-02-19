@@ -2,11 +2,12 @@
 
 (defun display-warning (type message &optional level buffer-name)
   "When testing overwrite this function to throw error when called."
-  (error "display-warning called: %S %S %S %S"
-         type
-         message
-         level
-         buffer-name))
+  (unless (eq level :debug)
+    (error "display-warning called: %S %S %S %S"
+           type
+           message
+           level
+           buffer-name)))
 
 (defmacro with-visit-file (path &rest body)
   "Visit PATH and evaluate BODY."

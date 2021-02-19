@@ -484,8 +484,8 @@ Make a message by passing ARGS to `format-message'."
     (unless (file-readable-p buffer-file-name)
       (set-buffer-file-coding-system coding-system)
       (cl-return-from editorconfig-set-coding-system))
-    (unless (eq coding-system
-                editorconfig--apply-coding-system-currently)
+    (unless (memq coding-system
+                  (coding-system-aliases editorconfig--apply-coding-system-currently))
       ;; Revert functions might call editorconfig-apply again
       (unwind-protect
           (progn
@@ -780,9 +780,13 @@ destroying your files, so please use with caution if you enable this instead of
   (if editorconfig-2-mode
       (progn
         (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
-        (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents))
+        (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
+        (add-hook 'read-only-mode-hook
+                  'editorconfig-mode-apply))
     (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
-    (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)))
+    (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
+    (remove-hook 'read-only-mode-hook
+              'editorconfig-mode-apply)))
 
 
 ;; Tools
