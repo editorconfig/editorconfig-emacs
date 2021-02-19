@@ -755,6 +755,18 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
           (when (and props
                      ;; filename has already been checked
                      (not (editorconfig--disabled-for-majormode major-mode)))
+            (when (and (file-remote-p filename)
+                       (not (local-variable-p 'buffer-file-coding-system))
+                       (not (file-exists-p filename))
+                       coding-system
+                       (not (eq coding-system
+                                'undecided)))
+              ;; When file path indicates it is a remote file and it actually
+              ;; does not exists, `buffer-file-coding-system' will not be set.
+              ;; (Does not call `insert-file-contents'?)
+              ;; For that case, explicitly set this value so that saving will be done
+              ;; with expected coding system.
+              (set-buffer-file-coding-system coding-system))
             (setq editorconfig-properties-hash props)
             (editorconfig-set-variables props)
             (condition-case err
