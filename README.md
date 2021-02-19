@@ -68,8 +68,8 @@ Current Emacs plugin coverage for EditorConfig's [properties][]:
   we just buffer-locally override any preferences that would auto-add them
   to files `.editorconfig` marks as trailing-newline-free
 * `max_line_length`
-* `file_type_ext` (Experimental)
-* `file_type_emacs` (Experimental)
+* <del>`file_type_ext` (Experimental)</del> (See below)
+* <del>`file_type_emacs` (Experimental)</del> (See below)
 * `root` (only used by EditorConfig core)
 
 Not yet covered properties marked with <del>over-strike</del>
@@ -83,21 +83,12 @@ ones that show up on our radar.
 
 
 
-### File Type
+### <del>File Type (file_type_ext, file_type_emacs)</del>
 
-This plugin has experimental supports for `file_type_ext` and
-`file_type_emacs`, which specify "file types" for files.
-As for Emacs, it means `major-mode` can be set.
-
-**file_type_ext** When it is set to `md` for `a.txt`, for example,
-`major-mode` will be decided as if the file name would be `a.txt.md`
-(and thus `markdown-mode` is likely to be used).
-
-**file_type_emacs** When it is set to `markdown` for `a.txt`,
-`markdown-mode`  will be enabled when opening `a.txt`.
-
-These property are experimental and their meanings might change in the
-future updates. When both are specified, `file_type_ext` takes precedence.
+File-type feature is currently disabled, because this package is now undergoing
+big internal refactoring.
+For those who want this functionality,
+please consider using [editorconfig-custom-majormode](https://github.com/10sr/editorconfig-custom-majormode-el).
 
 
 ## Customize

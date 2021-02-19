@@ -5,7 +5,7 @@
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.8.1
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
-;; Package-Requires: ((cl-lib "0.5") (emacs "24"))
+;; Package-Requires: ((cl-lib "0.5") (nadvice "0.3") (emacs "24"))
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
@@ -39,6 +39,7 @@
 
 ;;; Code:
 (require 'cl-lib)
+(require 'nadvice)
 (eval-when-compile
   (require 'rx)
   (defvar tex-indent-basic)
@@ -48,7 +49,7 @@
 
 (declare-function editorconfig-core-get-properties-hash
                   "editorconfig-core"
-                  nil)
+                  (&optional file confname confversion))
 
 (defgroup editorconfig nil
   "EditorConfig Emacs Plugin.
@@ -67,7 +68,7 @@ coding styles between different editors and IDEs."
   "editorconfig"
   "Path to EditorConfig executable.
 
-Used by `editorconfig-call-editorconfig-exec'."
+Used by `editorconfig--execute-editorconfig-exec'."
   :type 'string
   :group 'editorconfig)
 
@@ -77,12 +78,12 @@ Used by `editorconfig-call-editorconfig-exec'."
   "0.5")
 (defcustom editorconfig-get-properties-function
   'editorconfig-core-get-properties-hash
-  "A function which gets EditorConfig properties for current buffer.
+  "A function which gets EditorConfig properties for specified file.
 
-This function will be called with no argument and should return a
-hash object containing properties, or nil if any core program is
-not available.  Keys of this hash should be symbols of properties, and values
-should be strings of their values.
+This function will be called with one argument, full path of the target file,
+and should return a hash object containing properties, or nil if any core
+program is not available.  Keys of this hash should be symbols of properties,
+and values should be strings of their values.
 
 
 For example, if you always want to use built-in core library instead
@@ -346,6 +347,28 @@ number - `lisp-indent-offset' is not set only if indent_size is
          equal to this number.  For example, if this is set to 2,
          `lisp-indent-offset' will not be set only if indent_size is 2.")
 
+(define-error 'editorconfig-error
+  "Error thrown from editorconfig lib")
+
+(defun editorconfig-error (&rest args)
+  "Signal an `editorconfig-error'.
+Make a message by passing ARGS to `format-message'."
+  (signal 'editorconfig-error (list (apply #'format-message args))))
+
+(defun editorconfig--disabled-for-filename (filename)
+  "Return non-nil when EditorConfig is disabled for FILENAME."
+  (cl-assert (stringp filename))
+  (cl-loop for regexp in editorconfig-exclude-regexps
+           if (string-match regexp filename) return t
+           finally return nil))
+
+(defun editorconfig--disabled-for-majormode (majormode)
+  "Return non-nil when Editorconfig is disabled for MAJORMODE."
+  (cl-assert majormode)
+  (or (editorconfig--provided-mode-derived-p majormode 'special-mode)
+      (memq majormode
+            editorconfig-exclude-modes)))
+
 (defun editorconfig-string-integer-p (string)
   "Return non-nil if STRING represents integer."
   (and (stringp string)
@@ -436,9 +459,9 @@ number - `lisp-indent-offset' is not set only if indent_size is
      'permanent-local
      t)
 
-(cl-defun editorconfig-set-coding-system (end-of-line charset)
-  "Set buffer coding system by END-OF-LINE and CHARSET."
-  (let* ((eol (cond
+(defun editorconfig-merge-coding-systems (end-of-line charset)
+  "Return merged coding system symbol of END-OF-LINE and CHARSET."
+  (let ((eol (cond
                ((equal end-of-line "lf") 'undecided-unix)
                ((equal end-of-line "cr") 'undecided-mac)
                ((equal end-of-line "crlf") 'undecided-dos)
@@ -449,15 +472,20 @@ number - `lisp-indent-offset' is not set only if indent_size is
               ((equal charset "utf-8-bom") 'utf-8-with-signature)
               ((equal charset "utf-16be") 'utf-16be-with-signature)
               ((equal charset "utf-16le") 'utf-16le-with-signature)
-              (t 'undecided)))
-         (coding-system (merge-coding-systems cs eol)))
+              (t 'undecided))))
+    (merge-coding-systems cs eol)))
+
+(cl-defun editorconfig-set-coding-system (end-of-line charset)
+  "Set buffer coding system by END-OF-LINE and CHARSET."
+  (let ((coding-system (editorconfig-merge-coding-systems end-of-line
+                                                          charset)))
     (when (eq coding-system 'undecided)
       (cl-return-from editorconfig-set-coding-system))
     (unless (file-readable-p buffer-file-name)
       (set-buffer-file-coding-system coding-system)
       (cl-return-from editorconfig-set-coding-system))
-    (unless (eq coding-system
-                editorconfig--apply-coding-system-currently)
+    (unless (memq coding-system
+                  (coding-system-aliases editorconfig--apply-coding-system-currently))
       ;; Revert functions might call editorconfig-apply again
       (unwind-protect
           (progn
@@ -515,12 +543,6 @@ to non-nil when FINAL-NEWLINE is true."
              (> (string-to-number length) 0))
     (setq fill-column (string-to-number length))))
 
-(defvar editorconfig-file-type-emacs-whitelist
-  (append (mapcar 'car
-                  editorconfig-indentation-alist)
-          '(conf-mode))
-  "List of known `major-mode' that can be used for file_type_emacs value.")
-
 ;; Emacs<26 does not have provided-mode-derived-p
 (defun editorconfig--provided-mode-derived-p (mode &rest modes)
   "Non-nil if MODE is derived from one of MODES.
@@ -533,101 +555,18 @@ If you just want to check `major-mode', use `derived-mode-p'."
     mode))
 
 
-(defun editorconfig-set-major-mode-from-name (filetype)
-  "Set buffer `major-mode' by FILETYPE.
+(defun editorconfig--execute-editorconfig-exec (filename)
+  "Execute EditorConfig core with FILENAME and return output."
+  (if filename
+      (with-temp-buffer
+        (setq default-directory "/")
+        (if (eq 0
+                (call-process editorconfig-exec-path nil t nil filename))
+            (buffer-string)
+          (editorconfig-error (buffer-string))))
+    ""))
 
-FILETYPE should be s string like `\"ini\"`, if not nil or empty string."
-  (let ((mode (and filetype
-                   (not (string= filetype
-                                 ""))
-                   (intern (concat filetype
-                                   "-mode")))))
-    (when mode
-      (if (fboundp mode)
-          (if (apply 'editorconfig--provided-mode-derived-p mode
-                     editorconfig-file-type-emacs-whitelist)
-              (editorconfig-apply-major-mode-safely mode)
-            (display-warning :error (format "Major-mode `%S' is not listed in `%S'"
-                                            mode
-                                            'editorconfig-file-type-emacs-whitelist)))
-        (display-warning :error (format "Major-mode `%S' not found"
-                                        mode))
-        nil))))
-
-(defvar editorconfig--apply-major-mode-currently nil
-  "Used internally.")
-(make-variable-buffer-local 'editorconfig--apply-major-mode-currently)
-(put 'editorconfig--apply-major-mode-currently
-     'permanent-local
-     t)
-
-(defun editorconfig-apply-major-mode-safely (mode)
-  "Set `major-mode' to MODE.
-Normally `editorconfig-apply' will be hooked so that it runs when changing
-`major-mode', so there is a possibility that MODE is called infinitely if
-MODE is called naively from inside of `editorconfig-apply'.
-This function will avoid such cases and set `major-mode' safely.
-
-Just checking current `major-mode' value is not enough, because it can be
-different from MODE value (for example, `conf-mode' will set `major-mode' to
-`conf-unix-mode' or another conf mode)."
-  (cl-assert mode)
-  (when (and (not (eq mode
-                      editorconfig--apply-major-mode-currently))
-             (not (eq mode
-                      major-mode))
-             (not (derived-mode-p mode)))
-    (unwind-protect
-        (progn
-          (setq editorconfig--apply-major-mode-currently
-                mode)
-          (funcall mode))
-      (setq editorconfig--apply-major-mode-currently
-            nil))))
-
-(defun editorconfig--find-mode-from-ext (ext &optional filename)
-  "Get suitable `major-mode' from EXT and FILENAME.
-If FILENAME is omitted filename of current buffer is used."
-  (cl-assert ext)
-  (cl-assert (not (string= ext "")))
-  (let* ((name (concat (or filename
-                           buffer-file-name)
-                       "."
-                       ext)))
-    (assoc-default name
-                   auto-mode-alist
-                   'string-match)))
-
-(defun editorconfig-set-major-mode-from-ext (ext)
-  "Set buffer `major-mode' by EXT.
-
-EXT should be a string like `\"ini\"`, if not nil or empty string."
-  (cl-assert buffer-file-name)
-  (when (and ext
-             (not (string= ext "")))
-
-    (let ((mode (editorconfig--find-mode-from-ext ext
-                                                  buffer-file-name)))
-      (if mode
-          (editorconfig-apply-major-mode-safely mode)
-        (display-warning :error (format "Major-mode for `%s' not found"
-                                        ext))
-        nil))))
-
-(defun editorconfig-call-editorconfig-exec ()
-  "Call EditorConfig core and return output."
-  (let* ((filename (buffer-file-name))
-         (filename (and filename (expand-file-name filename))))
-    (if filename
-        (with-temp-buffer
-          (setq default-directory "/")
-          (if (eq 0
-                  (call-process editorconfig-exec-path nil t nil filename))
-              (buffer-string)
-            (error (buffer-string))))
-      "")))
-
-(defun editorconfig-parse-properties (props-string)
+(defun editorconfig--parse-properties (props-string)
   "Create properties hash table from PROPS-STRING."
   (let (props-list properties)
     (setq props-list (split-string props-string "\n")
@@ -639,25 +578,62 @@ EXT should be a string like `\"ini\"`, if not nil or empty string."
                 (val (mapconcat 'identity (cdr key-val) "")))
             (puthash key val properties)))))))
 
-(defun editorconfig-get-properties-from-exec ()
-  "Get EditorConfig properties of current buffer.
+(defun editorconfig-get-properties-from-exec (filename)
+  "Get EditorConfig properties of file FILENAME.
 
 This function uses value of `editorconfig-exec-path' to get properties."
   (if (executable-find editorconfig-exec-path)
-      (editorconfig-parse-properties (editorconfig-call-editorconfig-exec))
-    (error "Unable to find editorconfig executable")))
+      (editorconfig--parse-properties (editorconfig--execute-editorconfig-exec filename))
+    (editorconfig-error "Unable to find editorconfig executable")))
 
-(defun editorconfig-get-properties ()
-  "Get EditorConfig properties of current buffer.
+(defun editorconfig-get-properties (filename)
+  "Get EditorConfig properties for file FILENAME.
 
 It calls `editorconfig-get-properties-from-exec' if
 `editorconfig-exec-path' is found, otherwise
 `editorconfig-core-get-properties-hash'."
   (if (and (executable-find editorconfig-exec-path)
            (not (file-remote-p buffer-file-name)))
-      (editorconfig-get-properties-from-exec)
+      (editorconfig-get-properties-from-exec filename)
     (require 'editorconfig-core)
-    (editorconfig-core-get-properties-hash)))
+    (editorconfig-core-get-properties-hash filename)))
+
+(defun editorconfig-call-get-properties-function (filename)
+  "Call `editorconfig-get-properties-function' with FILENAME and return result.
+
+This function also removes 'unset'ted properties and calls
+`editorconfig-hack-properties-functions'."
+  (unless (functionp editorconfig-get-properties-function)
+    (editorconfig-error "Invalid editorconfig-get-properties-function value"))
+  (if (stringp filename)
+      (setq filename (expand-file-name filename))
+    (editorconfig-error "Invalid argument: %S" filename))
+  (let ((props nil))
+    (condition-case err
+        (setq props (funcall editorconfig-get-properties-function
+                             filename))
+      (error
+       (editorconfig-error "Error from editorconfig-get-properties-function: %S"
+                           err)))
+    (cl-loop for k being the hash-keys of props using (hash-values v)
+             when (equal v "unset") do (remhash k props))
+    (condition-case err
+        (run-hook-with-args 'editorconfig-hack-properties-functions props)
+      (error
+       (display-warning 'editorconfig-hack-properties-functions
+                        (concat (error-message-string err)
+                                ". Abort running hook.")
+                        :warning)))
+    props))
+
+(defun editorconfig-set-variables (props)
+  "Set buffer variables according to EditorConfig PROPS."
+  (editorconfig-set-indentation (gethash 'indent_style props)
+                                (gethash 'indent_size props)
+                                (gethash 'tab_width props))
+  (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
+  (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
+  (editorconfig-set-line-length (gethash 'max_line_length props)))
 
 ;;;###autoload
 (defun editorconfig-apply ()
@@ -670,30 +646,12 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
   (when buffer-file-name
     (condition-case err
         (progn
-          (unless (functionp editorconfig-get-properties-function)
-            (error "Invalid editorconfig-get-properties-function value"))
-          (let ((props (funcall editorconfig-get-properties-function)))
-            (cl-loop for k being the hash-keys of props using (hash-values v)
-                     when (equal v "unset") do (remhash k props))
-            (condition-case err
-                (run-hook-with-args 'editorconfig-hack-properties-functions props)
-              (error
-               (display-warning 'editorconfig-hack-properties-functions
-                                (concat (error-message-string err)
-                                        ". Abort running hook.")
-                                :warning)))
+          (let ((props (editorconfig-call-get-properties-function buffer-file-name)))
             (setq editorconfig-properties-hash props)
-            (editorconfig-set-indentation (gethash 'indent_style props)
-                                          (gethash 'indent_size props)
-                                          (gethash 'tab_width props))
+            (editorconfig-set-variables props)
             (editorconfig-set-coding-system
              (gethash 'end_of_line props)
              (gethash 'charset props))
-            (editorconfig-set-trailing-nl (gethash 'insert_final_newline props))
-            (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
-            (editorconfig-set-line-length (gethash 'max_line_length props))
-            (editorconfig-set-major-mode-from-name (gethash 'file_type_emacs props))
-            (editorconfig-set-major-mode-from-ext (gethash 'file_type_ext props))
             (condition-case err
                 (run-hook-with-args 'editorconfig-after-apply-functions props)
               (error
@@ -715,14 +673,78 @@ This function does nothing when the major mode is listed in
 any of regexps in `editorconfig-exclude-regexps'."
   (interactive)
   (when (and major-mode
-             (not (derived-mode-p 'special-mode))
-             (not (memq major-mode
-                        editorconfig-exclude-modes))
+             (not (editorconfig--disabled-for-majormode major-mode))
              buffer-file-name
-             (not (cl-loop for regexp in editorconfig-exclude-regexps
-                           if (string-match regexp buffer-file-name) return t
-                           finally return nil)))
+             (not (editorconfig--disabled-for-filename buffer-file-name)))
     (editorconfig-apply)))
+
+(defvar editorconfig--cons-filename-codingsystem nil
+  "Used interally.")
+
+(defun editorconfig--advice-insert-file-contents (f filename &rest args)
+  "Set `coding-system-for-read'.
+This function should be adviced to `insert-file-contents'"
+  (display-warning '(editorconfig editorconfig--advice-insert-file-contents)
+                   (format ": %S %S %S"
+                           filename args
+                           editorconfig--cons-filename-codingsystem)
+                   :debug)
+  (if (and (stringp filename)
+           (stringp (car editorconfig--cons-filename-codingsystem))
+           (string= (expand-file-name filename)
+                    (car editorconfig--cons-filename-codingsystem))
+           (cdr editorconfig--cons-filename-codingsystem)
+           (not (eq (cdr editorconfig--cons-filename-codingsystem)
+                    'undecided)))
+      (let (
+            (coding-system-for-read (cdr editorconfig--cons-filename-codingsystem))
+            ;; (coding-system-for-read 'undecided)
+            )
+        (apply f filename args))
+    (apply f filename args)))
+
+(defun editorconfig--advice-find-file-noselect (f filename &rest args)
+  "Get EditorConfig properties and apply them to buffer to be visited.
+
+This function should be adviced to `find-file-noselect'.
+F is this function, and FILENAME and ARGS are arguments passed to F."
+  (let ((props nil)
+        (coding-system nil)
+        (ret nil))
+    (condition-case err
+        (when (and (stringp filename)
+                   (not (editorconfig--disabled-for-filename filename)))
+          (setq props (editorconfig-call-get-properties-function filename))
+          (setq coding-system
+                (editorconfig-merge-coding-systems (gethash 'end_of_line props)
+                                                   (gethash 'charset props))))
+      (error
+       (display-warning 'editorconfig
+                        (format "Failed to get properties, styles will not be applied: %S"
+                                err)
+                        :warning)))
+
+    (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
+                                                            coding-system)))
+      (setq ret (apply f filename args)))
+
+    (condition-case err
+        (with-current-buffer ret
+          (when (and props
+                     ;; filename has already been checked
+                     (not (editorconfig--disabled-for-majormode major-mode)))
+            (setq editorconfig-properties-hash props)
+            (editorconfig-set-variables props)
+            (condition-case err
+                (run-hook-with-args 'editorconfig-after-apply-functions props)
+              (error
+               (display-warning 'editorconfig
+                                (format "Error while running `editorconfig-after-apply-functions': %S"
+                                        err))))))
+      (error
+       (display-warning 'editorconfig
+                        (format "Error while setting variables from EditorConfig: %S" err))))
+    ret))
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
@@ -745,6 +767,26 @@ To disable EditorConfig in some buffers, modify
     (if editorconfig-mode
         (add-hook hook 'editorconfig-mode-apply)
       (remove-hook hook 'editorconfig-mode-apply))))
+
+(define-minor-mode editorconfig-2-mode
+  "Toggle EditorConfig feature.
+
+This function is provided temporarily for beta testing, and not well tested yet.
+Currently this can cause unexpected behaviors like kill emacs processes and
+destroying your files, so please use with caution if you enable this instead of
+ `editorconfig-mode'."
+  :global t
+  :lighter editorconfig-mode-lighter
+  (if editorconfig-2-mode
+      (progn
+        (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
+        (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
+        (add-hook 'read-only-mode-hook
+                  'editorconfig-mode-apply))
+    (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
+    (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
+    (remove-hook 'read-only-mode-hook
+              'editorconfig-mode-apply)))
 
 
 ;; Tools
