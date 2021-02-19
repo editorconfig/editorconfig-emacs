@@ -85,7 +85,9 @@ ones that show up on our radar.
 
 ### <del>File Type (file_type_ext, file_type_emacs)</del>
 
-This feature is currently disabled.  For those who want this functionality,
+File-type feature is currently disabled, because this package is now undergoing
+big internal refactoring.
+For those who want this functionality,
 please consider using [editorconfig-custom-majormode](https://github.com/10sr/editorconfig-custom-majormode-el).
 
 
