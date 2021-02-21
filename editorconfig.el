@@ -488,6 +488,11 @@ Make a message by passing ARGS to `format-message'."
                      :debug)
     (when (eq coding-system 'undecided)
       (cl-return-from editorconfig-set-coding-system))
+    (when (and buffer-file-coding-system
+               (memq buffer-file-coding-system
+                     (coding-system-aliases (merge-coding-systems coding-system
+                                                                  buffer-file-coding-system))))
+      (cl-return-from editorconfig-set-coding-system))
     (unless (file-readable-p buffer-file-name)
       (set-buffer-file-coding-system coding-system)
       (cl-return-from editorconfig-set-coding-system))
