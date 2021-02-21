@@ -639,9 +639,9 @@ This function also removes 'unset'ted properties and calls
     (condition-case err
         (run-hook-with-args 'editorconfig-hack-properties-functions props)
       (error
-       (display-warning 'editorconfig-hack-properties-functions
-                        (concat (error-message-string err)
-                                ". Abort running hook.")
+       (display-warning '(editorconfig editorconfig-hack-properties-functions)
+                        (format "Error while running editorconfig-hack-properties-functions, abort running hook: %S"
+                                err)
                         :warning)))
     props))
 
@@ -674,14 +674,13 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
             (condition-case err
                 (run-hook-with-args 'editorconfig-after-apply-functions props)
               (error
-               (display-warning 'editorconfig-after-apply-functions
-                                (concat (error-message-string err)
-                                        ". Stop running hook.")
+               (display-warning '(editorconfig editorconfig-after-apply-functions)
+                                (format "Error while running editorconfig-after-apply-functions, abort running hook: %S"
+                                        err)
                                 :warning)))))
       (error
-       (display-warning 'editorconfig
-                        (concat (error-message-string err)
-                                ".  Styles will not be applied.")
+       (display-warning '(editorconfig editorconfig-apply)
+                        (format "Error in editorconfig-apply, styles will not be applied: %S" err)
                         :error)))))
 
 (defun editorconfig-mode-apply ()
@@ -741,7 +740,7 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                 (editorconfig-merge-coding-systems (gethash 'end_of_line props)
                                                    (gethash 'charset props))))
       (error
-       (display-warning 'editorconfig
+       (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
                         (format "Failed to get properties, styles will not be applied: %S"
                                 err)
                         :warning)))
@@ -772,11 +771,11 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
             (condition-case err
                 (run-hook-with-args 'editorconfig-after-apply-functions props)
               (error
-               (display-warning 'editorconfig
+               (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
                                 (format "Error while running `editorconfig-after-apply-functions': %S"
                                         err))))))
       (error
-       (display-warning 'editorconfig
+       (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
                         (format "Error while setting variables from EditorConfig: %S" err))))
     ret))
 
