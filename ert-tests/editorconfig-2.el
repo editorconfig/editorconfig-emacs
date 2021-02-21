@@ -40,7 +40,8 @@
 
 (ert-deftest test-editorconfig-2 nil
   "Check if properties are applied."
-  (editorconfig-2-mode 1)
+  (let ((editorconfig--enable-20210221-testing t))
+  (editorconfig-mode 1)
 
   (with-visit-file (concat editorconfig-ert-dir
                            "3_space.txt")
@@ -52,10 +53,11 @@
     (should (eq python-indent-offset 4))
     (should (eq tab-width 8))
     (should (eq indent-tabs-mode nil)))
-  (editorconfig-2-mode -1))
+  (editorconfig-mode -1)))
 
 (ert-deftest test-lisp-use-default-indent-2 nil
-  (editorconfig-2-mode 1)
+  (let ((editorconfig--enable-20210221-testing t))
+  (editorconfig-mode 1)
 
   (with-visit-file (concat editorconfig-secondary-ert-dir
                            "2_space.el")
@@ -75,10 +77,11 @@
     (with-visit-file (concat editorconfig-secondary-ert-dir
                              "2_space.el")
       (should (eq lisp-indent-offset 2))))
-  (editorconfig-2-mode -1))
+  (editorconfig-mode -1)))
 
 (ert-deftest test-trim-trailing-ws-2 nil
-  (editorconfig-2-mode 1)
+  (let ((editorconfig--enable-20210221-testing t))
+  (editorconfig-mode 1)
   (with-visit-file (concat editorconfig-ert-dir
                            "trim.txt")
     (should (memq 'delete-trailing-whitespace
@@ -88,19 +91,21 @@
     (read-only-mode 1)
     (should (not (memq 'delete-trailing-whitespace
                        write-file-functions))))
-  (editorconfig-2-mode -1))
+  (editorconfig-mode -1)))
 
 (ert-deftest test-file-type-emacs-2 nil
   :expected-result t  ;; Ignore failure
-  (editorconfig-2-mode 1)
+  (let ((editorconfig--enable-20210221-testing t))
+  (editorconfig-mode 1)
   (with-visit-file (concat editorconfig-secondary-ert-dir
                            "c.txt")
     (should (eq major-mode 'conf-unix-mode)))
-  (editorconfig-2-mode -1))
+  (editorconfig-mode -1)))
 
 (ert-deftest test-file-type-ext-2 nil
   :expected-result t  ;; Ignore failure
-  (editorconfig-2-mode 1)
+  (let ((editorconfig--enable-20210221-testing t))
+  (editorconfig-mode 1)
   (with-visit-file (concat editorconfig-secondary-ert-dir
                            "a.txt")
     (should (eq major-mode 'conf-unix-mode)))
@@ -109,15 +114,16 @@
                            "bin/perlscript")
     (should (eq major-mode 'perl-mode))
     (should (eq perl-indent-level 5)))
-  (editorconfig-2-mode -1))
+  (editorconfig-mode -1)))
 
 (ert-deftest test-hack-properties-functions-2 nil
-  (editorconfig-2-mode 1)
-  (add-hook 'editorconfig-hack-properties-functions
-            (lambda (props)
-              (puthash 'indent_size "5" props)))
-  (with-visit-file (concat editorconfig-ert-dir
-                           "4_space.py")
-    (should (eq python-indent-offset 5)))
-  (setq editorconfig-hack-properties-functions nil)
-  (editorconfig-2-mode -1))
+  (let ((editorconfig--enable-20210221-testing t))
+    (editorconfig-mode 1)
+    (add-hook 'editorconfig-hack-properties-functions
+              (lambda (props)
+                (puthash 'indent_size "5" props)))
+    (with-visit-file (concat editorconfig-ert-dir
+                             "4_space.py")
+                     (should (eq python-indent-offset 5)))
+    (setq editorconfig-hack-properties-functions nil)
+    (editorconfig-mode -1)))
