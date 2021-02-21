@@ -209,7 +209,7 @@ tracker: https://github.com/editorconfig/editorconfig-emacs/issues
 Make and [CMake][] must be installed to run the tests
 locally:
 
-    $ make test
+    $ make check
 
 To start a new Emacs process with current `*.el` and without loading user init
 file, run:
