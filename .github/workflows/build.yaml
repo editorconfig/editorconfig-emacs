@@ -37,4 +37,4 @@ jobs:
         with:
           version: ${{ matrix.emacs_version }}
       - name: Run tests
-        run: make test
+        run: make check
