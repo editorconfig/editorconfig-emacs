@@ -479,6 +479,13 @@ Make a message by passing ARGS to `format-message'."
   "Set buffer coding system by END-OF-LINE and CHARSET."
   (let ((coding-system (editorconfig-merge-coding-systems end-of-line
                                                           charset)))
+    (display-warning '(editorconfig editorconfig-set-coding-system)
+                     (format "buffer-file-name: %S | buffer-file-coding-system: %S | coding-system: %S | apply-currently: %S"
+                             buffer-file-name
+                             buffer-file-coding-system
+                             coding-system
+                             editorconfig--apply-coding-system-currently)
+                     :debug)
     (when (eq coding-system 'undecided)
       (cl-return-from editorconfig-set-coding-system))
     (unless (file-readable-p buffer-file-name)
