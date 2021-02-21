@@ -636,13 +636,6 @@ This function also removes 'unset'ted properties and calls
                            err)))
     (cl-loop for k being the hash-keys of props using (hash-values v)
              when (equal v "unset") do (remhash k props))
-    (condition-case err
-        (run-hook-with-args 'editorconfig-hack-properties-functions props)
-      (error
-       (display-warning '(editorconfig editorconfig-hack-properties-functions)
-                        (format "Error while running editorconfig-hack-properties-functions, abort running hook: %S"
-                                err)
-                        :warning)))
     props))
 
 (defun editorconfig-set-variables (props)
@@ -666,6 +659,13 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
     (condition-case err
         (progn
           (let ((props (editorconfig-call-get-properties-function buffer-file-name)))
+            (condition-case err
+                (run-hook-with-args 'editorconfig-hack-properties-functions props)
+              (error
+               (display-warning '(editorconfig editorconfig-hack-properties-functions)
+                                (format "Error while running editorconfig-hack-properties-functions, abort running hook: %S"
+                                        err)
+                                :warning)))
             (setq editorconfig-properties-hash props)
             (editorconfig-set-variables props)
             (editorconfig-set-coding-system
@@ -766,6 +766,16 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
               ;; For that case, explicitly set this value so that saving will be done
               ;; with expected coding system.
               (set-buffer-file-coding-system coding-system))
+
+            ;; When using editorconfig-2-mode, hack-properties-functions cannot affect coding-system value,
+            ;; because it has to be set before initializing buffers.
+            (condition-case err
+                (run-hook-with-args 'editorconfig-hack-properties-functions props)
+              (error
+               (display-warning '(editorconfig editorconfig-hack-properties-functions)
+                                (format "Error while running editorconfig-hack-properties-functions, abort running hook: %S"
+                                        err)
+                                :warning)))
             (setq editorconfig-properties-hash props)
             (editorconfig-set-variables props)
             (condition-case err
