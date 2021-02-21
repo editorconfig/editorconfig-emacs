@@ -796,6 +796,12 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                         (format "Error while setting variables from EditorConfig: %S" err))))
     ret))
 
+(defvar editorconfig--enable-20210221-testing nil
+  "Enable testing version of `editorconfig-mode'.
+
+Currently this mode is not well tested yet and can cause unexpected behaviors
+like killing Emacs process or not able to visit files at all.")
+
 ;;;###autoload
 (define-minor-mode editorconfig-mode
   "Toggle EditorConfig feature.
@@ -804,39 +810,32 @@ To disable EditorConfig in some buffers, modify
 `editorconfig-exclude-modes' or `editorconfig-exclude-regexps'."
   :global t
   :lighter editorconfig-mode-lighter
-  ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
-  ;; not `after-change-major-mode-hook'
-  (dolist (hook '(change-major-mode-after-body-hook
-                  read-only-mode-hook
-                  ;; Some modes call `kill-all-local-variables' in their init
-                  ;; code, which clears some values set by editorconfig.
-                  ;; For those modes, editorconfig-apply need to be called
-                  ;; explicitly through their hooks.
-                  rpm-spec-mode-hook
-                  ))
-    (if editorconfig-mode
-        (add-hook hook 'editorconfig-mode-apply)
-      (remove-hook hook 'editorconfig-mode-apply))))
+  (if editorconfig--enable-20210221-testing
+      (if editorconfig-mode
+          (progn
+            (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
+            (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
+            (add-hook 'read-only-mode-hook
+                      'editorconfig-mode-apply))
+        (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
+        (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
+        (remove-hook 'read-only-mode-hook
+                     'editorconfig-mode-apply))
 
-(define-minor-mode editorconfig-2-mode
-  "Toggle EditorConfig feature.
-
-This function is provided temporarily for beta testing, and not well tested yet.
-Currently this can cause unexpected behaviors like kill emacs processes and
-destroying your files, so please use with caution if you enable this instead of
- `editorconfig-mode'."
-  :global t
-  :lighter editorconfig-mode-lighter
-  (if editorconfig-2-mode
-      (progn
-        (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
-        (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
-        (add-hook 'read-only-mode-hook
-                  'editorconfig-mode-apply))
-    (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
-    (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
-    (remove-hook 'read-only-mode-hook
-              'editorconfig-mode-apply)))
+    ;; editorconfig--enable-20210221-testing is disabled
+    ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
+    ;; not `after-change-major-mode-hook'
+    (dolist (hook '(change-major-mode-after-body-hook
+                    read-only-mode-hook
+                    ;; Some modes call `kill-all-local-variables' in their init
+                    ;; code, which clears some values set by editorconfig.
+                    ;; For those modes, editorconfig-apply need to be called
+                    ;; explicitly through their hooks.
+                    rpm-spec-mode-hook
+                    ))
+      (if editorconfig-mode
+          (add-hook hook 'editorconfig-mode-apply)
+        (remove-hook hook 'editorconfig-mode-apply)))))
 
 
 ;; Tools
