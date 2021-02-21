@@ -13,9 +13,10 @@
   "Visit PATH and evaluate BODY."
   (declare (indent 1) (debug t))
   `(let ((buf (find-file-noselect ,path)))
-     (with-current-buffer buf
-       ,@body)
-     (kill-buffer buf)))
+     (unwind-protect
+         (with-current-buffer buf
+           ,@body)
+       (kill-buffer buf))))
 
 ;;; interactive
 
