@@ -8,7 +8,6 @@ AWK = awk
 
 PROJECT_ROOT_DIR = $(CURDIR)
 ERT_TESTS = $(wildcard $(PROJECT_ROOT_DIR)/ert-tests/*.el)
-TRAVIS_FILE = .travis.yml
 
 # Compile with noninteractive and relatively clean environment.
 BATCHFLAGS = -batch -q --no-site-file -L $(PROJECT_ROOT_DIR)
@@ -17,9 +16,15 @@ MAIN_SRC = editorconfig.el
 SRCS = $(wildcard $(PROJECT_ROOT_DIR)/*.el)
 OBJS = $(SRCS:.el=.elc)
 
-.PHONY: all clean test test-travis test-ert test-core test-metadata sandbox doc info
+.PHONY: check \
+	compile clean \
+	test test-ert test-core \
+	sandbox doc
 
-all: $(OBJS)
+check: compile test
+
+
+compile: $(OBJS)
 
 $(OBJS): %.elc: %.el
 	$(EMACS) $(BATCHFLAGS) -f batch-byte-compile $^
@@ -37,12 +42,8 @@ doc/editorconfig.texi: README.md doc/header.txt
 	cat doc/header.txt $@.body2 >$@
 	rm -f $@.body $@.body2
 
-test: test-ert test-core test-metadata $(OBJS)
+test: test-ert test-core
 	$(EMACS) $(BATCHFLAGS) -l editorconfig.el
-
-test-travis:
-	@if test -z "$$TRAVIS" && test -e $(TRAVIS_FILE); then travis-lint $(TRAVIS_FILE); fi
-
 
 
 # ert test
