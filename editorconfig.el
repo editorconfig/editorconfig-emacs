@@ -223,6 +223,7 @@ This hook will be run even when there are no matching sections in
     (livescript-mode livescript-tab-width)
     (lua-mode lua-indent-level)
     (matlab-mode matlab-indent-level)
+    (meson-mode meson-indent-basic)
     (mips-mode mips-tab-width)
     (mustache-mode mustache-basic-offset)
     (nasm-mode nasm-basic-offset)
