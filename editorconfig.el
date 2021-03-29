@@ -242,6 +242,7 @@ This hook will be run even when there are no matching sections in
     (pug-mode pug-tab-width)
     (puppet-mode puppet-indent-level)
     (python-mode . editorconfig-set-indentation-python-mode)
+    (rjsx-mode js-indent-level sgml-basic-offset)
     (ruby-mode ruby-indent-level)
     (rust-mode rust-indent-offset)
     (rustic-mode rustic-indent-offset)
