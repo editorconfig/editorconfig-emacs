@@ -710,6 +710,17 @@ any of regexps in `editorconfig-exclude-regexps'."
              (not (editorconfig--disabled-for-filename buffer-file-name)))
     (editorconfig-apply)))
 
+(defun editorconfig-local-major-mode-hook ()
+  "Function to run when major-mode has been changed."
+  (display-warning '(editorconfig editorconfig-local-major-mode-hook)
+                   (format "editorconfig-mode: %S -properties-hash: %S"
+                           editorconfig-mode
+                           editorconfig-properties-hash)
+                   :debug)
+  (when (and editorconfig-mode
+             editorconfig-properties-hash)
+    (editorconfig-set-variables editorconfig-properties-hash)))
+
 (defvar editorconfig--cons-filename-codingsystem nil
   "Used interally.")
 
@@ -792,6 +803,24 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                                 :warning)))
             (setq editorconfig-properties-hash props)
             (editorconfig-set-variables props)
+
+            (add-hook 'prog-mode-hook
+                      'editorconfig-local-major-mode-hook
+                      t t)
+            (add-hook 'text-mode-hook
+                      'editorconfig-local-major-mode-hook
+                      t t)
+            (add-hook 'read-only-mode-hook
+                      'editorconfig-local-major-mode-hook
+                      t t)
+            ;; Some modes call `kill-all-local-variables' in their init
+            ;; code, which clears some values set by editorconfig.
+            ;; For those modes, editorconfig-apply need to be called
+            ;; explicitly through their hooks.
+            (add-hook 'rpm-spec-mode-hook
+                      'editorconfig-local-major-mode-hook
+                      t t)
+
             (condition-case err
                 (run-hook-with-args 'editorconfig-after-apply-functions props)
               (error
@@ -821,13 +850,9 @@ To disable EditorConfig in some buffers, modify
       (if editorconfig-mode
           (progn
             (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
-            (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
-            (add-hook 'read-only-mode-hook
-                      'editorconfig-mode-apply))
+            (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents))
         (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
-        (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
-        (remove-hook 'read-only-mode-hook
-                     'editorconfig-mode-apply))
+        (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents))
 
     ;; editorconfig--enable-20210221-testing is disabled
     ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
