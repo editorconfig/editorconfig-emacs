@@ -714,10 +714,12 @@ any of regexps in `editorconfig-exclude-regexps'."
   "Function to run when major-mode has been changed."
   (display-warning '(editorconfig editorconfig-local-major-mode-hook)
                    (format "editorconfig-mode: %S -properties-hash: %S"
-                           editorconfig-mode
+                           (and (boundp 'editorconfig-mode)
+                                editorconfig-mode)
                            editorconfig-properties-hash)
                    :debug)
-  (when (and editorconfig-mode
+  (when (and (boundp 'editorconfig-mode)
+             editorconfig-mode
              editorconfig-properties-hash)
     (editorconfig-set-variables editorconfig-properties-hash)))
 
