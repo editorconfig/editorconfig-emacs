@@ -652,7 +652,7 @@ This function also removes 'unset'ted properties and calls
              when (equal v "unset") do (remhash k props))
     props))
 
-(defun editorconfig-set-variables (props)
+(defun editorconfig-set-local-variables (props)
   "Set buffer variables according to EditorConfig PROPS."
   (editorconfig-set-indentation (gethash 'indent_style props)
                                 (gethash 'indent_size props)
@@ -681,7 +681,7 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
                                         err)
                                 :warning)))
             (setq editorconfig-properties-hash props)
-            (editorconfig-set-variables props)
+            (editorconfig-set-local-variables props)
             (editorconfig-set-coding-system
              (gethash 'end_of_line props)
              (gethash 'charset props))
@@ -721,7 +721,7 @@ any of regexps in `editorconfig-exclude-regexps'."
   (when (and (boundp 'editorconfig-mode)
              editorconfig-mode
              editorconfig-properties-hash)
-    (editorconfig-set-variables editorconfig-properties-hash)))
+    (editorconfig-set-local-variables editorconfig-properties-hash)))
 
 (defvar editorconfig--cons-filename-codingsystem nil
   "Used interally.")
@@ -804,7 +804,7 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                                         err)
                                 :warning)))
             (setq editorconfig-properties-hash props)
-            (editorconfig-set-variables props)
+            (editorconfig-set-local-variables props)
 
             (add-hook 'prog-mode-hook
                       'editorconfig-local-major-mode-hook
