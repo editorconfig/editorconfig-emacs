@@ -477,11 +477,14 @@ Make a message by passing ARGS to `format-message'."
               (t 'undecided))))
     (merge-coding-systems cs eol)))
 
-(cl-defun editorconfig-set-coding-system (end-of-line charset)
-  "Set buffer coding system by END-OF-LINE and CHARSET."
+(cl-defun editorconfig-set-coding-system-revert (end-of-line charset)
+  "Set buffer coding system by END-OF-LINE and CHARSET.
+
+This function will revert buffer when the coding-system has been changed."
+  ;; `editorconfig--advice-find-file-noselect' does not use this function
   (let ((coding-system (editorconfig-merge-coding-systems end-of-line
                                                           charset)))
-    (display-warning '(editorconfig editorconfig-set-coding-system)
+    (display-warning '(editorconfig editorconfig-set-coding-system-revert)
                      (format "buffer-file-name: %S | buffer-file-coding-system: %S | coding-system: %S | apply-currently: %S"
                              buffer-file-name
                              buffer-file-coding-system
@@ -489,15 +492,15 @@ Make a message by passing ARGS to `format-message'."
                              editorconfig--apply-coding-system-currently)
                      :debug)
     (when (eq coding-system 'undecided)
-      (cl-return-from editorconfig-set-coding-system))
+      (cl-return-from editorconfig-set-coding-system-revert))
     (when (and buffer-file-coding-system
                (memq buffer-file-coding-system
                      (coding-system-aliases (merge-coding-systems coding-system
                                                                   buffer-file-coding-system))))
-      (cl-return-from editorconfig-set-coding-system))
+      (cl-return-from editorconfig-set-coding-system-revert))
     (unless (file-readable-p buffer-file-name)
       (set-buffer-file-coding-system coding-system)
-      (cl-return-from editorconfig-set-coding-system))
+      (cl-return-from editorconfig-set-coding-system-revert))
     (unless (memq coding-system
                   (coding-system-aliases editorconfig--apply-coding-system-currently))
       ;; Revert functions might call editorconfig-apply again
@@ -682,7 +685,7 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
                                 :warning)))
             (setq editorconfig-properties-hash props)
             (editorconfig-set-local-variables props)
-            (editorconfig-set-coding-system
+            (editorconfig-set-coding-system-revert
              (gethash 'end_of_line props)
              (gethash 'charset props))
             (condition-case err
