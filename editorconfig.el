@@ -464,17 +464,17 @@ Make a message by passing ARGS to `format-message'."
 (defun editorconfig-merge-coding-systems (end-of-line charset)
   "Return merged coding system symbol of END-OF-LINE and CHARSET."
   (let ((eol (cond
-               ((equal end-of-line "lf") 'undecided-unix)
-               ((equal end-of-line "cr") 'undecided-mac)
-               ((equal end-of-line "crlf") 'undecided-dos)
-               (t 'undecided)))
-         (cs (cond
-              ((equal charset "latin1") 'iso-latin-1)
-              ((equal charset "utf-8") 'utf-8)
-              ((equal charset "utf-8-bom") 'utf-8-with-signature)
-              ((equal charset "utf-16be") 'utf-16be-with-signature)
-              ((equal charset "utf-16le") 'utf-16le-with-signature)
-              (t 'undecided))))
+              ((equal end-of-line "lf") 'undecided-unix)
+              ((equal end-of-line "cr") 'undecided-mac)
+              ((equal end-of-line "crlf") 'undecided-dos)
+              (t 'undecided)))
+        (cs (cond
+             ((equal charset "latin1") 'iso-latin-1)
+             ((equal charset "utf-8") 'utf-8)
+             ((equal charset "utf-8-bom") 'utf-8-with-signature)
+             ((equal charset "utf-16be") 'utf-16be-with-signature)
+             ((equal charset "utf-16le") 'utf-16le-with-signature)
+             (t 'undecided))))
     (merge-coding-systems cs eol)))
 
 (cl-defun editorconfig-set-coding-system-revert (end-of-line charset)
@@ -782,7 +782,7 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                         :warning)))
 
     (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
-                                                            coding-system)))
+                                                          coding-system)))
       (setq ret (apply f filename args)))
 
     (condition-case err
@@ -813,24 +813,11 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                                         err)
                                 :warning)))
             (setq editorconfig-properties-hash props)
+            ;; When initializing buffer, `editorconfig-local-major-mode-hook'
+            ;; will be called before setting `editorconfig-properties-hash', so
+            ;; execute this explicitly here.
             (editorconfig-set-local-variables props)
 
-            (add-hook 'prog-mode-hook
-                      'editorconfig-local-major-mode-hook
-                      t t)
-            (add-hook 'text-mode-hook
-                      'editorconfig-local-major-mode-hook
-                      t t)
-            (add-hook 'read-only-mode-hook
-                      'editorconfig-local-major-mode-hook
-                      t t)
-            ;; Some modes call `kill-all-local-variables' in their init
-            ;; code, which clears some values set by editorconfig.
-            ;; For those modes, editorconfig-apply need to be called
-            ;; explicitly through their hooks.
-            (add-hook 'rpm-spec-mode-hook
-                      'editorconfig-local-major-mode-hook
-                      t t)
 
             (condition-case err
                 (run-hook-with-args 'editorconfig-after-apply-functions props)
@@ -858,12 +845,28 @@ To disable EditorConfig in some buffers, modify
   :global t
   :lighter editorconfig-mode-lighter
   (if editorconfig--enable-20210221-testing
-      (if editorconfig-mode
-          (progn
-            (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
-            (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents))
-        (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
-        (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents))
+      (let ((modehooks '(prog-mode-hook
+                          text-mode-hook
+                          read-only-mode-hook
+                          ;; Some modes call `kill-all-local-variables' in their init
+                          ;; code, which clears some values set by editorconfig.
+                          ;; For those modes, editorconfig-apply need to be called
+                          ;; explicitly through their hooks.
+                          rpm-spec-mode-hook
+                          )))
+        (if editorconfig-mode
+            (progn
+              (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
+              (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
+              (dolist (hook modehooks)
+                (add-hook hook
+                          'editorconfig-local-major-mode-hook
+                          t)))
+          (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
+          (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
+          (dolist (hook modehooks)
+            (remove-hook hook
+                         'editorconfig-local-major-mode-hook))))
 
     ;; editorconfig--enable-20210221-testing is disabled
     ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
