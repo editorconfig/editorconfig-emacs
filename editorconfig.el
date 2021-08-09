@@ -713,9 +713,9 @@ any of regexps in `editorconfig-exclude-regexps'."
              (not (editorconfig--disabled-for-filename buffer-file-name)))
     (editorconfig-apply)))
 
-(defun editorconfig-local-major-mode-hook ()
+(defun editorconfig-major-mode-hook ()
   "Function to run when major-mode has been changed."
-  (display-warning '(editorconfig editorconfig-local-major-mode-hook)
+  (display-warning '(editorconfig editorconfig-major-mode-hook)
                    (format "editorconfig-mode: %S -properties-hash: %S"
                            (and (boundp 'editorconfig-mode)
                                 editorconfig-mode)
@@ -813,7 +813,7 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                                         err)
                                 :warning)))
             (setq editorconfig-properties-hash props)
-            ;; When initializing buffer, `editorconfig-local-major-mode-hook'
+            ;; When initializing buffer, `editorconfig-major-mode-hook'
             ;; will be called before setting `editorconfig-properties-hash', so
             ;; execute this explicitly here.
             (editorconfig-set-local-variables props)
@@ -860,13 +860,13 @@ To disable EditorConfig in some buffers, modify
               (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
               (dolist (hook modehooks)
                 (add-hook hook
-                          'editorconfig-local-major-mode-hook
+                          'editorconfig-major-mode-hook
                           t)))
           (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
           (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
           (dolist (hook modehooks)
             (remove-hook hook
-                         'editorconfig-local-major-mode-hook))))
+                         'editorconfig-major-mode-hook))))
 
     ;; editorconfig--enable-20210221-testing is disabled
     ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
