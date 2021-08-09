@@ -464,24 +464,27 @@ Make a message by passing ARGS to `format-message'."
 (defun editorconfig-merge-coding-systems (end-of-line charset)
   "Return merged coding system symbol of END-OF-LINE and CHARSET."
   (let ((eol (cond
-               ((equal end-of-line "lf") 'undecided-unix)
-               ((equal end-of-line "cr") 'undecided-mac)
-               ((equal end-of-line "crlf") 'undecided-dos)
-               (t 'undecided)))
-         (cs (cond
-              ((equal charset "latin1") 'iso-latin-1)
-              ((equal charset "utf-8") 'utf-8)
-              ((equal charset "utf-8-bom") 'utf-8-with-signature)
-              ((equal charset "utf-16be") 'utf-16be-with-signature)
-              ((equal charset "utf-16le") 'utf-16le-with-signature)
-              (t 'undecided))))
+              ((equal end-of-line "lf") 'undecided-unix)
+              ((equal end-of-line "cr") 'undecided-mac)
+              ((equal end-of-line "crlf") 'undecided-dos)
+              (t 'undecided)))
+        (cs (cond
+             ((equal charset "latin1") 'iso-latin-1)
+             ((equal charset "utf-8") 'utf-8)
+             ((equal charset "utf-8-bom") 'utf-8-with-signature)
+             ((equal charset "utf-16be") 'utf-16be-with-signature)
+             ((equal charset "utf-16le") 'utf-16le-with-signature)
+             (t 'undecided))))
     (merge-coding-systems cs eol)))
 
-(cl-defun editorconfig-set-coding-system (end-of-line charset)
-  "Set buffer coding system by END-OF-LINE and CHARSET."
+(cl-defun editorconfig-set-coding-system-revert (end-of-line charset)
+  "Set buffer coding system by END-OF-LINE and CHARSET.
+
+This function will revert buffer when the coding-system has been changed."
+  ;; `editorconfig--advice-find-file-noselect' does not use this function
   (let ((coding-system (editorconfig-merge-coding-systems end-of-line
                                                           charset)))
-    (display-warning '(editorconfig editorconfig-set-coding-system)
+    (display-warning '(editorconfig editorconfig-set-coding-system-revert)
                      (format "buffer-file-name: %S | buffer-file-coding-system: %S | coding-system: %S | apply-currently: %S"
                              buffer-file-name
                              buffer-file-coding-system
@@ -489,15 +492,15 @@ Make a message by passing ARGS to `format-message'."
                              editorconfig--apply-coding-system-currently)
                      :debug)
     (when (eq coding-system 'undecided)
-      (cl-return-from editorconfig-set-coding-system))
+      (cl-return-from editorconfig-set-coding-system-revert))
     (when (and buffer-file-coding-system
                (memq buffer-file-coding-system
                      (coding-system-aliases (merge-coding-systems coding-system
                                                                   buffer-file-coding-system))))
-      (cl-return-from editorconfig-set-coding-system))
+      (cl-return-from editorconfig-set-coding-system-revert))
     (unless (file-readable-p buffer-file-name)
       (set-buffer-file-coding-system coding-system)
-      (cl-return-from editorconfig-set-coding-system))
+      (cl-return-from editorconfig-set-coding-system-revert))
     (unless (memq coding-system
                   (coding-system-aliases editorconfig--apply-coding-system-currently))
       ;; Revert functions might call editorconfig-apply again
@@ -652,7 +655,7 @@ This function also removes 'unset'ted properties and calls
              when (equal v "unset") do (remhash k props))
     props))
 
-(defun editorconfig-set-variables (props)
+(defun editorconfig-set-local-variables (props)
   "Set buffer variables according to EditorConfig PROPS."
   (editorconfig-set-indentation (gethash 'indent_style props)
                                 (gethash 'indent_size props)
@@ -681,8 +684,8 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
                                         err)
                                 :warning)))
             (setq editorconfig-properties-hash props)
-            (editorconfig-set-variables props)
-            (editorconfig-set-coding-system
+            (editorconfig-set-local-variables props)
+            (editorconfig-set-coding-system-revert
              (gethash 'end_of_line props)
              (gethash 'charset props))
             (condition-case err
@@ -710,27 +713,37 @@ any of regexps in `editorconfig-exclude-regexps'."
              (not (editorconfig--disabled-for-filename buffer-file-name)))
     (editorconfig-apply)))
 
-(defun editorconfig-local-major-mode-hook ()
-  "Function to run when major-mode has been changed."
-  (display-warning '(editorconfig editorconfig-local-major-mode-hook)
-                   (format "editorconfig-mode: %S -properties-hash: %S"
+(defun editorconfig-major-mode-hook ()
+  "Function to run when `major-mode' has been changed.
+
+This functions does not reload .editorconfig file, just sets local variables
+again.  Changing major mode can reset these variables."
+  (display-warning '(editorconfig editorconfig-major-mode-hook)
+                   (format "editorconfig-mode: %S, major-mode: %S, -properties-hash: %S"
                            (and (boundp 'editorconfig-mode)
                                 editorconfig-mode)
+                           major-mode
                            editorconfig-properties-hash)
                    :debug)
   (when (and (boundp 'editorconfig-mode)
              editorconfig-mode
              editorconfig-properties-hash)
-    (editorconfig-set-variables editorconfig-properties-hash)))
+    (editorconfig-set-local-variables editorconfig-properties-hash)))
 
 (defvar editorconfig--cons-filename-codingsystem nil
-  "Used interally.")
+  "Used interally.
+
+`editorconfig--advice-find-file-noselect' will set this variable, and
+`editorconfig--advice-insert-file-contents' will use this variable to set
+`coding-system-for-read' value.")
 
 (defun editorconfig--advice-insert-file-contents (f filename &rest args)
   "Set `coding-system-for-read'.
 
 This function should be added as an advice function to `insert-file-contents'.
 F is that function, and FILENAME and ARGS are arguments passed to F."
+  ;; This function uses `editorconfig--cons-filename-codingsystem' to decide what coding-system
+  ;; should be used, which will be set by `editorconfig--advice-find-file-noselect'.
   (display-warning '(editorconfig editorconfig--advice-insert-file-contents)
                    (format "filename: %S args: %S codingsystem: %S bufferfilename: %S"
                            filename args
@@ -773,7 +786,7 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                         :warning)))
 
     (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
-                                                            coding-system)))
+                                                          coding-system)))
       (setq ret (apply f filename args)))
 
     (condition-case err
@@ -789,12 +802,12 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                                 'undecided)))
               ;; When file path indicates it is a remote file and it actually
               ;; does not exists, `buffer-file-coding-system' will not be set.
-              ;; (Does not call `insert-file-contents'?)
+              ;; (Seems `insert-file-contents' will not be called)
               ;; For that case, explicitly set this value so that saving will be done
               ;; with expected coding system.
               (set-buffer-file-coding-system coding-system))
 
-            ;; When using editorconfig-2-mode, hack-properties-functions cannot affect coding-system value,
+            ;; NOTE: When using editorconfig-2-mode, hack-properties-functions cannot affect coding-system value,
             ;; because it has to be set before initializing buffers.
             (condition-case err
                 (run-hook-with-args 'editorconfig-hack-properties-functions props)
@@ -804,24 +817,11 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                                         err)
                                 :warning)))
             (setq editorconfig-properties-hash props)
-            (editorconfig-set-variables props)
+            ;; When initializing buffer, `editorconfig-major-mode-hook'
+            ;; will be called before setting `editorconfig-properties-hash', so
+            ;; execute this explicitly here.
+            (editorconfig-set-local-variables props)
 
-            (add-hook 'prog-mode-hook
-                      'editorconfig-local-major-mode-hook
-                      t t)
-            (add-hook 'text-mode-hook
-                      'editorconfig-local-major-mode-hook
-                      t t)
-            (add-hook 'read-only-mode-hook
-                      'editorconfig-local-major-mode-hook
-                      t t)
-            ;; Some modes call `kill-all-local-variables' in their init
-            ;; code, which clears some values set by editorconfig.
-            ;; For those modes, editorconfig-apply need to be called
-            ;; explicitly through their hooks.
-            (add-hook 'rpm-spec-mode-hook
-                      'editorconfig-local-major-mode-hook
-                      t t)
 
             (condition-case err
                 (run-hook-with-args 'editorconfig-after-apply-functions props)
@@ -849,12 +849,28 @@ To disable EditorConfig in some buffers, modify
   :global t
   :lighter editorconfig-mode-lighter
   (if editorconfig--enable-20210221-testing
-      (if editorconfig-mode
-          (progn
-            (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
-            (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents))
-        (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
-        (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents))
+      (let ((modehooks '(prog-mode-hook
+                          text-mode-hook
+                          read-only-mode-hook
+                          ;; Some modes call `kill-all-local-variables' in their init
+                          ;; code, which clears some values set by editorconfig.
+                          ;; For those modes, editorconfig-apply need to be called
+                          ;; explicitly through their hooks.
+                          rpm-spec-mode-hook
+                          )))
+        (if editorconfig-mode
+            (progn
+              (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
+              (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
+              (dolist (hook modehooks)
+                (add-hook hook
+                          'editorconfig-major-mode-hook
+                          t)))
+          (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
+          (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
+          (dolist (hook modehooks)
+            (remove-hook hook
+                         'editorconfig-major-mode-hook))))
 
     ;; editorconfig--enable-20210221-testing is disabled
     ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
