@@ -318,7 +318,7 @@ When variable `buffer-file-name' matches any of the regexps, then
 (with-eval-after-load 'recentf
   (add-to-list 'editorconfig-exclude-regexps
                (rx-to-string '(seq string-start
-                                   (eval (expand-file-name recentf-save-file)))
+                                   (eval (file-truename (expand-file-name recentf-save-file))))
                              t)))
 
 (defcustom editorconfig-trim-whitespaces-mode nil
