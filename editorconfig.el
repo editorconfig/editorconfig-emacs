@@ -789,12 +789,12 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                                 'undecided)))
               ;; When file path indicates it is a remote file and it actually
               ;; does not exists, `buffer-file-coding-system' will not be set.
-              ;; (Does not call `insert-file-contents'?)
+              ;; (Seems `insert-file-contents' will not be called)
               ;; For that case, explicitly set this value so that saving will be done
               ;; with expected coding system.
               (set-buffer-file-coding-system coding-system))
 
-            ;; When using editorconfig-2-mode, hack-properties-functions cannot affect coding-system value,
+            ;; NOTE: When using editorconfig-2-mode, hack-properties-functions cannot affect coding-system value,
             ;; because it has to be set before initializing buffers.
             (condition-case err
                 (run-hook-with-args 'editorconfig-hack-properties-functions props)
