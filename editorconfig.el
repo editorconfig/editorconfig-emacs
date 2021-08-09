@@ -727,13 +727,19 @@ any of regexps in `editorconfig-exclude-regexps'."
     (editorconfig-set-local-variables editorconfig-properties-hash)))
 
 (defvar editorconfig--cons-filename-codingsystem nil
-  "Used interally.")
+  "Used interally.
+
+`editorconfig--advice-find-file-noselect' will set this variable, and
+`editorconfig--advice-insert-file-contents' will use this variable to set
+`coding-system-for-read' value.")
 
 (defun editorconfig--advice-insert-file-contents (f filename &rest args)
   "Set `coding-system-for-read'.
 
 This function should be added as an advice function to `insert-file-contents'.
 F is that function, and FILENAME and ARGS are arguments passed to F."
+  ;; This function uses `editorconfig--cons-filename-codingsystem' to decide what coding-system
+  ;; should be used, which will be set by `editorconfig--advice-find-file-noselect'.
   (display-warning '(editorconfig editorconfig--advice-insert-file-contents)
                    (format "filename: %S args: %S codingsystem: %S bufferfilename: %S"
                            filename args
