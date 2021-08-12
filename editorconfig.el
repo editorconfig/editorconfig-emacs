@@ -485,7 +485,7 @@ This function will revert buffer when the coding-system has been changed."
   (let ((coding-system (editorconfig-merge-coding-systems end-of-line
                                                           charset)))
     (display-warning '(editorconfig editorconfig-set-coding-system-revert)
-                     (format "buffer-file-name: %S | buffer-file-coding-system: %S | coding-system: %S | apply-currently: %S"
+                     (format "editorconfig-set-coding-system-revert: buffer-file-name: %S | buffer-file-coding-system: %S | coding-system: %S | apply-currently: %S"
                              buffer-file-name
                              buffer-file-coding-system
                              coding-system
@@ -580,7 +580,7 @@ If you just want to check `major-mode', use `derived-mode-p'."
               (remote-localname (file-remote-p filename
                                                'localname)))
           (display-warning '(editorconfig editorconfig--execute-editorconfig-exec)
-                           (format "filename: %S | remote: %S | remote-localname: %S"
+                           (format "editorconfig--execute-editorconfig-exec: filename: %S | remote: %S | remote-localname: %S"
                                    filename
                                    remote
                                    remote-localname)
@@ -591,7 +591,7 @@ If you just want to check `major-mode', use `derived-mode-p'."
                 (setq filename remote-localname))
             (cd "/")))
         (display-warning '(editorconfig editorconfig--execute-editorconfig-exec)
-                         (format "default-directory: %S | filename: %S"
+                         (format "editorconfig--execute-editorconfig-exec: default-directory: %S | filename: %S"
                                  default-directory
                                  filename
                                  )
@@ -721,7 +721,7 @@ again.  Changing major mode can reset these variables.
 
 This function also executes `editorconfig-after-apply-functions' functions."
   (display-warning '(editorconfig editorconfig-major-mode-hook)
-                   (format "editorconfig-mode: %S, major-mode: %S, -properties-hash: %S"
+                   (format "editorconfig-major-mode-hook: editorconfig-mode: %S, major-mode: %S, -properties-hash: %S"
                            (and (boundp 'editorconfig-mode)
                                 editorconfig-mode)
                            major-mode
@@ -753,7 +753,7 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
   ;; This function uses `editorconfig--cons-filename-codingsystem' to decide what coding-system
   ;; should be used, which will be set by `editorconfig--advice-find-file-noselect'.
   (display-warning '(editorconfig editorconfig--advice-insert-file-contents)
-                   (format "filename: %S args: %S codingsystem: %S bufferfilename: %S"
+                   (format "editorconfig--advice-insert-file-contents: filename: %S args: %S codingsystem: %S bufferfilename: %S"
                            filename args
                            editorconfig--cons-filename-codingsystem
                            buffer-file-name)
