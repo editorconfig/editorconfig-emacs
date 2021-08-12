@@ -717,7 +717,9 @@ any of regexps in `editorconfig-exclude-regexps'."
   "Function to run when `major-mode' has been changed.
 
 This functions does not reload .editorconfig file, just sets local variables
-again.  Changing major mode can reset these variables."
+again.  Changing major mode can reset these variables.
+
+This function also executes `editorconfig-after-apply-functions' functions."
   (display-warning '(editorconfig editorconfig-major-mode-hook)
                    (format "editorconfig-mode: %S, major-mode: %S, -properties-hash: %S"
                            (and (boundp 'editorconfig-mode)
@@ -728,7 +730,13 @@ again.  Changing major mode can reset these variables."
   (when (and (boundp 'editorconfig-mode)
              editorconfig-mode
              editorconfig-properties-hash)
-    (editorconfig-set-local-variables editorconfig-properties-hash)))
+    (editorconfig-set-local-variables editorconfig-properties-hash)
+    (condition-case err
+        (run-hook-with-args 'editorconfig-after-apply-functions editorconfig-properties-hash)
+      (error
+       (display-warning '(editorconfig editorconfig-major-mode-hook)
+                        (format "Error while running `editorconfig-after-apply-functions': %S"
+                                err))))))
 
 (defvar editorconfig--cons-filename-codingsystem nil
   "Used interally.
