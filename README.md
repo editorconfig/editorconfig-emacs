@@ -12,9 +12,9 @@ This is an [EditorConfig][] plugin for [Emacs][].
 ## Getting Started
 
 
-### Install from MELPA
+### package.el
 
-This package is available from [MELPA][] and [MELPA Stable][].
+This package is available from [MELPA][], [MELPA Stable][] and [NonGNU ELPA][].
 Install from these repositories and enable global minor-mode `editorconfig-mode`:
 
 ```emacs-lisp
@@ -240,6 +240,7 @@ with this program.  If not, see <https://www.gnu.org/licenses/>.
 [Emacs]: https://www.gnu.org/software/emacs/
 [MELPA]: https://melpa.org/#/editorconfig
 [MELPA Stable]: https://stable.melpa.org/#/editorconfig
+[NonGNU ELPA]: http://elpa.nongnu.org/nongnu/editorconfig.html
 [use-package]: https://www.emacswiki.org/emacs/UsePackage
 [EditorConfig]: https://editorconfig.org
 [EditorConfig C Core]: https://github.com/editorconfig/editorconfig-core-c
