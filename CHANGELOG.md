@@ -5,19 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
 ## [Unreleased]
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [0.8.2] - 2021-08-13
 
 ### Added
 
 - Add rustic-mode to editorconfig-indentation-alist ([#208])
 - Add conf-mode abbrev-table definitions ([#220])
+- Add meson-mode indentation rule ([#253])
+- Add support for rjsx-mode ([#254])
+- Update README for NonGNU ELPA repository ([#259])
+- Add new implementation of editorconfig-mode ([#248], [#250], [#251], [#255], [#258], [#260])
+  - By default this is disabled: set `(setq editorconfig--enable-20210221-testing t)` to use this
 
 ### Fixed
 
 - Fix so that "?" does not match "/" ([#211])
 - Fix document typo ([#213])
 - Don't make unchanged vars buffer-local ([#222])
+- Silence byte-compiler warnings ([#235])
+- Use revert-buffer-with-coding-system to set coding system ([#236])
+- Do not run editorconfig-apply on recentf-save-file ([#241])
+- Skip special-mode buffers when applying ([#247])
+- Stop excluding remote files by default ([#234], [#245])
+- Fix editorconfig execution for remote hosts via tramp ([#249])
+- Add minor fixes to tests ([#252])
+- Fix excluding the recentf-save-file when in a symlinked directory ([#256])
 
 ### Changed
 
@@ -199,7 +226,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 *Undocumented*
 
 
-[Unreleased]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.8.2...HEAD
+[0.8.2]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.7.14...v0.8.0
 [0.7.14]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.7.13...v0.7.14
@@ -225,6 +253,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.2...v0.3
 [0.2]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.1...v0.2
 [0.1]: https://github.com/editorconfig/editorconfig-emacs/releases/tag/v0.1
+[#260]: https://github.com/editorconfig/editorconfig-emacs/issues/260
+[#258]: https://github.com/editorconfig/editorconfig-emacs/issues/258
+[#255]: https://github.com/editorconfig/editorconfig-emacs/issues/255
+[#251]: https://github.com/editorconfig/editorconfig-emacs/issues/251
+[#250]: https://github.com/editorconfig/editorconfig-emacs/issues/250
+[#248]: https://github.com/editorconfig/editorconfig-emacs/issues/248
+[#259]: https://github.com/editorconfig/editorconfig-emacs/issues/259
+[#256]: https://github.com/editorconfig/editorconfig-emacs/issues/256
+[#252]: https://github.com/editorconfig/editorconfig-emacs/issues/252
+[#249]: https://github.com/editorconfig/editorconfig-emacs/issues/249
+[#245]: https://github.com/editorconfig/editorconfig-emacs/issues/245
+[#234]: https://github.com/editorconfig/editorconfig-emacs/issues/234
+[#241]: https://github.com/editorconfig/editorconfig-emacs/issues/241
+[#236]: https://github.com/editorconfig/editorconfig-emacs/issues/236
+[#235]: https://github.com/editorconfig/editorconfig-emacs/issues/235
 [#222]: https://github.com/editorconfig/editorconfig-emacs/issues/222
 [#222]: https://github.com/editorconfig/editorconfig-emacs/issues/222
 [#220]: https://github.com/editorconfig/editorconfig-emacs/issues/220

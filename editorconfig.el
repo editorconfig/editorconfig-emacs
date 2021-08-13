@@ -1,9 +1,9 @@
 ;;; editorconfig.el --- EditorConfig Emacs Plugin  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2020 EditorConfig Team
+;; Copyright (C) 2011-2021 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-;; Version: 0.8.1
+;; Version: 0.8.2
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
 ;; Package-Requires: ((cl-lib "0.5") (nadvice "0.3") (emacs "24"))
 
