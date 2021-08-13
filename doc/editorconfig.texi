@@ -8,50 +8,69 @@
 @anchor{#editorconfig-emacs-plugin}
 This is an @uref{https://editorconfig.org,EditorConfig} plugin for
 @uref{https://www.gnu.org/software/emacs/,Emacs}.
+
 @menu
-* Installation::
+* Getting Started::
 * Supported properties::
 * Customize::
-* Testing::
+* Troubleshooting::
 * Submitting Bugs and Feature Requests::
 * License::
 @end menu
 
-@node Installation
-@section Installation
-@anchor{#installation}
-Download the
-@uref{https://github.com/editorconfig/editorconfig-core-c,EditorConfig C
-Core} and follow the instructions in the README and INSTALL files to
-install it.
+@node Getting Started
+@section Getting Started
+@anchor{#getting-started}
 
-This plugin also has a built-in core library implemented in Emacs-Lisp,
-and fallback to it when no core executable is found.
+@menu
+* packageel::
+* use-package::
+* Manual installation::
+@end menu
 
-In either case, copy @code{.el} files in this repository to
-@code{~/.emacs.d/lisp} and add the following to your @code{~/.emacs}
-file:
+@node packageel
+@subsection package.el
+@anchor{#package.el}
+This package is available from
+@uref{https://melpa.org/#/editorconfig,MELPA},
+@uref{https://stable.melpa.org/#/editorconfig,MELPA Stable} and
+@uref{http://elpa.nongnu.org/nongnu/editorconfig.html,NonGNU ELPA}.
+Install from these repositories and enable global minor-mode
+@code{editorconfig-mode}:
 
 @verbatim
-(add-to-list 'load-path "~/.emacs.d/lisp")
-(require 'editorconfig)
 (editorconfig-mode 1)
 @end verbatim
 
-Alternatively, you can find the package available on
-@uref{https://melpa.org/#/editorconfig,MELPA} and
-@uref{https://stable.melpa.org/#/editorconfig,MELPA Stable}
-(@uref{http://marmalade-repo.org/packages/editorconfig,The Marmalade
-package} is deprecated).
+Normally, enabling @code{editorconfig-mode} should be enough for this
+plugin to work: all other configurations are optional. This mode sets up
+hooks so that EditorConfig properties will be loaded and applied to the
+new buffers automatically when visiting files.
 
-Or if you use
-@uref{https://www.emacswiki.org/emacs/UsePackage,@strong{use-package}}:
+@node use-package
+@subsection use-package
+@anchor{#use-package}
+If you use
+@uref{https://www.emacswiki.org/emacs/UsePackage,@strong{use-package}},
+add the following to your @code{init.el} file:
 
 @verbatim
 (use-package editorconfig
   :ensure t
   :config
   (editorconfig-mode 1))
+@end verbatim
+
+@node Manual installation
+@subsection Manual installation
+@anchor{#manual-installation}
+Copy all @code{.el} files in this repository to @code{~/.emacs.d/lisp}
+and add the following:
+
+@verbatim
+(add-to-list 'load-path "~/.emacs.d/lisp")
+(require 'editorconfig)
+(editorconfig-mode 1)
 @end verbatim
 
 @node Supported properties
@@ -85,8 +104,10 @@ trailing-newline-free
 @code{max_line_length}
 @item
 @code{file_type_ext} (Experimental)
+(See below)
 @item
 @code{file_type_emacs} (Experimental)
+(See below)
 @item
 @code{root} (only used by EditorConfig core)
 @end itemize
@@ -96,78 +117,86 @@ implementing missing features warmly welcomed! Typically, you will want
 to tie these to native functionality, or the configuration of existing
 packages handling the feature.
 
-As several packages have their own handling of, say, indentation, we might
-not yet cover some mode you use, but we try to add the ones that show up
-on our radar. Similarly, we don't yet hook in to all different packages
-for whitespace trimming to inform them about editorconfig settings, but
-aim for better coverage of things like
-@uref{ftp://ftp.lysator.liu.se/pub/emacs/ws-trim.el,ws-trim}.
+As several packages have their own handling of, say, indentation, we
+might not yet cover some mode you use, but we try to add the ones that
+show up on our radar.
+
 @menu
-* File Type::
+* File Type file_type_ext file_type_emacs::
 @end menu
 
-@node File Type
-@subsection File Type
-@anchor{#file-type}
-This plugin has experimental supports for @code{file_type_ext} and
-@code{file_type_emacs}, which specify ``file types'' for files. As for
-Emacs, it means @code{major-mode} can be set.
-
-@strong{file_type_ext} When it is set to @code{md} for @code{a.txt}, for
-example, @code{major-mode} will be decided as if the file name would be
-@code{a.txt.md} (and thus @code{markdown-mode} is likely to be used).
-
-@strong{file_type_emacs} When it is set to @code{markdown} for
-@code{a.txt}, @code{markdown-mode} will be enabled when opening
-@code{a.txt}.
-
-These property are experimental and their meanings might change in the
-future updates. When both are specified, @code{file_type_ext} takes
-precedence.
+@node File Type file_type_ext file_type_emacs
+@subsection File Type (file_type_ext, file_type_emacs)
+@anchor{#file-type-file_type_ext-file_type_emacs}
+File-type feature is currently disabled, because this package is now
+undergoing big internal refactoring. For those who want this
+functionality, please consider using
+@uref{https://github.com/10sr/editorconfig-custom-majormode-el,editorconfig-custom-majormode}.
 
 @node Customize
 @section Customize
 @anchor{#customize}
+@code{editorconfig-emacs} provides some customize variables.
+
+Here are some of these variables: for the full list of available
+variables, type M-x customize-group [RET] editorconfig [RET].
+
 @menu
+* editorconfig-trim-whitespaces-mode::
 * editorconfig-after-apply-functions::
 * editorconfig-hack-properties-functions::
-* editorconfig-indentation-alist::
-* editorconfig-exec-path::
-* editorconfig-get-properties-function::
 @end menu
+
+@node editorconfig-trim-whitespaces-mode
+@subsection @code{editorconfig-trim-whitespaces-mode}
+@anchor{#editorconfig-trim-whitespaces-mode}
+Buffer local minor-mode to use to trim trailing whitespaces.
+
+If set, editorconfig will enable/disable this mode in accord with
+@code{trim_trailing_whitespace} property in @code{.editorconfig}.
+Otherwise, use Emacs built-in @code{delete-trailing-whitespace}
+function.
+
+One possible value is
+@uref{https://github.com/lewang/ws-butler,@code{ws-butler-mode}}, with
+which only lines touched get trimmed. To use it, add following to your
+init.el:
+
+@verbatim
+(setq editorconfig-trim-whitespaces-mode
+      'ws-butler-mode)
+@end verbatim
 
 @node editorconfig-after-apply-functions
 @subsection @code{editorconfig-after-apply-functions}
 @anchor{#editorconfig-after-apply-functions}
 (Formerly @code{editorconfig-custom-hooks})
 
-A list of functions after loading common EditorConfig settings, where
-you can set some custom variables or overwrite existing properties.
+A list of functions which will be called after loading common
+EditorConfig settings, when you can set some custom variables.
 
 For example, @code{web-mode} has several variables for indentation
 offset size and EditorConfig sets them at once by @code{indent_size}.
-You may want to stop indenting only blocks of @code{web-mode}: it can be
-achieved by adding following to your init.el:
+You can stop indenting only blocks of @code{web-mode} by adding
+following to your init.el:
 
 @verbatim
 (add-hook 'editorconfig-after-apply-functions
-  (lambda (hash) (setq web-mode-block-padding 0)))
+  (lambda (props) (setq web-mode-block-padding 0)))
 @end verbatim
-
-You can also define your own custom properties and enable them here.
 
 @node editorconfig-hack-properties-functions
 @subsection @code{editorconfig-hack-properties-functions}
 @anchor{#editorconfig-hack-properties-functions}
-A list of function to alter property values before applying them.
+A list of functions to alter property values before applying them.
 
 These functions will be run after loading ".editorconfig" files and
 before applying them to current buffer, so that you can alter some
 properties from ".editorconfig" before they take effect.
 
-For example, Makefiles always use tab characters for indentation: you
-can overwrite "indent_style" property when current @code{major-mode} is
-a @code{makefile-mode} with following code:
+For example, Makefile files always use tab characters for indentation:
+you can overwrite "indent_style" property when current @code{major-mode}
+is @code{makefile-mode}:
 
 @verbatim
 (add-hook 'editorconfig-hack-properties-functions
@@ -176,91 +205,78 @@ a @code{makefile-mode} with following code:
                (puthash 'indent_style "tab" props))))
 @end verbatim
 
-@node editorconfig-indentation-alist
-@subsection @code{editorconfig-indentation-alist}
-@anchor{#editorconfig-indentation-alist}
-Alist of indentation setting methods by modes.
+@node Troubleshooting
+@section Troubleshooting
+@anchor{#troubleshooting}
+Enabling @code{editorconfig-mode} should be enough for normal cases.
 
-For the easiest case to add a new support for a major-mode, you just
-need to add a pair of major-mode symbol and its indentation variables:
+When EditorConfig properties are not effective for unknown reason, we
+recommend first trying
+@code{M-x editorconfig-display-current-properties}.
 
-@verbatim
-(add-to-list 'editorconfig-indentation-alist
-  ;; Just an example, of course EditorConfig has already included this setting!
-  '(c-mode c-basic-offset))
-@end verbatim
+This command will open a new buffer and display the EditorConfig
+properties loaded for current buffer. You can check if EditorConfig
+properties were not read for buffers at all, or they were loaded but did
+not take effect for some other reasons.
 
-You can also modify this variable with the command M-x
-customize-variable [RET] editorconfig-indentation-alist [RET]. For a bit
-more complicated cases please take a look at the docstring of this
-variable.
+@menu
+* Indentation for new major-modes::
+* Not work at all for FOO-mode!::
+@end menu
 
-@node editorconfig-exec-path
-@subsection @code{editorconfig-exec-path}
-@anchor{#editorconfig-exec-path}
-String of @code{editorconfig} executable name (command name or full path
-to the executable).
+@node Indentation for new major-modes
+@subsection Indentation for new major-modes
+@anchor{#indentation-for-new-major-modes}
+Because most Emacs major-modes have their own indentation settings, this
+plugin requires explicit support for each major-mode for
+@code{indent_size} property.
 
-@node editorconfig-get-properties-function
-@subsection @code{editorconfig-get-properties-function}
-@anchor{#editorconfig-get-properties-function}
-Function to use to get EditorConfig properties.
+By default this plugin ships with settings for many major-modes, but,
+sorry to say, it cannot be perfect. Especially it is difficult to
+support brand-new major-modes. Please feel free to submit issue or
+pull-request for such major-mode!
 
-For example, if you always want to use built-in core library instead of
-any EditorConfig executable to get properties, add following to your
-init.el:
+Supported major-modes and their indentation configs are defined in the
+variable @code{editorconfig-indentation-alist}.
 
-@verbatim
-(set-variable 'editorconfig-get-properties-function
-              #'editorconfig-core-get-properties-hash)
-@end verbatim
+@node Not work at all for FOO-mode!
+@subsection Not work at all for FOO-mode!
+@anchor{#not-work-at-all-for-foo-mode}
+Most cases properties are loaded just after visiting files when
+@code{editorconfig-mode} is enabled. But it is known that there are
+major-modes that this mechanism does not work for and require explicit
+call of @code{editorconfig-apply}.
 
-Possible known values are:
-
-@itemize
-@item
-@code{editorconfig-get-properties} (default)
-@itemize
-@item
-Use @code{editorconfig-get-properties-from-exec} when
-@code{editorconfig-exec-path} executable is found, otherwise use
-@code{editorconfig-core-get-properties-hash}
-@end itemize
-
-@item
-@code{editorconfig-get-properties-from-exec}
-@itemize
-@item
-Get properties by executing EditorConfig executable specified in
-@code{editorconfig-exec-path}
-@end itemize
-
-@item
-@code{editorconfig-core-get-properties-hash}
-@itemize
-@item
-Always use built-in Emacs-Lisp implementation to get properties
-@end itemize
-
-@end itemize
-
-@node Testing
-@section Testing
-@anchor{#testing}
-Make and @uref{https://cmake.org,CMake} must be installed to run the
-tests.
-
-To run the tests:
-
-@verbatim
-$ make test
-@end verbatim
+Typically it will occur when the major-mode is not defined using
+@code{define-derived-mode} (@code{rpm-spec-mode} is an example for
+this). Please feel free to submit issues if you find such modes!
 
 @node Submitting Bugs and Feature Requests
 @section Submitting Bugs and Feature Requests
 @anchor{#submitting-bugs-and-feature-requests}
 Bugs, feature requests, and other issues should be submitted to the
 issue tracker: https://github.com/editorconfig/editorconfig-emacs/issues
+
+@menu
+* Development::
+@end menu
+
+@node Development
+@subsection Development
+@anchor{#development}
+Make and @uref{https://cmake.org,CMake} must be installed to run the
+tests locally:
+
+@verbatim
+$ make check
+@end verbatim
+
+To start a new Emacs process with current @code{*.el} and without
+loading user init file, run:
+
+@verbatim
+$ make sandbox
+@end verbatim
 
 @node License
 @section License
