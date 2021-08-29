@@ -136,26 +136,6 @@ only blocks of `web-mode` by adding following to your init.el:
 ```
 
 
-### `editorconfig-hack-properties-functions`
-
-A list of functions to alter property values before applying them.
-
-These functions will be run after loading \".editorconfig\" files and before
-applying them to current buffer, so that you can alter some properties from
-\".editorconfig\" before they take effect.
-
-For example, Makefile files always use tab characters for indentation: you can
-overwrite \"indent_style\" property when current `major-mode` is
-`makefile-mode`:
-
-``` emacs-lisp
-(add-hook 'editorconfig-hack-properties-functions
-          '(lambda (props)
-             (when (derived-mode-p 'makefile-mode)
-               (puthash 'indent_style "tab" props))))
-
-```
-
 
 ## Troubleshooting
 
