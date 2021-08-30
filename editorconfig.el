@@ -148,6 +148,8 @@ This hook will be run even when there are no matching sections in
 These functions will be run after loading \".editorconfig\" files and before
 applying them to current buffer, so that you can alter some properties from
 \".editorconfig\" before they take effect.
+(Since 2021/08/30 (v0.9.0): Buffer coding-systems are set before running
+this functions, so this variable cannot be used to change coding-systems.)
 
 For example, Makefiles always use tab characters for indentation: you can
 overwrite \"indent_style\" property when current `major-mode' is a
@@ -162,6 +164,11 @@ This hook will be run even when there are no matching sections in
 \".editorconfig\", or no \".editorconfig\" file was found at all."
   :type 'hook
   :group 'editorconfig)
+(make-obsolete-variable 'editorconfig-hack-properties-functions
+                        "Using `editorconfig-after-apply-functions' instead is recommended,
+    because since 2021/08/30 (v0.9.0) this variable cannot support all properties:
+    charset values will be referenced before running this hook."
+                        "v0.9.0")
 
 (define-obsolete-variable-alias
   'edconf-indentation-alist
@@ -842,11 +849,11 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                         (format "Error while setting variables from EditorConfig: %S" err))))
     ret))
 
-(defvar editorconfig--enable-20210221-testing nil
-  "Enable testing version of `editorconfig-mode'.
+(defvar editorconfig--legacy-version nil
+  "Use legacy version of editorconfig-mode.
 
-Currently this mode is not well tested yet and can cause unexpected behaviors
-like killing Emacs process or not able to visit files at all.")
+As of 2021/08/30, `editorconfig-mode' uses totally new implementation by default.
+This flag disables this and go back to previous version.")
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
@@ -856,7 +863,7 @@ To disable EditorConfig in some buffers, modify
 `editorconfig-exclude-modes' or `editorconfig-exclude-regexps'."
   :global t
   :lighter editorconfig-mode-lighter
-  (if editorconfig--enable-20210221-testing
+  (if (not editorconfig--legacy-version)
       (let ((modehooks '(prog-mode-hook
                           text-mode-hook
                           read-only-mode-hook
@@ -880,7 +887,7 @@ To disable EditorConfig in some buffers, modify
             (remove-hook hook
                          'editorconfig-major-mode-hook))))
 
-    ;; editorconfig--enable-20210221-testing is disabled
+    ;; editorconfig--legacy-version is enabled
     ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
     ;; not `after-change-major-mode-hook'
     (dolist (hook '(change-major-mode-after-body-hook
