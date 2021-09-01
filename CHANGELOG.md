@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Use new implementation by default (#263)
+  - Set `(setq editorconfig--legacy-version t)` to use previous one
+
+
 ### Deprecated
 
 ### Removed
