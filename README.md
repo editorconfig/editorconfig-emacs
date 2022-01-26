@@ -177,6 +177,16 @@ Typically it will occur when the major-mode is not defined using
 Please feel free to submit issues if you find such modes!
 
 
+### `editorconfig-format-buffer` does not work well with lsp-mode
+
+By default, [lsp-mode][] configures indent-region-function so that Emacs uses
+language servers' `textDocument/rangeFormatting` request to format text in
+buffers.
+So EditorConfig settings are ignored unless language servers
+themselves support loading configs from `.editorconfig`.
+
+To avoid this behavior ad-hocly, set `lsp-enable-indentation` to nil.
+
 
 
 ## Submitting Bugs and Feature Requests
@@ -226,3 +236,4 @@ with this program.  If not, see <https://www.gnu.org/licenses/>.
 [EditorConfig C Core]: https://github.com/editorconfig/editorconfig-core-c
 [properties]: https://editorconfig.org/#supported-properties
 [CMake]: https://cmake.org
+[lsp-mode]: https://github.com/emacs-lsp/lsp-mode
