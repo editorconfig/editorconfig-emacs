@@ -852,8 +852,8 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
 (defvar editorconfig--legacy-version nil
   "Use legacy version of editorconfig-mode.
 
-As of 2021/08/30, `editorconfig-mode' uses totally new implementation by default.
-This flag disables this and go back to previous version.")
+As of 2021/08/30, `editorconfig-mode' uses totally new implementation by
+default.  This flag disables this and go back to previous version.")
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
