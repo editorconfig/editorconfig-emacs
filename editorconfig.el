@@ -148,7 +148,7 @@ This hook will be run even when there are no matching sections in
 These functions will be run after loading \".editorconfig\" files and before
 applying them to current buffer, so that you can alter some properties from
 \".editorconfig\" before they take effect.
-(Since 2021/08/30 (v0.9.0): Buffer coding-systems are set before running
+\(Since 2021/08/30 (v0.9.0): Buffer coding-systems are set before running
 this functions, so this variable cannot be used to change coding-systems.)
 
 For example, Makefiles always use tab characters for indentation: you can
