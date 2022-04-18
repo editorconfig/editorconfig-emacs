@@ -22,6 +22,7 @@ jobs:
           - "25.3"
           - "26.3"
           - "27.1"
+          - "28.1"
         experimental: [false]
         include:
           - emacs_version: snapshot
