@@ -1,5 +1,6 @@
 (require 'editorconfig-fnmatch)
 
+(set-variable 'vc-handled-backends nil)
 
 (ert-deftest test-editorconfig-fnmatch-p ()
   (let ((cases-t
