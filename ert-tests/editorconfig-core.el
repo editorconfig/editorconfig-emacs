@@ -1,5 +1,6 @@
 (require 'editorconfig-core)
 
+(set-variable 'vc-handled-backends nil)
 
 (ert-deftest test-editorconfig-core--get-handles ()
   (let* ((fixtures (concat default-directory

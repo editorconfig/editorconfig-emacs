@@ -95,13 +95,13 @@ your init.el:
 
 Possible known values are:
 
-* `editorconfig-core-get-properties-hash' (default)
+* `editorconfig-core-get-properties-hash\\=' (default)
   * Always use built-in Emacs-Lisp implementation to get properties
 * `editorconfig-get-properties'
-  * Use `editorconfig-get-properties-from-exec' when
+  * Use `editorconfig-get-properties-from-exec\\=' when
     `editorconfig-exec-path' executable is found, otherwise
-    use `editorconfig-core-get-properties-hash'
-* `editorconfig-get-properties-from-exec'
+    use `editorconfig-core-get-properties-hash\\='
+* `editorconfig-get-properties-from-exec\\='
   * Get properties by executing EditorConfig executable"
   :type 'function
   :group 'editorconfig)

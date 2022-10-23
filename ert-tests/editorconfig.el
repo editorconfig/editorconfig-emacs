@@ -1,5 +1,7 @@
 (require 'editorconfig)
 
+(set-variable 'vc-handled-backends nil)
+
 (defun display-warning (type message &optional level buffer-name)
   "When testing overwrite this function to throw error when called."
   (unless (eq level :debug)
