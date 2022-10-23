@@ -47,9 +47,7 @@
   (defvar tex-indent-arg)
   (defvar evil-shift-width))
 
-(declare-function editorconfig-core-get-properties-hash
-                  "editorconfig-core"
-                  (&optional file confname confversion))
+(require 'editorconfig-core)
 
 (defgroup editorconfig nil
   "EditorConfig Emacs Plugin.
