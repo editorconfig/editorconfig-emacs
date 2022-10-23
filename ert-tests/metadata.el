@@ -1,5 +1,7 @@
 (require 'package)
 
+(set-variable 'vc-handled-backends nil)
+
 (defvar metadata-el-files nil)
 
 (ert-deftest test-metadata ()

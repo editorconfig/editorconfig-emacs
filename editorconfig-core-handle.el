@@ -200,8 +200,8 @@ If CONF is not found return nil."
             )
         (while (not (eq (point) point-max))
           (setq line
-                (buffer-substring-no-properties (point-at-bol)
-                                                (point-at-eol)))
+                (buffer-substring-no-properties (line-beginning-position)
+                                                (line-end-position)))
           (setq line
                 (replace-regexp-in-string "\\(^\\| \\)\\(#\\|;\\).*$"
                                           ""

@@ -3,6 +3,8 @@
 (defconst fixtures (concat (file-name-directory load-file-name)
                            "fixtures/"))
 
+(set-variable 'vc-handled-backends nil)
+
 (ert-deftest test-editorconfig-core-handle ()
   ;; handle.ini
   (let* ((conf (concat fixtures
