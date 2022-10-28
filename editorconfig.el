@@ -634,7 +634,7 @@ It calls `editorconfig-get-properties-from-exec' if
 `editorconfig-exec-path' is found, otherwise
 `editorconfig-core-get-properties-hash'."
   (if (and (executable-find editorconfig-exec-path)
-           (not (file-remote-p buffer-file-name)))
+           (not (file-remote-p filename)))
       (editorconfig-get-properties-from-exec filename)
     (require 'editorconfig-core)
     (editorconfig-core-get-properties-hash filename)))
