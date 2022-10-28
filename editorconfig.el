@@ -782,70 +782,72 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
 
 This function should be added as an advice function to `find-file-noselect'.
 F is that function, and FILENAME and ARGS are arguments passed to F."
-  (let ((props nil)
-        (coding-system nil)
-        (ret nil))
-    (condition-case err
-        (when (and (stringp filename)
-                   (not (editorconfig--disabled-for-filename filename)))
-          (setq props (editorconfig-call-get-properties-function filename))
-          (setq coding-system
-                (editorconfig-merge-coding-systems (gethash 'end_of_line props)
-                                                   (gethash 'charset props))))
-      (error
-       (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
-                        (format "Failed to get properties, styles will not be applied: %S"
-                                err)
-                        :warning)))
+  (if buffer-file-name
+      (let ((props nil)
+            (coding-system nil)
+            (ret nil))
+        (condition-case err
+            (when (and (stringp filename)
+                       (not (editorconfig--disabled-for-filename filename)))
+              (setq props (editorconfig-call-get-properties-function filename))
+              (setq coding-system
+                    (editorconfig-merge-coding-systems (gethash 'end_of_line props)
+                                                       (gethash 'charset props))))
+          (error
+           (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
+                            (format "Failed to get properties, styles will not be applied: %S"
+                                    err)
+                            :warning)))
 
-    (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
-                                                          coding-system)))
-      (setq ret (apply f filename args)))
+        (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
+                                                              coding-system)))
+          (setq ret (apply f filename args)))
 
-    (condition-case err
-        (with-current-buffer ret
-          (when (and props
-                     ;; filename has already been checked
-                     (not (editorconfig--disabled-for-majormode major-mode)))
-            (when (and (file-remote-p filename)
-                       (not (local-variable-p 'buffer-file-coding-system))
-                       (not (file-exists-p filename))
-                       coding-system
-                       (not (eq coding-system
-                                'undecided)))
-              ;; When file path indicates it is a remote file and it actually
-              ;; does not exists, `buffer-file-coding-system' will not be set.
-              ;; (Seems `insert-file-contents' will not be called)
-              ;; For that case, explicitly set this value so that saving will be done
-              ;; with expected coding system.
-              (set-buffer-file-coding-system coding-system))
+        (condition-case err
+            (with-current-buffer ret
+              (when (and props
+                         ;; filename has already been checked
+                         (not (editorconfig--disabled-for-majormode major-mode)))
+                (when (and (file-remote-p filename)
+                           (not (local-variable-p 'buffer-file-coding-system))
+                           (not (file-exists-p filename))
+                           coding-system
+                           (not (eq coding-system
+                                    'undecided)))
+                  ;; When file path indicates it is a remote file and it actually
+                  ;; does not exists, `buffer-file-coding-system' will not be set.
+                  ;; (Seems `insert-file-contents' will not be called)
+                  ;; For that case, explicitly set this value so that saving will be done
+                  ;; with expected coding system.
+                  (set-buffer-file-coding-system coding-system))
 
-            ;; NOTE: When using editorconfig-2-mode, hack-properties-functions cannot affect coding-system value,
-            ;; because it has to be set before initializing buffers.
-            (condition-case err
-                (run-hook-with-args 'editorconfig-hack-properties-functions props)
-              (error
-               (display-warning '(editorconfig editorconfig-hack-properties-functions)
-                                (format "Error while running editorconfig-hack-properties-functions, abort running hook: %S"
-                                        err)
-                                :warning)))
-            (setq editorconfig-properties-hash props)
-            ;; When initializing buffer, `editorconfig-major-mode-hook'
-            ;; will be called before setting `editorconfig-properties-hash', so
-            ;; execute this explicitly here.
-            (editorconfig-set-local-variables props)
+                ;; NOTE: When using editorconfig-2-mode, hack-properties-functions cannot affect coding-system value,
+                ;; because it has to be set before initializing buffers.
+                (condition-case err
+                    (run-hook-with-args 'editorconfig-hack-properties-functions props)
+                  (error
+                   (display-warning '(editorconfig editorconfig-hack-properties-functions)
+                                    (format "Error while running editorconfig-hack-properties-functions, abort running hook: %S"
+                                            err)
+                                    :warning)))
+                (setq editorconfig-properties-hash props)
+                ;; When initializing buffer, `editorconfig-major-mode-hook'
+                ;; will be called before setting `editorconfig-properties-hash', so
+                ;; execute this explicitly here.
+                (editorconfig-set-local-variables props)
 
 
-            (condition-case err
-                (run-hook-with-args 'editorconfig-after-apply-functions props)
-              (error
-               (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
-                                (format "Error while running `editorconfig-after-apply-functions': %S"
-                                        err))))))
-      (error
-       (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
-                        (format "Error while setting variables from EditorConfig: %S" err))))
-    ret))
+                (condition-case err
+                    (run-hook-with-args 'editorconfig-after-apply-functions props)
+                  (error
+                   (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
+                                    (format "Error while running `editorconfig-after-apply-functions': %S"
+                                            err))))))
+          (error
+           (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
+                            (format "Error while setting variables from EditorConfig: %S" err))))
+        ret)
+    (apply f filename args)))
 
 (defvar editorconfig--legacy-version nil
   "Use legacy version of editorconfig-mode.
