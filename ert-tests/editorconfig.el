@@ -45,6 +45,10 @@
   "Check if properties are applied."
   (editorconfig-mode 1)
 
+  ;; Check that directory can be opened with editorconfig enabled
+  (with-visit-file editorconfig-ert-dir
+    ())
+
   (with-visit-file (concat editorconfig-ert-dir
                            "3_space.txt")
     (should (eq tab-width 3))
