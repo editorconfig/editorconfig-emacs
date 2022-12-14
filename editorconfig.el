@@ -261,6 +261,7 @@ This hook will be run even when there are no matching sections in
               tcl-continued-indent-level)
     (terra-mode terra-indent-level)
     (typescript-mode typescript-indent-level)
+    (typescript-ts-base-mode typescript-ts-mode-indent-offset)
     (verilog-mode verilog-indent-level
                   verilog-indent-level-behavioral
                   verilog-indent-level-declaration
