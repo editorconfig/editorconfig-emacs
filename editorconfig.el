@@ -221,6 +221,7 @@ This hook will be run even when there are no matching sections in
     (js2-jsx-mode js2-basic-offset sgml-basic-offset)
     (js3-mode js3-indent-level)
     (json-mode js-indent-level)
+    (json-ts-mode json-ts-mode-indent-offset)
     (julia-mode julia-indent-offset)
     (kotlin-mode kotlin-tab-width)
     (latex-mode . editorconfig-set-indentation-latex-mode)
