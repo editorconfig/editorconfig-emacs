@@ -17,14 +17,20 @@ MAIN_SRC = editorconfig.el
 SRCS = $(wildcard $(PROJECT_ROOT_DIR)/*.el)
 OBJS = $(SRCS:.el=.elc)
 
-.PHONY: check \
+.PHONY: check-unix check-dos \
 	compile clean \
 	test test-ert test-core \
 	sandbox doc
 
 # CI entry
-check: compile test
+check-unix: package install compile test
+check-dos: package install compile test-ert
 
+package:
+	$(EASK) package
+
+install:
+	$(EASK) install
 
 compile:
 	$(EASK) compile
