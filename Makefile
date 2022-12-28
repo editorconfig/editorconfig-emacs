@@ -3,6 +3,7 @@
 TEXI_CHAPTER := EditorConfig Emacs Plugin
 
 EMACS = emacs
+EASK = eask
 PANDOC = pandoc
 AWK = awk
 
@@ -21,16 +22,15 @@ OBJS = $(SRCS:.el=.elc)
 	test test-ert test-core \
 	sandbox doc
 
+# CI entry
 check: compile test
 
 
-compile: $(OBJS)
-
-$(OBJS): %.elc: %.el
-	$(EMACS) $(BATCHFLAGS) -f batch-byte-compile $^
+compile:
+	$(EASK) compile
 
 clean:
-	-rm -f $(OBJS)
+	$(EASK) clean elc
 
 
 doc: doc/editorconfig.texi

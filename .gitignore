@@ -3,3 +3,11 @@
 \#*
 .\#*
 *.autosave
+
+# eask packages
+.eask/
+dist/
+
+# packaging
+*-autoloads.el
+*-pkg.el

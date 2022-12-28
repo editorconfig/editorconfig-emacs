@@ -1,3 +1,28 @@
+;;; editorconfig.el --- Tests editorconfig  -*- lexical-binding: t -*-
+
+;; Copyright (C) 2011-2022 EditorConfig Team
+
+;; This file is part of EditorConfig Emacs Plugin.
+
+;; EditorConfig Emacs Plugin is free software: you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or (at your
+;; option) any later version.
+
+;; EditorConfig Emacs Plugin is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+;; Public License for more details.
+
+;; You should have received a copy of the GNU General Public License along with
+;; EditorConfig Emacs Plugin. If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; Tests editorconfig
+
+;;; Code:
+
 (require 'editorconfig)
 
 (set-variable 'vc-handled-backends nil)
@@ -16,8 +41,7 @@
   (declare (indent 1) (debug t))
   `(let ((buf (find-file-noselect ,path)))
      (unwind-protect
-         (with-current-buffer buf
-           ,@body)
+         (with-current-buffer buf ,@body)
        (kill-buffer buf))))
 
 ;;; interactive
@@ -34,24 +58,20 @@
   (should (featurep 'editorconfig)))
 
 (defvar editorconfig-ert-dir
-  (concat default-directory
-          "ert-tests/plugin-tests/test_files/"))
+  (concat default-directory "ert-tests/plugin-tests/test_files/"))
 
 (defvar editorconfig-secondary-ert-dir
-  (concat default-directory
-          "ert-tests/test_files_secondary/"))
+  (concat default-directory "ert-tests/test_files_secondary/"))
 
 (ert-deftest test-editorconfig nil
   "Check if properties are applied."
   (editorconfig-mode 1)
 
-  (with-visit-file (concat editorconfig-ert-dir
-                           "3_space.txt")
+  (with-visit-file (concat editorconfig-ert-dir "3_space.txt")
     (should (eq tab-width 3))
     (should (eq indent-tabs-mode nil)))
 
-  (with-visit-file (concat editorconfig-ert-dir
-                           "4_space.py")
+  (with-visit-file (concat editorconfig-ert-dir "4_space.py")
     (should (eq python-indent-offset 4))
     (should (eq tab-width 8))
     (should (eq indent-tabs-mode nil)))
@@ -60,34 +80,28 @@
 (ert-deftest test-lisp-use-default-indent nil
   (editorconfig-mode 1)
 
-  (with-visit-file (concat editorconfig-secondary-ert-dir
-                           "2_space.el")
+  (with-visit-file (concat editorconfig-secondary-ert-dir "2_space.el")
     (should (eq lisp-indent-offset 2)))
 
   (let ((editorconfig-lisp-use-default-indent t))
-    (with-visit-file (concat editorconfig-secondary-ert-dir
-                             "2_space.el")
+    (with-visit-file (concat editorconfig-secondary-ert-dir "2_space.el")
       (should (eq lisp-indent-offset nil))))
 
   (let ((editorconfig-lisp-use-default-indent 2))
-    (with-visit-file (concat editorconfig-secondary-ert-dir
-                             "2_space.el")
+    (with-visit-file (concat editorconfig-secondary-ert-dir "2_space.el")
       (should (eq lisp-indent-offset nil))))
 
   (let ((editorconfig-lisp-use-default-indent 4))
-    (with-visit-file (concat editorconfig-secondary-ert-dir
-                             "2_space.el")
+    (with-visit-file (concat editorconfig-secondary-ert-dir "2_space.el")
       (should (eq lisp-indent-offset 2))))
   (editorconfig-mode -1))
 
 (ert-deftest test-trim-trailing-ws nil
   (editorconfig-mode 1)
-  (with-visit-file (concat editorconfig-ert-dir
-                           "trim.txt")
+  (with-visit-file (concat editorconfig-ert-dir "trim.txt")
     (should (memq 'delete-trailing-whitespace
                   write-file-functions)))
-  (with-visit-file (concat editorconfig-ert-dir
-                           "trim.txt")
+  (with-visit-file (concat editorconfig-ert-dir "trim.txt")
     (read-only-mode 1)
     (should (not (memq 'delete-trailing-whitespace
                        write-file-functions))))
@@ -96,20 +110,17 @@
 (ert-deftest test-file-type-emacs nil
   :expected-result t  ;; Ignore failure
   (editorconfig-mode 1)
-  (with-visit-file (concat editorconfig-secondary-ert-dir
-                           "c.txt")
+  (with-visit-file (concat editorconfig-secondary-ert-dir "c.txt")
     (should (eq major-mode 'conf-unix-mode)))
   (editorconfig-mode -1))
 
 (ert-deftest test-file-type-ext nil
   :expected-result t  ;; Ignore failure
   (editorconfig-mode 1)
-  (with-visit-file (concat editorconfig-secondary-ert-dir
-                           "a.txt")
+  (with-visit-file (concat editorconfig-secondary-ert-dir "a.txt")
     (should (eq major-mode 'conf-unix-mode)))
 
-  (with-visit-file (concat editorconfig-secondary-ert-dir
-                           "bin/perlscript")
+  (with-visit-file (concat editorconfig-secondary-ert-dir "bin/perlscript")
     (should (eq major-mode 'perl-mode))
     (should (eq perl-indent-level 5)))
   (editorconfig-mode -1))
@@ -119,8 +130,9 @@
   (add-hook 'editorconfig-hack-properties-functions
             (lambda (props)
               (puthash 'indent_size "5" props)))
-  (with-visit-file (concat editorconfig-ert-dir
-                           "4_space.py")
+  (with-visit-file (concat editorconfig-ert-dir "4_space.py")
     (should (eq python-indent-offset 5)))
   (setq editorconfig-hack-properties-functions nil)
   (editorconfig-mode -1))
+
+;;; editorconfig.el ends here

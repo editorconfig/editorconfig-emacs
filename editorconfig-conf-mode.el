@@ -2,8 +2,6 @@
 
 ;; Copyright (C) 2011-2022 EditorConfig Team
 
-;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
 ;; or the CONTRIBUTORS file for the list of contributors.
@@ -77,25 +75,19 @@
 
     ;; Highlight all key values
     (dolist (key-value key-value-list)
-      (push
-       `(,(format "[=:][ \t]*\\(%s\\)\\([ \t]\\|$\\)" key-value)
-         1 font-lock-constant-face)
-       font-lock-value
-       ))
+      (push `(,(format "[=:][ \t]*\\(%s\\)\\([ \t]\\|$\\)" key-value)
+              1 font-lock-constant-face)
+            font-lock-value))
     ;; Highlight all key properties
     (dolist (key-property key-property-list)
-      (push
-       `(,(format "^[ \t]*\\(%s\\)[ \t]*[=:]" key-property)
-         1 font-lock-builtin-face)
-       font-lock-value
-       ))
+      (push `(,(format "^[ \t]*\\(%s\\)[ \t]*[=:]" key-property)
+              1 font-lock-builtin-face)
+            font-lock-value))
 
     (conf-mode-initialize "#" font-lock-value)))
 
 ;;;###autoload
-(add-to-list 'auto-mode-alist
-             '("\\.editorconfig\\'" . editorconfig-conf-mode))
+(add-to-list 'auto-mode-alist '("\\.editorconfig\\'" . editorconfig-conf-mode))
 
 (provide 'editorconfig-conf-mode)
-
 ;;; editorconfig-conf-mode.el ends here
