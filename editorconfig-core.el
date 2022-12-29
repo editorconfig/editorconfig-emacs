@@ -2,6 +2,8 @@
 
 ;; Copyright (C) 2011-2022 EditorConfig Team
 
+;; Author: EditorConfig Team <editorconfig@googlegroups.com>
+
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
 ;; or the CONTRIBUTORS file for the list of contributors.
