@@ -80,24 +80,20 @@ RESULT is used internally and normally should not be used."
   (let ((handle (editorconfig-core-handle (concat (file-name-as-directory dir)
                                                   confname)))
         (parent (file-name-directory (directory-file-name dir))))
-    (if (or (string= parent
-                     dir)
-            (and handle
-                 (editorconfig-core-handle-root-p handle)))
-        (cl-remove-if-not 'identity
-                          (cons handle result))
+    (if (or (string= parent dir)
+            (and handle (editorconfig-core-handle-root-p handle)))
+        (cl-remove-if-not 'identity (cons handle result))
       (editorconfig-core--get-handles parent
                                       confname
-                                      (cons handle
-                                            result)))))
+                                      (cons handle result)))))
 
 ;;;###autoload
 (defun editorconfig-core-get-nearest-editorconfig (directory)
   "Return path to .editorconfig file that is closest to DIRECTORY."
-  (let ((handle (car (last (editorconfig-core--get-handles directory
+  (when-let ((handle (car (last
+                           (editorconfig-core--get-handles directory
                                                            ".editorconfig")))))
-    (when handle
-      (editorconfig-core-handle-path handle))))
+    (editorconfig-core-handle-path handle)))
 
 ;;;###autoload
 (defun editorconfig-core-get-properties (&optional file confname confversion)
@@ -111,9 +107,7 @@ This functions returns alist of properties.  Each element will look like
   (let ((hash (editorconfig-core-get-properties-hash file confname confversion))
         (result nil))
     (maphash (lambda (key value)
-               (add-to-list 'result
-                            (cons (symbol-name key)
-                                  value)))
+               (add-to-list 'result (cons (symbol-name key) value)))
              hash)
     result))
 
@@ -122,11 +116,7 @@ This functions returns alist of properties.  Each element will look like
 
 This is a destructive function, hash INTO will be modified.
 When the same key exists in both two hashes, values of UPDATE takes precedence."
-  (maphash (lambda (key value)
-             (puthash key
-                      value
-                      into))
-           update)
+  (maphash (lambda (key value) (puthash key value into)) update)
   into)
 
 ;;;###autoload
@@ -142,10 +132,8 @@ hash object instead."
         (expand-file-name (or file
                               buffer-file-name
                               (error "FILE is not given and `buffer-file-name' is nil"))))
-  (setq confname (or confname
-                     ".editorconfig"))
-  (setq confversion (or confversion
-                        "0.12.0"))
+  (setq confname (or confname ".editorconfig"))
+  (setq confversion (or confversion "0.12.0"))
   (let ((result (make-hash-table)))
     (dolist (handle (editorconfig-core--get-handles (file-name-directory file)
                                                     confname))
@@ -154,16 +142,10 @@ hash object instead."
                                                                                    file)))
 
     ;; Downcase known boolean values
-    (dolist (key '(
-                   end_of_line indent_style indent_size insert_final_newline
-                   trim_trailing_whitespace charset
-                   ))
-      (let ((val (gethash key
-                          result)))
-        (when val
-          (puthash key
-                   (downcase val)
-                   result))))
+    (dolist (key '( end_of_line indent_style indent_size insert_final_newline
+                    trim_trailing_whitespace charset))
+      (when-let ((val (gethash key result)))
+        (puthash key (downcase val) result)))
 
     ;; Add indent_size property
     (let ((v-indent-size (gethash 'indent_size result))
@@ -182,21 +164,16 @@ hash object instead."
       (when (and v-indent-size
                  (not v-tab-width)
                  (not (string= v-indent-size "tab")))
-        (puthash 'tab_width
-                 v-indent-size
-                 result)))
+        (puthash 'tab_width v-indent-size result)))
     ;; Update indent-size property
     (let ((v-indent-size (gethash 'indent_size result))
           (v-tab-width (gethash 'tab_width result)))
       (when (and v-indent-size
                  v-tab-width
                  (string= v-indent-size "tab"))
-        (puthash 'indent_size
-                 v-tab-width
-                 result)))
+        (puthash 'indent_size v-tab-width result)))
 
     result))
 
 (provide 'editorconfig-core)
-
 ;;; editorconfig-core.el ends here

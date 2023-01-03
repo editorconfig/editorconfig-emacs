@@ -213,12 +213,10 @@ translation is found for PATTERN."
            (setq pos index
                  has-comma nil)
            (while (and (or (and (< pos length)
-                                (not (= (aref pattern pos)
-                                        ?})))
+                                (not (= (aref pattern pos) ?})))
                            is-escaped)
                        (not has-comma))
-             (if (and (eq (aref pattern pos)
-                          ?,)
+             (if (and (eq (aref pattern pos) ?,)
                       (not is-escaped))
                  (setq has-comma t)
                (setq is-escaped (and (eq (aref pattern pos)
@@ -242,8 +240,7 @@ translation is found for PATTERN."
                                                                    "\\|")
                                                         "\\)"))))
                    (let ((inner (editorconfig-fnmatch--do-translate pattern-sub t)))
-                     (setq result `(,@result ,(format "{%s}"
-                                                      inner)))))
+                     (setq result `(,@result ,(format "{%s}" inner)))))
                  (setq index (1+ pos)))
              (if matching-braces
                  (setq result `(,@result "\\(?:")
@@ -264,17 +261,14 @@ translation is found for PATTERN."
              (setq result `(,@result "}"))))
 
           (?/
-           (if (and (<= (+ index 3)
-                        (length pattern))
-                    (string= (substring pattern index (+ index 3))
-                             "**/"))
+           (if (and (<= (+ index 3) (length pattern))
+                    (string= (substring pattern index (+ index 3)) "**/"))
                (setq result `(,@result "\\(?:/\\|/.*/\\)")
                      index (+ index 3))
              (setq result `(,@result "/"))))
 
           (t
-           (unless (= current-char
-                      ?\\)
+           (unless (= current-char ?\\)
              (setq result `(,@result ,(regexp-quote (char-to-string current-char)))))))
 
         (if (= current-char ?\\)
@@ -284,8 +278,7 @@ translation is found for PATTERN."
           (setq is-escaped nil))))
     (unless nested
       (setq result `("^" ,@result "\\'")))
-    (apply 'concat result)))
+    (apply #'concat result)))
 
 (provide 'editorconfig-fnmatch)
-
 ;;; editorconfig-fnmatch.el ends here

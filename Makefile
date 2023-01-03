@@ -3,6 +3,7 @@
 TEXI_CHAPTER := EditorConfig Emacs Plugin
 
 EMACS = emacs
+EASK = eask
 PANDOC = pandoc
 AWK = awk
 
@@ -16,21 +17,26 @@ MAIN_SRC = editorconfig.el
 SRCS = $(wildcard $(PROJECT_ROOT_DIR)/*.el)
 OBJS = $(SRCS:.el=.elc)
 
-.PHONY: check \
+.PHONY: check-unix check-dos \
 	compile clean \
 	test test-ert test-core \
 	sandbox doc
 
-check: compile test
+# CI entry
+check-unix: package install compile test
+check-dos: package install compile test-ert
 
+package:
+	$(EASK) package
 
-compile: $(OBJS)
+install:
+	$(EASK) install
 
-$(OBJS): %.elc: %.el
-	$(EMACS) $(BATCHFLAGS) -f batch-byte-compile $^
+compile:
+	$(EASK) compile
 
 clean:
-	-rm -f $(OBJS)
+	$(EASK) clean elc
 
 
 doc: doc/editorconfig.texi

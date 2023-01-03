@@ -5,7 +5,8 @@
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.9.1
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
-;; Package-Requires: ((emacs "24") (cl-lib "0.5") (nadvice "0.3"))
+;; Package-Requires: ((emacs "26.1") (nadvice "0.3"))
+;; Keywords: convenience editorconfig
 
 ;; See
 ;; https://github.com/editorconfig/editorconfig-emacs/graphs/contributors
@@ -38,8 +39,12 @@
 ;; version control systems.
 
 ;;; Code:
+
 (require 'cl-lib)
+(require 'pcase)
+
 (require 'nadvice)
+
 (eval-when-compile
   (require 'rx)
   (defvar tex-indent-basic)
@@ -357,7 +362,7 @@ number - `lisp-indent-offset' is not set only if indent_size is
          `lisp-indent-offset' will not be set only if indent_size is 2.")
 
 (define-error 'editorconfig-error
-  "Error thrown from editorconfig lib")
+              "Error thrown from editorconfig lib")
 
 (defun editorconfig-error (&rest args)
   "Signal an `editorconfig-error'.
@@ -374,7 +379,7 @@ Make a message by passing ARGS to `format-message'."
 (defun editorconfig--disabled-for-majormode (majormode)
   "Return non-nil when Editorconfig is disabled for MAJORMODE."
   (cl-assert majormode)
-  (or (editorconfig--provided-mode-derived-p majormode 'special-mode)
+  (or (provided-mode-derived-p majormode 'special-mode)
       (memq majormode
             editorconfig-exclude-modes)))
 
@@ -385,37 +390,30 @@ Make a message by passing ARGS to `format-message'."
 
 (defun editorconfig-set-indentation-python-mode (size)
   "Set `python-mode' indent size to SIZE."
-  (set (make-local-variable (if (or (> emacs-major-version 24)
-                                    (and (= emacs-major-version 24)
-                                         (>= emacs-minor-version 3)))
-                                'python-indent-offset
-                              'python-indent))
-       size)
+  (setq-local python-indent-offset size)
   ;; For https://launchpad.net/python-mode
   (when (boundp 'py-indent-offset)
-    (set (make-local-variable 'py-indent-offset) size)))
+    (setq-local py-indent-offset size)))
 
 (defun editorconfig-set-indentation-latex-mode (size)
   "Set `latex-mode' indent size to SIZE."
-  (set (make-local-variable 'tex-indent-basic) size)
-  (set (make-local-variable 'tex-indent-item) size)
-  (set (make-local-variable 'tex-indent-arg) (* 2 size))
+  (setq-local tex-indent-basic size)
+  (setq-local tex-indent-item size)
+  (setq-local tex-indent-arg (* 2 size))
   ;; For AUCTeX
   (when (boundp 'TeX-brace-indent-level)
-    (set (make-local-variable 'TeX-brace-indent-level) size))
+    (setq-local TeX-brace-indent-level size))
   (when (boundp 'LaTeX-indent-level)
-    (set (make-local-variable 'LaTeX-indent-level) size))
+    (setq-local LaTeX-indent-level size))
   (when (boundp 'LaTeX-item-indent)
-    (set (make-local-variable 'LaTeX-item-indent) (- size))))
+    (setq-local LaTeX-item-indent (- size))))
 
 (defun editorconfig--should-set (size symbol)
   "Determines if editorconfig should set SYMBOL using SIZE."
   (if (eq symbol 'lisp-indent-offset)
       (cond
-       ((eql nil editorconfig-lisp-use-default-indent)
-        t)
-       ((eql t editorconfig-lisp-use-default-indent)
-        nil)
+       ((null editorconfig-lisp-use-default-indent)  t)
+       ((eql t editorconfig-lisp-use-default-indent) nil)
        ((numberp editorconfig-lisp-use-default-indent)
         (not (eql size editorconfig-lisp-use-default-indent)))
        (t t))
@@ -425,7 +423,7 @@ Make a message by passing ARGS to `format-message'."
   "Set indentation type from STYLE, SIZE and TAB_WIDTH."
   (if (editorconfig-string-integer-p size)
       (setq size (string-to-number size))
-    (when (not (equal size "tab")) (setq size nil)))
+    (unless (equal size "tab") (setq size nil)))
   (cond (tab_width
          (setq tab-width (string-to-number tab_width)))
         ((numberp size)
@@ -438,7 +436,7 @@ Make a message by passing ARGS to `format-message'."
          (setq indent-tabs-mode t)))
   (when size
     (when (featurep 'evil)
-      (set (make-local-variable 'evil-shift-width) size))
+      (setq-local evil-shift-width size))
     (let ((parent major-mode)
           entry)
       ;; Find the closet parent mode of `major-mode' in
@@ -461,9 +459,8 @@ Make a message by passing ARGS to `format-message'."
                                        ((integerp spec) (* spec size))
                                        (t spec))))))))))))))
 
-(defvar editorconfig--apply-coding-system-currently nil
+(defvar-local editorconfig--apply-coding-system-currently nil
   "Used internally.")
-(make-variable-buffer-local 'editorconfig--apply-coding-system-currently)
 (put 'editorconfig--apply-coding-system-currently
      'permanent-local
      t)
@@ -513,29 +510,27 @@ This function will revert buffer when the coding-system has been changed."
       ;; Revert functions might call editorconfig-apply again
       (unwind-protect
           (progn
-            (setq editorconfig--apply-coding-system-currently
-                  coding-system)
+            (setq editorconfig--apply-coding-system-currently coding-system)
             ;; Revert without query if buffer is not modified
             (let ((revert-without-query '(".")))
               (revert-buffer-with-coding-system coding-system)))
-        (setq editorconfig--apply-coding-system-currently
-              nil)))))
+        (setq editorconfig--apply-coding-system-currently nil)))))
 
 (defun editorconfig-set-trailing-nl (final-newline)
   "Set up requiring final newline by FINAL-NEWLINE.
 
 This function will set `require-final-newline' and `mode-require-final-newline'
 to non-nil when FINAL-NEWLINE is true."
-  (cond
-   ((equal final-newline "true")
-    ;; keep prefs around how/when the nl is added, if set - otherwise add on save
-    (set      (make-local-variable 'require-final-newline)      (or require-final-newline t))
-    (set      (make-local-variable 'mode-require-final-newline) (or mode-require-final-newline t)))
-   ((equal final-newline "false")
-    ;; FIXME: Add functionality for actually REMOVING any trailing newlines here!
-    ;;        (rather than just making sure we don't automagically ADD a new one)
-    (set      (make-local-variable 'require-final-newline) nil)
-    (set      (make-local-variable 'mode-require-final-newline) nil))))
+  (pcase final-newline
+    ("true"
+     ;; keep prefs around how/when the nl is added, if set - otherwise add on save
+     (setq-local require-final-newline      (or require-final-newline t))
+     (setq-local mode-require-final-newline (or mode-require-final-newline t)))
+    ("false"
+     ;; FIXME: Add functionality for actually REMOVING any trailing newlines here!
+     ;;        (rather than just making sure we don't automagically ADD a new one)
+     (setq-local require-final-newline      nil)
+     (setq-local mode-require-final-newline nil))))
 
 (defun editorconfig-set-trailing-ws (trim-trailing-ws)
   "Set up trimming of trailing whitespace at end of lines by TRIM-TRAILING-WS."
@@ -546,37 +541,21 @@ to non-nil when FINAL-NEWLINE is true."
     ;; to write-file-functions
     (if editorconfig-trim-whitespaces-mode
         (funcall editorconfig-trim-whitespaces-mode 1)
-      (add-to-list
-       'write-file-functions
-       'delete-trailing-whitespace)))
+      (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
   (when (or (equal trim-trailing-ws "false")
             buffer-read-only)
     ;; when false we remove every delete-trailing-whitespace
     ;; from write-file-functions
     (when editorconfig-trim-whitespaces-mode
       (funcall editorconfig-trim-whitespaces-mode 0))
-    (setq
-     write-file-functions
-     (delete
-      'delete-trailing-whitespace
-      write-file-functions))))
+    (setq write-file-functions
+          (delete 'delete-trailing-whitespace write-file-functions))))
 
 (defun editorconfig-set-line-length (length)
   "Set the max line length (`fill-column') to LENGTH."
   (when (and (editorconfig-string-integer-p length)
              (> (string-to-number length) 0))
     (setq fill-column (string-to-number length))))
-
-;; Emacs<26 does not have provided-mode-derived-p
-(defun editorconfig--provided-mode-derived-p (mode &rest modes)
-  "Non-nil if MODE is derived from one of MODES.
-Uses the `derived-mode-parent' property of the symbol to trace backwards.
-If you just want to check `major-mode', use `derived-mode-p'."
-  (if (fboundp 'provided-mode-derived-p)
-      (apply 'provided-mode-derived-p mode modes)
-    (while (and (not (memq mode modes))
-                (setq mode (get mode 'derived-mode-parent))))
-    mode))
 
 
 (defun editorconfig--execute-editorconfig-exec (filename)
@@ -611,9 +590,8 @@ If you just want to check `major-mode', use `derived-mode-p'."
 
 (defun editorconfig--parse-properties (props-string)
   "Create properties hash table from PROPS-STRING."
-  (let (props-list properties)
-    (setq props-list (split-string props-string "\n")
-          properties (make-hash-table))
+  (let ((props-list (split-string props-string "\n"))
+        (properties (make-hash-table)))
     (dolist (prop props-list properties)
       (let ((key-val (split-string prop " *= *")))
         (when (> (length key-val) 1)
@@ -734,8 +712,7 @@ This function also executes `editorconfig-after-apply-functions' functions."
                            major-mode
                            editorconfig-properties-hash)
                    :debug)
-  (when (and (boundp 'editorconfig-mode)
-             editorconfig-mode
+  (when (and (bound-and-true-p editorconfig-mode)
              editorconfig-properties-hash)
     (editorconfig-set-local-variables editorconfig-properties-hash)
     (condition-case err
@@ -772,8 +749,7 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
            (cdr editorconfig--cons-filename-codingsystem)
            (not (eq (cdr editorconfig--cons-filename-codingsystem)
                     'undecided)))
-      (let (
-            (coding-system-for-read (cdr editorconfig--cons-filename-codingsystem))
+      (let ((coding-system-for-read (cdr editorconfig--cons-filename-codingsystem))
             ;; (coding-system-for-read 'undecided)
             )
         (apply f filename args))
@@ -837,7 +813,6 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
             ;; execute this explicitly here.
             (editorconfig-set-local-variables props)
 
-
             (condition-case err
                 (run-hook-with-args 'editorconfig-after-apply-functions props)
               (error
@@ -865,14 +840,13 @@ To disable EditorConfig in some buffers, modify
   :lighter editorconfig-mode-lighter
   (if (not editorconfig--legacy-version)
       (let ((modehooks '(prog-mode-hook
-                          text-mode-hook
-                          read-only-mode-hook
-                          ;; Some modes call `kill-all-local-variables' in their init
-                          ;; code, which clears some values set by editorconfig.
-                          ;; For those modes, editorconfig-apply need to be called
-                          ;; explicitly through their hooks.
-                          rpm-spec-mode-hook
-                          )))
+                         text-mode-hook
+                         read-only-mode-hook
+                         ;; Some modes call `kill-all-local-variables' in their init
+                         ;; code, which clears some values set by editorconfig.
+                         ;; For those modes, editorconfig-apply need to be called
+                         ;; explicitly through their hooks.
+                         rpm-spec-mode-hook)))
         (if editorconfig-mode
             (progn
               (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
@@ -884,8 +858,7 @@ To disable EditorConfig in some buffers, modify
           (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
           (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
           (dolist (hook modehooks)
-            (remove-hook hook
-                         'editorconfig-major-mode-hook))))
+            (remove-hook hook 'editorconfig-major-mode-hook))))
 
     ;; editorconfig--legacy-version is enabled
     ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
@@ -896,8 +869,7 @@ To disable EditorConfig in some buffers, modify
                     ;; code, which clears some values set by editorconfig.
                     ;; For those modes, editorconfig-apply need to be called
                     ;; explicitly through their hooks.
-                    rpm-spec-mode-hook
-                    ))
+                    rpm-spec-mode-hook))
       (if editorconfig-mode
           (add-hook hook 'editorconfig-mode-apply)
         (remove-hook hook 'editorconfig-mode-apply)))))
@@ -911,18 +883,16 @@ To disable EditorConfig in some buffers, modify
   "Find the closest .editorconfig file for current file."
   (interactive)
   (eval-and-compile (require 'editorconfig-core))
-  (let ((file (editorconfig-core-get-nearest-editorconfig
-               default-directory)))
-    (when file
-      (find-file file))))
+  (when-let ((file (editorconfig-core-get-nearest-editorconfig
+                    default-directory)))
+    (find-file file)))
 
 ;;;###autoload
 (defun editorconfig-display-current-properties ()
   "Display EditorConfig properties extracted for current buffer."
   (interactive)
   (if editorconfig-properties-hash
-      (let (
-            (buf (get-buffer-create "*EditorConfig Properties*"))
+      (let ((buf (get-buffer-create "*EditorConfig Properties*"))
             (file buffer-file-name)
             (props editorconfig-properties-hash))
         (with-current-buffer buf
@@ -942,10 +912,10 @@ To disable EditorConfig in some buffers, modify
 (defun editorconfig-format-buffer()
   "Format buffer according to .editorconfig indent_style and indent_width."
   (interactive)
-  (if (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
-      (tabify (point-min) (point-max)))
-  (if (string= (gethash 'indent_style editorconfig-properties-hash) "space")
-      (untabify (point-min) (point-max)))
+  (when (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
+    (tabify (point-min) (point-max)))
+  (when (string= (gethash 'indent_style editorconfig-properties-hash) "space")
+    (untabify (point-min) (point-max)))
   (indent-region (point-min) (point-max)))
 
 
@@ -967,31 +937,25 @@ To disable EditorConfig in some buffers, modify
 If called interactively or if SHOW-VERSION is non-nil, show the
 version in the echo area and the messages buffer."
   (interactive (list t))
-  (let* ((version
-          (with-temp-buffer
-            (require 'find-func)
-            (insert-file-contents (find-library-name "editorconfig"))
-            (require 'lisp-mnt)
-            (lm-version)))
-         (pkg
-          (and (eval-and-compile (require 'package nil t))
-               (cadr (assq 'editorconfig
-                           package-alist))))
-         (pkg-version
-          (and pkg
-               (package-version-join (package-desc-version pkg))))
+  (let* ((version (with-temp-buffer
+                    (require 'find-func)
+                    (insert-file-contents (find-library-name "editorconfig"))
+                    (require 'lisp-mnt)
+                    (lm-version)))
+         (pkg (and (eval-and-compile (require 'package nil t))
+                   (cadr (assq 'editorconfig
+                               package-alist))))
+         (pkg-version (and pkg
+                           (package-version-join (package-desc-version pkg))))
          (version-full (if (and pkg-version
-                                (not (string= version
-                                              pkg-version)))
+                                (not (string= version pkg-version)))
                            (concat version "-" pkg-version)
                          version)))
     (when show-version
-      (message "EditorConfig Emacs v%s"
-               version-full))
+      (message "EditorConfig Emacs v%s" version-full))
     version-full))
 
 (provide 'editorconfig)
-
 ;;; editorconfig.el ends here
 
 ;; Local Variables:
