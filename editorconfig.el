@@ -183,16 +183,20 @@ This hook will be run even when there are no matching sections in
     (awk-mode c-basic-offset)
     (bpftrace-mode c-basic-offset)
     (c++-mode c-basic-offset)
-    (c++-ts-mode c-basic-offset)
+    (c++-ts-mode c-basic-offset
+                 c-ts-mode-indent-offset)
     (c-mode c-basic-offset)
-    (c-ts-mode c-basic-offset)
+    (c-ts-mode c-basic-offset
+               c-ts-mode-indent-offset)
     (cmake-mode cmake-tab-width)
-    (cmake-ts-mode cmake-tab-width)
+    (cmake-ts-mode cmake-tab-width
+                   cmake-ts-mode-indent-offset)
     (coffee-mode coffee-tab-width)
     (cperl-mode cperl-indent-level)
     (crystal-mode crystal-indent-level)
     (csharp-mode c-basic-offset)
-    (csharp-ts-mode c-basic-offset)
+    (csharp-ts-mode c-basic-offset
+                    c-ts-common-indent-offset)
     (css-mode css-indent-offset)
     (css-ts-mode css-indent-offset)
     (d-mode c-basic-offset)
@@ -213,6 +217,7 @@ This hook will be run even when there are no matching sections in
                  fsharp-indent-level
                  fsharp-indent-offset)
     (groovy-mode groovy-indent-offset)
+    (go-ts-mode go-ts-mode-indent-offset)
     (haskell-mode haskell-indent-spaces
                   haskell-indent-offset
                   haskell-indentation-layout-offset
@@ -222,10 +227,12 @@ This hook will be run even when there are no matching sections in
                   haskell-indentation-where-pre-offset
                   shm-indent-spaces)
     (haxor-mode haxor-tab-width)
+    (html-ts-mode html-ts-mode-indent-offset)
     (idl-mode c-basic-offset)
     (jade-mode jade-tab-width)
     (java-mode c-basic-offset)
-    (java-ts-mode c-basic-offset)
+    (java-ts-mode c-basic-offset
+                  java-ts-mode-indent-offset)
     (js-mode js-indent-level)
     (js-jsx-mode js-indent-level sgml-basic-offset)
     (js2-mode js2-basic-offset)
@@ -264,7 +271,8 @@ This hook will be run even when there are no matching sections in
     (ruby-mode ruby-indent-level)
     (ruby-ts-mode ruby-indent-level)
     (rust-mode rust-indent-offset)
-    (rust-ts-mode rust-indent-offset)
+    (rust-ts-mode rust-indent-offset
+                  rust-ts-mode-indent-offset)
     (rustic-mode rustic-indent-offset)
     (scala-mode scala-indent:step)
     (scss-mode css-indent-offset)
@@ -275,6 +283,7 @@ This hook will be run even when there are no matching sections in
     (tcl-mode tcl-indent-level
               tcl-continued-indent-level)
     (terra-mode terra-indent-level)
+    (toml-ts-mode toml-ts-mode-indent-offset)
     (typescript-mode typescript-indent-level)
     (typescript-ts-base-mode typescript-ts-mode-indent-offset)
     (verilog-mode verilog-indent-level
