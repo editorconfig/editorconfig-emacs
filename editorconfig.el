@@ -196,7 +196,7 @@ This hook will be run even when there are no matching sections in
     (crystal-mode crystal-indent-level)
     (csharp-mode c-basic-offset)
     (csharp-ts-mode c-basic-offset
-                    c-ts-common-indent-offset)
+                    csharp-ts-mode-indent-offset)
     (css-mode css-indent-offset)
     (css-ts-mode css-indent-offset)
     (d-mode c-basic-offset)
