@@ -3,14 +3,11 @@
 [![MELPA Stable](https://stable.melpa.org/packages/editorconfig-badge.svg)](https://stable.melpa.org/#/editorconfig)
 [![NonGNU ELPA](http://elpa.nongnu.org/nongnu/editorconfig.svg)](http://elpa.nongnu.org/nongnu/editorconfig.html)
 
-
 # EditorConfig Emacs Plugin
 
 This is an [EditorConfig][] plugin for [Emacs][].
 
-
 ## Getting Started
-
 
 ### package.el
 
@@ -26,7 +23,6 @@ all other configurations are optional.
 This mode sets up hooks so that EditorConfig properties will be
 loaded and applied to the new buffers automatically when visiting files.
 
-
 ### use-package
 
 If you use [**use-package**][use-package], add the following to your
@@ -39,7 +35,6 @@ If you use [**use-package**][use-package], add the following to your
   (editorconfig-mode 1))
 ```
 
-
 ### Manual installation
 
 Copy all `.el` files in this repository to `~/.emacs.d/lisp` and add the
@@ -50,8 +45,6 @@ following:
 (require 'editorconfig)
 (editorconfig-mode 1)
 ```
-
-
 
 ## Supported properties
 
@@ -64,16 +57,16 @@ Current Emacs plugin coverage for EditorConfig's [properties][]:
 * `charset`
 * `trim_trailing_whitespace`
 * `insert_final_newline = true` is supported
-* <del>`insert_final_newline = false`</del> is not enforced
+* ~~`insert_final_newline = false`~~ is not enforced
   (as in trailing newlines actually being removed automagically),
   we just buffer-locally override any preferences that would auto-add them
   to files `.editorconfig` marks as trailing-newline-free
 * `max_line_length`
-* <del>`file_type_ext` (Experimental)</del> (See below)
-* <del>`file_type_emacs` (Experimental)</del> (See below)
+* ~~`file_type_ext` (Experimental)~~ (See below)
+* ~~`file_type_emacs` (Experimental)~~ (See below)
 * `root` (only used by EditorConfig core)
 
-Not yet covered properties marked with <del>over-strike</del>
+Not yet covered properties marked with ~~over-strike~~
 – pull requests implementing missing features warmly welcomed!
 Typically, you will want to tie these to native functionality,
 or the configuration of existing packages handling the feature.
@@ -82,15 +75,12 @@ As several packages have their own handling of, say, indentation,
 we might not yet cover some mode you use, but we try to add the
 ones that show up on our radar.
 
-
-
-### <del>File Type (file_type_ext, file_type_emacs)</del>
+### ~~File Type (file_type_ext, file_type_emacs)~~
 
 File-type feature is currently disabled, because this package is now undergoing
 big internal refactoring.
 For those who want this functionality,
 please consider using [editorconfig-custom-majormode](https://github.com/10sr/editorconfig-custom-majormode-el).
-
 
 ## Customize
 
@@ -98,7 +88,6 @@ please consider using [editorconfig-custom-majormode](https://github.com/10sr/ed
 
 Here are some of these variables: for the full list of available variables,
 type <kbd>M-x customize-group [RET] editorconfig [RET]</kbd>.
-
 
 ### `editorconfig-trim-whitespaces-mode`
 
@@ -118,7 +107,6 @@ init.el:
       'ws-butler-mode)
 ```
 
-
 ### `editorconfig-after-apply-functions`
 
 (Formerly `editorconfig-custom-hooks`)
@@ -135,8 +123,6 @@ only blocks of `web-mode` by adding following to your init.el:
   (lambda (props) (setq web-mode-block-padding 0)))
 ```
 
-
-
 ## Troubleshooting
 
 Enabling `editorconfig-mode` should be enough for normal cases.
@@ -148,8 +134,6 @@ This command will open a new buffer and display the EditorConfig properties
 loaded for current buffer.
 You can check if EditorConfig properties were not read for buffers at all,
 or they were loaded but did not take effect for some other reasons.
-
-
 
 ### Indentation for new major-modes
 
@@ -164,7 +148,6 @@ Please feel free to submit issue or pull-request for such major-mode!
 Supported major-modes and their indentation configs are defined in the variable
 `editorconfig-indentation-alist`.
 
-
 ### Not work at all for FOO-mode!
 
 Most cases properties are loaded just after visiting files when
@@ -176,7 +159,6 @@ Typically it will occur when the major-mode is not defined using
 `define-derived-mode` (`rpm-spec-mode` is an example for this).
 Please feel free to submit issues if you find such modes!
 
-
 ### `editorconfig-format-buffer` does not work well with lsp-mode
 
 By default, [lsp-mode][] configures indent-region-function so that Emacs uses
@@ -187,28 +169,31 @@ themselves support loading configs from `.editorconfig`.
 
 To avoid this behavior ad-hocly, set `lsp-enable-indentation` to nil.
 
-
-
 ## Submitting Bugs and Feature Requests
 
 Bugs, feature requests, and other issues should be submitted to the issue
 tracker: https://github.com/editorconfig/editorconfig-emacs/issues
 
-
 ### Development
 
-Make and [CMake][] must be installed to run the tests
-locally:
+To run the test locally, you will need the following tools:
 
-    $ make check
+- Make
+- [CMake][]
+- [Eask][]
+
+If you are on `Linux` or `macOS`:
+
+    $ make check-unix
+
+On `Windows`:
+
+    $ make check-dos
 
 To start a new Emacs process with current `*.el` and without loading user init
 file, run:
 
     $ make sandbox
-
-
-
 
 ## License
 
@@ -226,7 +211,6 @@ You should have received a copy of the GNU General Public License along
 with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-
 [Emacs]: https://www.gnu.org/software/emacs/
 [MELPA]: https://melpa.org/#/editorconfig
 [MELPA Stable]: https://stable.melpa.org/#/editorconfig
@@ -236,4 +220,5 @@ with this program.  If not, see <https://www.gnu.org/licenses/>.
 [EditorConfig C Core]: https://github.com/editorconfig/editorconfig-core-c
 [properties]: https://editorconfig.org/#supported-properties
 [CMake]: https://cmake.org
+[Eask]: https://github.com/emacs-eask/cli
 [lsp-mode]: https://github.com/emacs-lsp/lsp-mode
