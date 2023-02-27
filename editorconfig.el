@@ -93,18 +93,18 @@ For example, if you always want to use built-in core library instead
 of any EditorConfig executable to get properties, add following to
 your init.el:
 
-  (set-variable 'editorconfig-get-properties-function
-                #'editorconfig-core-get-properties-hash)
+  (set-variable \\='editorconfig-get-properties-function
+                #\\='editorconfig-core-get-properties-hash)
 
 Possible known values are:
 
-* `editorconfig-core-get-properties-hash\\=' (default)
+* `editorconfig-core-get-properties-hash' (default)
   * Always use built-in Emacs-Lisp implementation to get properties
 * `editorconfig-get-properties'
-  * Use `editorconfig-get-properties-from-exec\\=' when
+  * Use `editorconfig-get-properties-from-exec' when
     `editorconfig-exec-path' executable is found, otherwise
-    use `editorconfig-core-get-properties-hash\\='
-* `editorconfig-get-properties-from-exec\\='
+    use `editorconfig-core-get-properties-hash'
+* `editorconfig-get-properties-from-exec'
   * Get properties by executing EditorConfig executable"
   :type 'function
   :group 'editorconfig)
@@ -134,9 +134,9 @@ whatever functionality you want.  For example, the following is
 an example to add a new property emacs_linum to decide whether to
 show line numbers on the left:
 
-  (add-hook 'editorconfig-after-apply-functions
-    '(lambda (props)
-       (let ((show-line-num (gethash 'emacs_linum props)))
+  (add-hook \\='editorconfig-after-apply-functions
+    \\='(lambda (props)
+       (let ((show-line-num (gethash \\='emacs_linum props)))
          (cond ((equal show-line-num \"true\") (linum-mode 1))
            ((equal show-line-num \"false\") (linum-mode 0))))))
 
@@ -158,10 +158,10 @@ For example, Makefiles always use tab characters for indentation: you can
 overwrite \"indent_style\" property when current `major-mode' is a
 `makefile-mode' with following code:
 
-  (add-hook 'editorconfig-hack-properties-functions
-            '(lambda (props)
-               (when (derived-mode-p 'makefile-mode)
-                 (puthash 'indent_style \"tab\" props))))
+  (add-hook \\='editorconfig-hack-properties-functions
+            \\='(lambda (props)
+               (when (derived-mode-p \\='makefile-mode)
+                 (puthash \\='indent_style \"tab\" props))))
 
 This hook will be run even when there are no matching sections in
 \".editorconfig\", or no \".editorconfig\" file was found at all."
@@ -641,7 +641,7 @@ It calls `editorconfig-get-properties-from-exec' if
 (defun editorconfig-call-get-properties-function (filename)
   "Call `editorconfig-get-properties-function' with FILENAME and return result.
 
-This function also removes 'unset'ted properties and calls
+This function also removes `unset' properties and calls
 `editorconfig-hack-properties-functions'."
   (unless (functionp editorconfig-get-properties-function)
     (editorconfig-error "Invalid editorconfig-get-properties-function value"))
