@@ -102,8 +102,8 @@ If FILE is not given, use currently visiting file.
 Give CONFNAME for basename of config file other than .editorconfig.
 If need to specify config format version, give CONFVERSION.
 
-This functions returns alist of properties.  Each element will look like
-'(KEY . VALUE) ."
+This function returns an alist of properties.  Each element will
+look like (KEY . VALUE)."
   (let ((hash (editorconfig-core-get-properties-hash file confname confversion))
         (result nil))
     (maphash (lambda (key value)
