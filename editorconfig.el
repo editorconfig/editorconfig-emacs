@@ -570,7 +570,7 @@ to non-nil when FINAL-NEWLINE is true."
     (when editorconfig-trim-whitespaces-mode
       (funcall editorconfig-trim-whitespaces-mode 0))
     (setq write-file-functions
-          (delete 'delete-trailing-whitespace write-file-functions))))
+          (remove 'delete-trailing-whitespace write-file-functions))))
 
 (defun editorconfig-set-line-length (length)
   "Set the max line length (`fill-column') to LENGTH."
