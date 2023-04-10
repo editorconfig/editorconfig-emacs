@@ -50,7 +50,8 @@
   (defvar tex-indent-basic)
   (defvar tex-indent-item)
   (defvar tex-indent-arg)
-  (defvar evil-shift-width))
+  (defvar evil-shift-width)
+  (defvar python-indent-offset))
 
 (require 'editorconfig-core)
 
