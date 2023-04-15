@@ -1,6 +1,6 @@
 ;;; editorconfig-core-handle.el --- Handle Class for EditorConfig File  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2022 EditorConfig Team
+;; Copyright (C) 2011-2023 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 
