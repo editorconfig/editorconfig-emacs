@@ -676,54 +676,6 @@ This function also removes `unset' properties and calls
   (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
   (editorconfig-set-line-length (gethash 'max_line_length props)))
 
-;;;###autoload
-(defun editorconfig-apply ()
-  "Get and apply EditorConfig properties to current buffer.
-
-This function does not respect the values of `editorconfig-exclude-modes' and
-`editorconfig-exclude-regexps' and always applies available properties.
-Use `editorconfig-mode-apply' instead to make use of these variables."
-  (interactive)
-  (when buffer-file-name
-    (condition-case err
-        (progn
-          (let ((props (editorconfig-call-get-properties-function buffer-file-name)))
-            (condition-case err
-                (run-hook-with-args 'editorconfig-hack-properties-functions props)
-              (error
-               (display-warning '(editorconfig editorconfig-hack-properties-functions)
-                                (format "Error while running editorconfig-hack-properties-functions, abort running hook: %S"
-                                        err)
-                                :warning)))
-            (setq editorconfig-properties-hash props)
-            (editorconfig-set-local-variables props)
-            (editorconfig-set-coding-system-revert
-             (gethash 'end_of_line props)
-             (gethash 'charset props))
-            (condition-case err
-                (run-hook-with-args 'editorconfig-after-apply-functions props)
-              (error
-               (display-warning '(editorconfig editorconfig-after-apply-functions)
-                                (format "Error while running editorconfig-after-apply-functions, abort running hook: %S"
-                                        err)
-                                :warning)))))
-      (error
-       (display-warning '(editorconfig editorconfig-apply)
-                        (format "Error in editorconfig-apply, styles will not be applied: %S" err)
-                        :error)))))
-
-(defun editorconfig-mode-apply ()
-  "Get and apply EditorConfig properties to current buffer.
-
-This function does nothing when the major mode is listed in
-`editorconfig-exclude-modes', or variable `buffer-file-name' matches
-any of regexps in `editorconfig-exclude-regexps'."
-  (interactive)
-  (when (and major-mode
-             (not (editorconfig--disabled-for-majormode major-mode))
-             buffer-file-name
-             (not (editorconfig--disabled-for-filename buffer-file-name)))
-    (editorconfig-apply)))
 
 (defun editorconfig-major-mode-hook ()
   "Function to run when `major-mode' has been changed.
@@ -851,11 +803,6 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                         (format "Error while setting variables from EditorConfig: %S" err))))
     ret))
 
-(defvar editorconfig--legacy-version nil
-  "Use legacy version of editorconfig-mode.
-
-As of 2021/08/30, `editorconfig-mode' uses totally new implementation by
-default.  This flag disables this and go back to previous version.")
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
@@ -865,86 +812,26 @@ To disable EditorConfig in some buffers, modify
 `editorconfig-exclude-modes' or `editorconfig-exclude-regexps'."
   :global t
   :lighter editorconfig-mode-lighter
-  (if (not editorconfig--legacy-version)
-      (let ((modehooks '(prog-mode-hook
-                         text-mode-hook
-                         read-only-mode-hook
-                         ;; Some modes call `kill-all-local-variables' in their init
-                         ;; code, which clears some values set by editorconfig.
-                         ;; For those modes, editorconfig-apply need to be called
-                         ;; explicitly through their hooks.
-                         rpm-spec-mode-hook)))
-        (if editorconfig-mode
-            (progn
-              (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
-              (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
-              (dolist (hook modehooks)
-                (add-hook hook
-                          'editorconfig-major-mode-hook
-                          t)))
-          (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
-          (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
+  (let ((modehooks '(prog-mode-hook
+                     text-mode-hook
+                     read-only-mode-hook
+                     ;; Some modes call `kill-all-local-variables' in their init
+                     ;; code, which clears some values set by editorconfig.
+                     ;; For those modes, editorconfig-apply need to be called
+                     ;; explicitly through their hooks.
+                     rpm-spec-mode-hook)))
+    (if editorconfig-mode
+        (progn
+          (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
+          (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
           (dolist (hook modehooks)
-            (remove-hook hook 'editorconfig-major-mode-hook))))
-
-    ;; editorconfig--legacy-version is enabled
-    ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
-    ;; not `after-change-major-mode-hook'
-    (dolist (hook '(change-major-mode-after-body-hook
-                    read-only-mode-hook
-                    ;; Some modes call `kill-all-local-variables' in their init
-                    ;; code, which clears some values set by editorconfig.
-                    ;; For those modes, editorconfig-apply need to be called
-                    ;; explicitly through their hooks.
-                    rpm-spec-mode-hook))
-      (if editorconfig-mode
-          (add-hook hook 'editorconfig-mode-apply)
-        (remove-hook hook 'editorconfig-mode-apply)))))
-
-
-;; Tools
-;; Some useful commands for users, not required for EditorConfig to work
-
-;;;###autoload
-(defun editorconfig-find-current-editorconfig ()
-  "Find the closest .editorconfig file for current file."
-  (interactive)
-  (eval-and-compile (require 'editorconfig-core))
-  (when-let ((file (editorconfig-core-get-nearest-editorconfig
-                    default-directory)))
-    (find-file file)))
-
-;;;###autoload
-(defun editorconfig-display-current-properties ()
-  "Display EditorConfig properties extracted for current buffer."
-  (interactive)
-  (if editorconfig-properties-hash
-      (let ((buf (get-buffer-create "*EditorConfig Properties*"))
-            (file buffer-file-name)
-            (props editorconfig-properties-hash))
-        (with-current-buffer buf
-          (erase-buffer)
-          (insert (format "# EditorConfig for %s\n" file))
-          (maphash (lambda (k v)
-                     (insert (format "%S = %s\n" k v)))
-                   props))
-        (display-buffer buf))
-    (message "Properties are not applied to current buffer yet.")
-    nil))
-;;;###autoload
-(defalias 'describe-editorconfig-properties
-  'editorconfig-display-current-properties)
-
-;;;###autoload
-(defun editorconfig-format-buffer()
-  "Format buffer according to .editorconfig indent_style and indent_width."
-  (interactive)
-  (when (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
-    (tabify (point-min) (point-max)))
-  (when (string= (gethash 'indent_style editorconfig-properties-hash) "space")
-    (untabify (point-min) (point-max)))
-  (indent-region (point-min) (point-max)))
-
+            (add-hook hook
+                      'editorconfig-major-mode-hook
+                      t)))
+      (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
+      (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
+      (dolist (hook modehooks)
+        (remove-hook hook 'editorconfig-major-mode-hook)))))
 
 
 ;; (defconst editorconfig--version
