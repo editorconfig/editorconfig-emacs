@@ -47,6 +47,7 @@
 
 (eval-when-compile
   (require 'rx)
+  (require 'subr-x)
   (defvar tex-indent-basic)
   (defvar tex-indent-item)
   (defvar tex-indent-arg)
