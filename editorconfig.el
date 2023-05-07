@@ -851,11 +851,6 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                         (format "Error while setting variables from EditorConfig: %S" err))))
     ret))
 
-(defvar editorconfig--legacy-version nil
-  "Use legacy version of editorconfig-mode.
-
-As of 2021/08/30, `editorconfig-mode' uses totally new implementation by
-default.  This flag disables this and go back to previous version.")
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
@@ -865,41 +860,26 @@ To disable EditorConfig in some buffers, modify
 `editorconfig-exclude-modes' or `editorconfig-exclude-regexps'."
   :global t
   :lighter editorconfig-mode-lighter
-  (if (not editorconfig--legacy-version)
-      (let ((modehooks '(prog-mode-hook
-                         text-mode-hook
-                         read-only-mode-hook
-                         ;; Some modes call `kill-all-local-variables' in their init
-                         ;; code, which clears some values set by editorconfig.
-                         ;; For those modes, editorconfig-apply need to be called
-                         ;; explicitly through their hooks.
-                         rpm-spec-mode-hook)))
-        (if editorconfig-mode
-            (progn
-              (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
-              (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
-              (dolist (hook modehooks)
-                (add-hook hook
-                          'editorconfig-major-mode-hook
-                          t)))
-          (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
-          (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
+  (let ((modehooks '(prog-mode-hook
+                     text-mode-hook
+                     read-only-mode-hook
+                     ;; Some modes call `kill-all-local-variables' in their init
+                     ;; code, which clears some values set by editorconfig.
+                     ;; For those modes, editorconfig-apply need to be called
+                     ;; explicitly through their hooks.
+                     rpm-spec-mode-hook)))
+    (if editorconfig-mode
+        (progn
+          (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
+          (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
           (dolist (hook modehooks)
-            (remove-hook hook 'editorconfig-major-mode-hook))))
-
-    ;; editorconfig--legacy-version is enabled
-    ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
-    ;; not `after-change-major-mode-hook'
-    (dolist (hook '(change-major-mode-after-body-hook
-                    read-only-mode-hook
-                    ;; Some modes call `kill-all-local-variables' in their init
-                    ;; code, which clears some values set by editorconfig.
-                    ;; For those modes, editorconfig-apply need to be called
-                    ;; explicitly through their hooks.
-                    rpm-spec-mode-hook))
-      (if editorconfig-mode
-          (add-hook hook 'editorconfig-mode-apply)
-        (remove-hook hook 'editorconfig-mode-apply)))))
+            (add-hook hook
+                      'editorconfig-major-mode-hook
+                      t)))
+      (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
+      (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
+      (dolist (hook modehooks)
+        (remove-hook hook 'editorconfig-major-mode-hook)))))
 
 
 ;; Tools
