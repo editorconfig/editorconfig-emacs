@@ -3,7 +3,7 @@
 ;; Copyright (C) 2011-2023 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-;; Version: 0.10.0
+;; Version: 0.9.1
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
 ;; Package-Requires: ((emacs "26.1") (nadvice "0.3"))
 ;; Keywords: convenience editorconfig
