@@ -404,6 +404,9 @@ Make a message by passing ARGS to `format-message'."
   "Return non-nil when Editorconfig is disabled for MAJORMODE."
   (cl-assert majormode)
   (or (provided-mode-derived-p majormode 'special-mode)
+      ;; Some special modes (like `archive-mode') are not derived from
+      ;; `special-mode'
+      (eq (get majormode 'mode-class) 'special)
       (memq majormode
             editorconfig-exclude-modes)))
 
