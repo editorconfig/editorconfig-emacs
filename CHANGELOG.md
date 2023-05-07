@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [0.10.0] - 2023-05-07
+
+### Added
+
+### Changed
+
 - Drop Emacs 24.x and 25.x ([#286])
 
 ### Deprecated
@@ -243,7 +258,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 *Undocumented*
 
 
-[Unreleased]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.8.2...v0.9.0
 [0.8.2]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.8.1...v0.8.2
