@@ -1,5 +1,5 @@
 (package "editorconfig"
-         "0.9.1"
+         "0.10.0"
          "EditorConfig Emacs Plugin")
 
 (website-url "https://github.com/editorconfig/editorconfig-emacs#readme")
