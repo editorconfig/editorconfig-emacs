@@ -24,6 +24,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Enable indentation for tree-sitter based typescript mode ([#282])
+- Add support for json-ts-mode ([#283])
+- Add support for some treesit modes ([#287])
+- Add indent variable associations for numerous tree-sitter modes ([#290])
+- Add js-ts-mode' spec to editorconfig-indentation-alist' ([#293])
+- Add bash-ts-mode to editorconfig-indentation-alist ([#296])
+- Add support for gdscript-mode ([#300])
+
 ### Changed
 
 - Drop Emacs 24.x and 25.x ([#286])
@@ -33,6 +41,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
+- Fix write-file-functions default value ([#295])
+- Check mode-class property for special modes ([#301])
+- Load subr-x when compiling ([#302])
 
 ### Security
 
@@ -288,7 +300,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.2...v0.3
 [0.2]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.1...v0.2
 [0.1]: https://github.com/editorconfig/editorconfig-emacs/releases/tag/v0.1
+[#302]: https://github.com/editorconfig/editorconfig-emacs/issues/302
+[#301]: https://github.com/editorconfig/editorconfig-emacs/issues/301
+[#300]: https://github.com/editorconfig/editorconfig-emacs/issues/300
+[#296]: https://github.com/editorconfig/editorconfig-emacs/issues/296
+[#295]: https://github.com/editorconfig/editorconfig-emacs/issues/295
+[#293]: https://github.com/editorconfig/editorconfig-emacs/issues/293
+[#290]: https://github.com/editorconfig/editorconfig-emacs/issues/290
+[#287]: https://github.com/editorconfig/editorconfig-emacs/issues/287
 [#286]: https://github.com/editorconfig/editorconfig-emacs/issues/286
+[#283]: https://github.com/editorconfig/editorconfig-emacs/issues/283
+[#282]: https://github.com/editorconfig/editorconfig-emacs/issues/282
 [#280]: https://github.com/editorconfig/editorconfig-emacs/issues/280
 [#263]: https://github.com/editorconfig/editorconfig-emacs/issues/263
 [#260]: https://github.com/editorconfig/editorconfig-emacs/issues/260
