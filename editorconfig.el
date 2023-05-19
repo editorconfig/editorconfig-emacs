@@ -51,8 +51,7 @@
   (defvar tex-indent-basic)
   (defvar tex-indent-item)
   (defvar tex-indent-arg)
-  (defvar evil-shift-width)
-  (defvar python-indent-offset))
+  (defvar evil-shift-width))
 
 (require 'editorconfig-core)
 
@@ -417,7 +416,8 @@ Make a message by passing ARGS to `format-message'."
 
 (defun editorconfig-set-indentation-python-mode (size)
   "Set `python-mode' indent size to SIZE."
-  (setq-local python-indent-offset size)
+  (when (boundp 'python-indent-offset)
+    (setq-local python-indent-offset size))
   ;; For https://launchpad.net/python-mode
   (when (boundp 'py-indent-offset)
     (setq-local py-indent-offset size)))
