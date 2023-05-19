@@ -68,6 +68,9 @@
 
 (require 'editorconfig-core-handle)
 
+(eval-when-compile
+  (require 'subr-x))
+
 
 (defun editorconfig-core--get-handles (dir confname &optional result)
   "Get list of EditorConfig handlers for DIR from CONFNAME.
