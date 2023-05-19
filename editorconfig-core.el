@@ -68,6 +68,9 @@
 
 (require 'editorconfig-core-handle)
 
+(eval-when-compile
+  (require 'subr-x))
+
 
 (defun editorconfig-core--get-handles (dir confname &optional result)
   "Get list of EditorConfig handlers for DIR from CONFNAME.
@@ -90,7 +93,7 @@ RESULT is used internally and normally should not be used."
 ;;;###autoload
 (defun editorconfig-core-get-nearest-editorconfig (directory)
   "Return path to .editorconfig file that is closest to DIRECTORY."
-  (when-let ((handle (car (last
+  (when-let* ((handle (car (last
                            (editorconfig-core--get-handles directory
                                                            ".editorconfig")))))
     (editorconfig-core-handle-path handle)))
@@ -144,7 +147,7 @@ hash object instead."
     ;; Downcase known boolean values
     (dolist (key '( end_of_line indent_style indent_size insert_final_newline
                     trim_trailing_whitespace charset))
-      (when-let ((val (gethash key result)))
+      (when-let* ((val (gethash key result)))
         (puthash key (downcase val) result)))
 
     ;; Add indent_size property

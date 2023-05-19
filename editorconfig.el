@@ -910,7 +910,7 @@ To disable EditorConfig in some buffers, modify
   "Find the closest .editorconfig file for current file."
   (interactive)
   (eval-and-compile (require 'editorconfig-core))
-  (when-let ((file (editorconfig-core-get-nearest-editorconfig
+  (when-let* ((file (editorconfig-core-get-nearest-editorconfig
                     default-directory)))
     (find-file file)))
 
