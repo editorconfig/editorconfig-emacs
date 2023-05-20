@@ -418,7 +418,7 @@ Make a message by passing ARGS to `format-message'."
   "Set `python-mode' indent size to SIZE."
   (when (boundp 'python-indent-offset)
     (setq-local python-indent-offset size))
-  ;; For https://launchpad.net/python-mode
+  ;; For https://gitlab.com/python-mode-devs/python-mode
   (when (boundp 'py-indent-offset)
     (setq-local py-indent-offset size)))
 
