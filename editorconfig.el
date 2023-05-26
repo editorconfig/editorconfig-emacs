@@ -245,6 +245,7 @@ This hook will be run even when there are no matching sections in
     (json-ts-mode json-ts-mode-indent-offset)
     (julia-mode julia-indent-offset)
     (kotlin-mode kotlin-tab-width)
+    (kotlin-ts-mode kotlin-ts-mode-indent-offset)
     (latex-mode . editorconfig-set-indentation-latex-mode)
     (lisp-mode lisp-indent-offset)
     (livescript-mode livescript-tab-width)
