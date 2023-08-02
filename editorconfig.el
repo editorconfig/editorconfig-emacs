@@ -229,6 +229,7 @@ This hook will be run even when there are no matching sections in
                   haskell-indentation-where-pre-offset
                   shm-indent-spaces)
     (haxor-mode haxor-tab-width)
+    (hcl-mode hcl-indent-level)
     (html-ts-mode html-ts-mode-indent-offset)
     (idl-mode c-basic-offset)
     (jade-mode jade-tab-width)
