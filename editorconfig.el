@@ -267,6 +267,7 @@ This hook will be run even when there are no matching sections in
     ;; for details.
     (php-mode c-basic-offset)
     (pike-mode c-basic-offset)
+    (protobuf-mode c-basic-offset)
     (ps-mode ps-mode-tab)
     (pug-mode pug-tab-width)
     (puppet-mode puppet-indent-level)
