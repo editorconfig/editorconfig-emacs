@@ -267,6 +267,7 @@ This hook will be run even when there are no matching sections in
     ;; See https://github.com/editorconfig/editorconfig-emacs/issues/116
     ;; for details.
     (php-mode c-basic-offset)
+    (php-ts-mode php-ts-mode-indent-offset)
     (pike-mode c-basic-offset)
     (protobuf-mode c-basic-offset)
     (ps-mode ps-mode-tab)
