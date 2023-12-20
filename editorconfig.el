@@ -201,6 +201,7 @@ This hook will be run even when there are no matching sections in
     (css-mode css-indent-offset)
     (css-ts-mode css-indent-offset)
     (d-mode c-basic-offset)
+    (elixir-ts-mode elixir-ts-indent-offset)
     (emacs-lisp-mode lisp-indent-offset)
     (enh-ruby-mode enh-ruby-indent-level)
     (erlang-mode erlang-indent-level)
