@@ -245,6 +245,7 @@ This hook will be run even when there are no matching sections in
     (js3-mode js3-indent-level)
     (json-mode js-indent-level)
     (json-ts-mode json-ts-mode-indent-offset)
+    (jsonian-mode jsonian-default-indentation)
     (julia-mode julia-indent-offset)
     (kotlin-mode kotlin-tab-width)
     (kotlin-ts-mode kotlin-ts-mode-indent-offset)
