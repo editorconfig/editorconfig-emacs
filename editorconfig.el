@@ -288,6 +288,7 @@ This hook will be run even when there are no matching sections in
     (scss-mode css-indent-offset)
     (sgml-mode sgml-basic-offset)
     (sh-mode sh-basic-offset sh-indentation)
+    (swift-mode swift-mode:basic-offset)
     (bash-ts-mode sh-basic-offset sh-indentation)
     (slim-mode slim-indent-offset)
     (sml-mode sml-indent-level)
