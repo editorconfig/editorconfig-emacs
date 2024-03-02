@@ -219,6 +219,7 @@ This hook will be run even when there are no matching sections in
                  fsharp-indent-level
                  fsharp-indent-offset)
     (gdscript-mode gdscript-indent-offset)
+    (graphql-mode graphql-indent-level)
     (groovy-mode groovy-indent-offset)
     (go-ts-mode go-ts-mode-indent-offset)
     (haskell-mode haskell-indent-spaces
