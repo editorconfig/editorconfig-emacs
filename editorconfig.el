@@ -316,7 +316,8 @@ This hook will be run even when there are no matching sections in
               web-mode-script-padding
               web-mode-style-padding)
     (yaml-mode yaml-indent-offset)
-    (yaml-ts-mode yaml-indent-offset))
+    (yaml-ts-mode yaml-indent-offset)
+    (zig-mode zig-indent-offset))
   "Alist of indentation setting methods by modes.
 
 Each element looks like (MODE . FUNCTION) or (MODE . INDENT-SPEC-LIST).
