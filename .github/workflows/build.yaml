@@ -40,6 +40,11 @@ jobs:
           # - os: windows-latest
           #   emacs_version: snapshot
           #   experimental: true
+        exclude:
+          - os: macos-latest
+            emacs_version: "26.3"
+          - os: macos-latest
+            emacs_version: "27.2"
     continue-on-error: ${{ matrix.experimental }}
 
     steps:
