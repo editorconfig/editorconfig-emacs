@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Remove editorconfig-mode legacy version ([#304])
+  - Remove flag `editorconfig--legacy-version`, which was defined in [#263]
+
 ### Deprecated
 
 ### Removed
@@ -303,6 +306,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.2...v0.3
 [0.2]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.1...v0.2
 [0.1]: https://github.com/editorconfig/editorconfig-emacs/releases/tag/v0.1
+[#304]: https://github.com/editorconfig/editorconfig-emacs/issues/304
 [#306]: https://github.com/editorconfig/editorconfig-emacs/issues/306
 [#305]: https://github.com/editorconfig/editorconfig-emacs/issues/305
 [#302]: https://github.com/editorconfig/editorconfig-emacs/issues/302
