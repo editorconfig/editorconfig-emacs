@@ -25,11 +25,15 @@
 
 ;;; Commentary:
 
-;; Some useful commands for users, not required for EditorConfig to work
+;; Some useful commands for users, not required for editorconfig-mode to work
 
 ;;; Code:
 
 (require 'cl-lib)
+
+(eval-when-compile
+  (require 'subr-x))
+
 
 (require 'editorconfig)
 
@@ -88,7 +92,7 @@ any of regexps in `editorconfig-exclude-regexps'."
   "Find the closest .editorconfig file for current file."
   (interactive)
   (eval-and-compile (require 'editorconfig-core))
-  (when-let ((file (editorconfig-core-get-nearest-editorconfig
+  (when-let* ((file (editorconfig-core-get-nearest-editorconfig
                     default-directory)))
     (find-file file)))
 

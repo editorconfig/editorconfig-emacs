@@ -844,50 +844,6 @@ To disable EditorConfig in some buffers, modify
         (remove-hook hook 'editorconfig-major-mode-hook)))))
 
 
-;; Tools
-;; Some useful commands for users, not required for EditorConfig to work
-
-;;;###autoload
-(defun editorconfig-find-current-editorconfig ()
-  "Find the closest .editorconfig file for current file."
-  (interactive)
-  (eval-and-compile (require 'editorconfig-core))
-  (when-let* ((file (editorconfig-core-get-nearest-editorconfig
-                    default-directory)))
-    (find-file file)))
-
-;;;###autoload
-(defun editorconfig-display-current-properties ()
-  "Display EditorConfig properties extracted for current buffer."
-  (interactive)
-  (if editorconfig-properties-hash
-      (let ((buf (get-buffer-create "*EditorConfig Properties*"))
-            (file buffer-file-name)
-            (props editorconfig-properties-hash))
-        (with-current-buffer buf
-          (erase-buffer)
-          (insert (format "# EditorConfig for %s\n" file))
-          (maphash (lambda (k v)
-                     (insert (format "%S = %s\n" k v)))
-                   props))
-        (display-buffer buf))
-    (message "Properties are not applied to current buffer yet.")
-    nil))
-;;;###autoload
-(defalias 'describe-editorconfig-properties
-  'editorconfig-display-current-properties)
-
-;;;###autoload
-(defun editorconfig-format-buffer()
-  "Format buffer according to .editorconfig indent_style and indent_width."
-  (interactive)
-  (when (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
-    (tabify (point-min) (point-max)))
-  (when (string= (gethash 'indent_style editorconfig-properties-hash) "space")
-    (untabify (point-min) (point-max)))
-  (indent-region (point-min) (point-max)))
-
-
 ;; (defconst editorconfig--version
 ;;   (eval-when-compile
 ;;     (require 'lisp-mnt)
