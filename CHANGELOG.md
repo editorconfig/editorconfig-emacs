@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Remove editorconfig-mode legacy version ([#304])
+  - Remove flag `editorconfig--legacy-version`, which was defined in [#263]
+
 ### Deprecated
 
 ### Removed
@@ -18,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+
+## [0.10.1]
+
+### Fixed
+
+- Fix when-let (again) ([#305])
+- Fix compile warning of python-mode offset ([#306])
 
 
 ## [0.10.0] - 2023-05-07
@@ -36,17 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Drop Emacs 24.x and 25.x ([#286])
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Fix write-file-functions default value ([#295])
 - Check mode-class property for special modes ([#301])
 - Load subr-x when compiling ([#302])
-
-### Security
 
 
 ## [0.9.1] - 2022-11-07
@@ -270,7 +275,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 *Undocumented*
 
 
-[Unreleased]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.10.1...HEAD
+[0.10.1]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.8.2...v0.9.0
@@ -300,6 +306,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.2...v0.3
 [0.2]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.1...v0.2
 [0.1]: https://github.com/editorconfig/editorconfig-emacs/releases/tag/v0.1
+[#304]: https://github.com/editorconfig/editorconfig-emacs/issues/304
+[#306]: https://github.com/editorconfig/editorconfig-emacs/issues/306
+[#305]: https://github.com/editorconfig/editorconfig-emacs/issues/305
 [#302]: https://github.com/editorconfig/editorconfig-emacs/issues/302
 [#301]: https://github.com/editorconfig/editorconfig-emacs/issues/301
 [#300]: https://github.com/editorconfig/editorconfig-emacs/issues/300

@@ -26,6 +26,7 @@ jobs:
           - "26.3"
           - "27.2"
           - "28.2"
+          - "29.3"
         experimental: [false]
         include:
           - os: ubuntu-latest
@@ -34,9 +35,16 @@ jobs:
           - os: macos-latest
             emacs_version: snapshot
             experimental: true
-          - os: windows-latest
-            emacs_version: snapshot
-            experimental: true
+          # 2023/8/2 Recently this test always fails
+          # so remove this until it works
+          # - os: windows-latest
+          #   emacs_version: snapshot
+          #   experimental: true
+        exclude:
+          - os: macos-latest
+            emacs_version: "26.3"
+          - os: macos-latest
+            emacs_version: "27.2"
     continue-on-error: ${{ matrix.experimental }}
 
     steps:

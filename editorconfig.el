@@ -3,7 +3,7 @@
 ;; Copyright (C) 2011-2023 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-;; Version: 0.10.0
+;; Version: 0.10.1
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
 ;; Package-Requires: ((emacs "26.1") (nadvice "0.3"))
 ;; Keywords: convenience editorconfig
@@ -51,8 +51,7 @@
   (defvar tex-indent-basic)
   (defvar tex-indent-item)
   (defvar tex-indent-arg)
-  (defvar evil-shift-width)
-  (defvar python-indent-offset))
+  (defvar evil-shift-width))
 
 (require 'editorconfig-core)
 
@@ -202,6 +201,7 @@ This hook will be run even when there are no matching sections in
     (css-mode css-indent-offset)
     (css-ts-mode css-indent-offset)
     (d-mode c-basic-offset)
+    (elixir-ts-mode elixir-ts-indent-offset)
     (emacs-lisp-mode lisp-indent-offset)
     (enh-ruby-mode enh-ruby-indent-level)
     (erlang-mode erlang-indent-level)
@@ -219,6 +219,7 @@ This hook will be run even when there are no matching sections in
                  fsharp-indent-level
                  fsharp-indent-offset)
     (gdscript-mode gdscript-indent-offset)
+    (graphql-mode graphql-indent-level)
     (groovy-mode groovy-indent-offset)
     (go-ts-mode go-ts-mode-indent-offset)
     (haskell-mode haskell-indent-spaces
@@ -230,6 +231,7 @@ This hook will be run even when there are no matching sections in
                   haskell-indentation-where-pre-offset
                   shm-indent-spaces)
     (haxor-mode haxor-tab-width)
+    (hcl-mode hcl-indent-level)
     (html-ts-mode html-ts-mode-indent-offset)
     (idl-mode c-basic-offset)
     (jade-mode jade-tab-width)
@@ -244,12 +246,15 @@ This hook will be run even when there are no matching sections in
     (js3-mode js3-indent-level)
     (json-mode js-indent-level)
     (json-ts-mode json-ts-mode-indent-offset)
+    (jsonian-mode jsonian-default-indentation)
     (julia-mode julia-indent-offset)
     (kotlin-mode kotlin-tab-width)
+    (kotlin-ts-mode kotlin-ts-mode-indent-offset)
     (latex-mode . editorconfig-set-indentation-latex-mode)
     (lisp-mode lisp-indent-offset)
     (livescript-mode livescript-tab-width)
     (lua-mode lua-indent-level)
+    (lua-ts-mode lua-ts-indent-offset)
     (matlab-mode matlab-indent-level)
     (meson-mode meson-indent-basic)
     (mips-mode mips-tab-width)
@@ -265,7 +270,9 @@ This hook will be run even when there are no matching sections in
     ;; See https://github.com/editorconfig/editorconfig-emacs/issues/116
     ;; for details.
     (php-mode c-basic-offset)
+    (php-ts-mode php-ts-mode-indent-offset)
     (pike-mode c-basic-offset)
+    (protobuf-mode c-basic-offset)
     (ps-mode ps-mode-tab)
     (pug-mode pug-tab-width)
     (puppet-mode puppet-indent-level)
@@ -282,6 +289,7 @@ This hook will be run even when there are no matching sections in
     (scss-mode css-indent-offset)
     (sgml-mode sgml-basic-offset)
     (sh-mode sh-basic-offset sh-indentation)
+    (swift-mode swift-mode:basic-offset)
     (bash-ts-mode sh-basic-offset sh-indentation)
     (slim-mode slim-indent-offset)
     (sml-mode sml-indent-level)
@@ -308,7 +316,8 @@ This hook will be run even when there are no matching sections in
               web-mode-script-padding
               web-mode-style-padding)
     (yaml-mode yaml-indent-offset)
-    (yaml-ts-mode yaml-indent-offset))
+    (yaml-ts-mode yaml-indent-offset)
+    (zig-mode zig-indent-offset))
   "Alist of indentation setting methods by modes.
 
 Each element looks like (MODE . FUNCTION) or (MODE . INDENT-SPEC-LIST).
@@ -417,8 +426,9 @@ Make a message by passing ARGS to `format-message'."
 
 (defun editorconfig-set-indentation-python-mode (size)
   "Set `python-mode' indent size to SIZE."
-  (setq-local python-indent-offset size)
-  ;; For https://launchpad.net/python-mode
+  (when (boundp 'python-indent-offset)
+    (setq-local python-indent-offset size))
+  ;; For https://gitlab.com/python-mode-devs/python-mode
   (when (boundp 'py-indent-offset)
     (setq-local py-indent-offset size)))
 
@@ -832,6 +842,50 @@ To disable EditorConfig in some buffers, modify
       (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
       (dolist (hook modehooks)
         (remove-hook hook 'editorconfig-major-mode-hook)))))
+
+
+;; Tools
+;; Some useful commands for users, not required for EditorConfig to work
+
+;;;###autoload
+(defun editorconfig-find-current-editorconfig ()
+  "Find the closest .editorconfig file for current file."
+  (interactive)
+  (eval-and-compile (require 'editorconfig-core))
+  (when-let* ((file (editorconfig-core-get-nearest-editorconfig
+                    default-directory)))
+    (find-file file)))
+
+;;;###autoload
+(defun editorconfig-display-current-properties ()
+  "Display EditorConfig properties extracted for current buffer."
+  (interactive)
+  (if editorconfig-properties-hash
+      (let ((buf (get-buffer-create "*EditorConfig Properties*"))
+            (file buffer-file-name)
+            (props editorconfig-properties-hash))
+        (with-current-buffer buf
+          (erase-buffer)
+          (insert (format "# EditorConfig for %s\n" file))
+          (maphash (lambda (k v)
+                     (insert (format "%S = %s\n" k v)))
+                   props))
+        (display-buffer buf))
+    (message "Properties are not applied to current buffer yet.")
+    nil))
+;;;###autoload
+(defalias 'describe-editorconfig-properties
+  'editorconfig-display-current-properties)
+
+;;;###autoload
+(defun editorconfig-format-buffer()
+  "Format buffer according to .editorconfig indent_style and indent_width."
+  (interactive)
+  (when (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
+    (tabify (point-min) (point-max)))
+  (when (string= (gethash 'indent_style editorconfig-properties-hash) "space")
+    (untabify (point-min) (point-max)))
+  (indent-region (point-min) (point-max)))
 
 
 ;; (defconst editorconfig--version
