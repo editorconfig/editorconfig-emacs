@@ -25,7 +25,7 @@
 
 ;;; Commentary:
 
-;; Some useful commands for users, not required for editorconfig-mode to work
+;; Some utility commands for users, not used from editorconfig-mode.
 
 ;;; Code:
 
