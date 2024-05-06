@@ -18,9 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - editorconfig-apply
     - editorconfig-mode-apply
     - editorconfig-find-current-editorconfig
-    - editorconfig-display-current-properties (describe-editorconfig-properties)
+    - editorconfig-display-current-properties (and its alias describe-editorconfig-properties)
     - editorconfig-format-buffer
-  - These commands are configured to be autoloaded functions except for `editorconfig-mode-apply`
+  - These commands are configured to be autoloaded functions, except for `editorconfig-mode-apply`
 
 ### Deprecated
 
