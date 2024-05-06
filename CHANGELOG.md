@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Remove editorconfig-mode legacy version ([#304])
   - Remove flag `editorconfig--legacy-version`, which was defined in [#263]
+- Separate some utility commands to new file ([#330])
+  - Following commands are now defined in `editoroconfig-tools.el`, not `editorconfig.el`
+    - editorconfig-apply
+    - editorconfig-mode-apply
+    - editorconfig-find-current-editorconfig
+    - editorconfig-display-current-properties (and its alias describe-editorconfig-properties)
+    - editorconfig-format-buffer
+  - These commands are configured to be autoloaded functions, except for `editorconfig-mode-apply`
 
 ### Deprecated
 
