@@ -337,6 +337,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#316]: https://github.com/editorconfig/editorconfig-emacs/issues/316
 [#312]: https://github.com/editorconfig/editorconfig-emacs/issues/312
 [#310]: https://github.com/editorconfig/editorconfig-emacs/issues/310
+[#304]: https://github.com/editorconfig/editorconfig-emacs/issues/304
 [#306]: https://github.com/editorconfig/editorconfig-emacs/issues/306
 [#305]: https://github.com/editorconfig/editorconfig-emacs/issues/305
 [#302]: https://github.com/editorconfig/editorconfig-emacs/issues/302
