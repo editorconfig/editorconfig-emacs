@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support new mejor-modes
+  - kotlin-ts-mode ([#310])
+  - hcl-mode ([#312])
+  - protobuf-mode ([#316])
+  - lua-ts-mode ([#317])
+  - php-ts-mode ([#318])
+  - elixir-ts-mode ([#319])
+  - jsonian-mode ([#320])
+  - swift-mode ([#321])
+  - graphql-mode ([#325])
+  - zig-mode ([#326])
+
 ### Changed
 
 - Remove editorconfig-mode legacy version ([#304])
@@ -314,6 +326,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.2...v0.3
 [0.2]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.1...v0.2
 [0.1]: https://github.com/editorconfig/editorconfig-emacs/releases/tag/v0.1
+[#330]: https://github.com/editorconfig/editorconfig-emacs/issues/330
+[#326]: https://github.com/editorconfig/editorconfig-emacs/issues/326
+[#325]: https://github.com/editorconfig/editorconfig-emacs/issues/325
+[#321]: https://github.com/editorconfig/editorconfig-emacs/issues/321
+[#320]: https://github.com/editorconfig/editorconfig-emacs/issues/320
+[#319]: https://github.com/editorconfig/editorconfig-emacs/issues/319
+[#318]: https://github.com/editorconfig/editorconfig-emacs/issues/318
+[#317]: https://github.com/editorconfig/editorconfig-emacs/issues/317
+[#316]: https://github.com/editorconfig/editorconfig-emacs/issues/316
+[#312]: https://github.com/editorconfig/editorconfig-emacs/issues/312
+[#310]: https://github.com/editorconfig/editorconfig-emacs/issues/310
 [#304]: https://github.com/editorconfig/editorconfig-emacs/issues/304
 [#306]: https://github.com/editorconfig/editorconfig-emacs/issues/306
 [#305]: https://github.com/editorconfig/editorconfig-emacs/issues/305
