@@ -5,11 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
 ## [Unreleased]
 
 ### Added
 
-- Support new mejor-modes
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [0.11.0] - 2024-05-11
+
+### Added
+
+- Support new major-modes
   - kotlin-ts-mode ([#310])
   - hcl-mode ([#312])
   - protobuf-mode ([#316])
@@ -34,16 +50,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - editorconfig-format-buffer
   - These commands are configured to be autoloaded functions, except for `editorconfig-mode-apply`
 
-### Deprecated
 
-### Removed
-
-### Fixed
-
-### Security
-
-
-## [0.10.1]
+## [0.10.1] - 2023-05-19
 
 ### Fixed
 
@@ -295,7 +303,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 *Undocumented*
 
 
-[Unreleased]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.9.0...v0.9.1
