@@ -1,6 +1,6 @@
 ;;; editorconfig.el --- EditorConfig Emacs Plugin  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2023 EditorConfig Team
+;; Copyright (C) 2011-2024 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.11.0
