@@ -182,6 +182,8 @@ This hook will be run even when there are no matching sections in
   ;; For contributors: Sort modes in alphabetical order
   '((apache-mode apache-indent-level)
     (awk-mode c-basic-offset)
+    (bash-ts-mode sh-basic-offset 
+                  sh-indentation)
     (bpftrace-mode c-basic-offset)
     (c++-mode c-basic-offset)
     (c++-ts-mode c-basic-offset
@@ -219,9 +221,9 @@ This hook will be run even when there are no matching sections in
                  fsharp-indent-level
                  fsharp-indent-offset)
     (gdscript-mode gdscript-indent-offset)
+    (go-ts-mode go-ts-mode-indent-offset)
     (graphql-mode graphql-indent-level)
     (groovy-mode groovy-indent-offset)
-    (go-ts-mode go-ts-mode-indent-offset)
     (haskell-mode haskell-indent-spaces
                   haskell-indent-offset
                   haskell-indentation-layout-offset
@@ -291,14 +293,13 @@ This hook will be run even when there are no matching sections in
     (scss-mode css-indent-offset)
     (sgml-mode sgml-basic-offset)
     (sh-mode sh-basic-offset sh-indentation)
-    (svelte-mode svelte-basic-offset)
-    (swift-mode swift-mode:basic-offset)
-    (bash-ts-mode sh-basic-offset sh-indentation)
     (slim-mode slim-indent-offset)
     (sml-mode sml-indent-level)
+    (svelte-mode svelte-basic-offset)
+    (swift-mode swift-mode:basic-offset)
+    (terra-mode terra-indent-level)
     (tcl-mode tcl-indent-level
               tcl-continued-indent-level)
-    (terra-mode terra-indent-level)
     (toml-ts-mode toml-ts-mode-indent-offset)
     (typescript-mode typescript-indent-level)
     (typescript-ts-base-mode typescript-ts-mode-indent-offset)
