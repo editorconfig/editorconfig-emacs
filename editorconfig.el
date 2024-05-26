@@ -455,16 +455,30 @@ Make a message by passing ARGS to `format-message'."
   (when (boundp 'LaTeX-item-indent)
     (setq-local LaTeX-item-indent (- size))))
 
-(defun editorconfig--should-set (size symbol)
-  "Determines if editorconfig should set SYMBOL using SIZE."
-  (if (eq symbol 'lisp-indent-offset)
-      (cond
-       ((null editorconfig-lisp-use-default-indent)  t)
-       ((eql t editorconfig-lisp-use-default-indent) nil)
-       ((numberp editorconfig-lisp-use-default-indent)
-        (not (eql size editorconfig-lisp-use-default-indent)))
-       (t t))
-    t))
+(cl-defun editorconfig--should-set (symbol &optional size)
+  "Determine if editorconfig should set SYMBOL.
+
+Optional arg SIZE is used when symbol is `lisp-indent-offset'.
+See `editorconfig-lisp-use-default-indent' for details."
+  (when (and (not editorconfig-override-file-local-variables)
+             (assq symbol file-local-variables-alist))
+    (cl-return-from editorconfig--should-set
+      nil))
+
+  (when (and (not editorconfig-override-dir-local-variables)
+             (assq symbol dir-local-variables-alist))
+    (cl-return-from editorconfig--should-set
+      nil))
+
+  (when (eq symbol 'lisp-indent-offset)
+    (cl-return-from editorconfig--should-set
+      (cond ((null editorconfig-lisp-use-default-indent)  t)
+            ((eql t editorconfig-lisp-use-default-indent) nil)
+            ((numberp editorconfig-lisp-use-default-indent)
+             (not (eql size editorconfig-lisp-use-default-indent)))
+            (t t))))
+
+  t)
 
 (defun editorconfig-set-indentation (style &optional size tab_width)
   "Set indentation type from STYLE, SIZE and TAB_WIDTH."
@@ -496,10 +510,10 @@ Make a message by passing ARGS to `format-message'."
                 ((listp fn-or-list)
                  (dolist (elem fn-or-list)
                    (cond ((and (symbolp elem)
-                               (editorconfig--should-set size elem))
+                               (editorconfig--should-set elem size))
                           (set (make-local-variable elem) size))
                          ((and (consp elem)
-                               (editorconfig--should-set size (car elem)))
+                               (editorconfig--should-set (car elem) size))
                           (let ((spec (cdr elem)))
                             (set (make-local-variable (car elem))
                                  (cond ((functionp spec) (funcall spec size))
