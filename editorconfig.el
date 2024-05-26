@@ -182,7 +182,7 @@ This hook will be run even when there are no matching sections in
   ;; For contributors: Sort modes in alphabetical order
   '((apache-mode apache-indent-level)
     (awk-mode c-basic-offset)
-    (bash-ts-mode sh-basic-offset 
+    (bash-ts-mode sh-basic-offset
                   sh-indentation)
     (bpftrace-mode c-basic-offset)
     (c++-mode c-basic-offset)
@@ -400,6 +400,12 @@ number - `lisp-indent-offset' is not set only if indent_size is
 
 (define-error 'editorconfig-error
               "Error thrown from editorconfig lib")
+
+(defvar editorconfig-override-file-local-variables nil
+  "Non-nil means editorconfig will override values defined as file local variable values.")
+
+(defvar editorconfig-override-dir-local-variables nil
+  "Non-nil means editorconfig will override values defined in dir-locals.el .")
 
 (defun editorconfig-error (&rest args)
   "Signal an `editorconfig-error'.
