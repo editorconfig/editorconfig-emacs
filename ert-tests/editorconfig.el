@@ -63,6 +63,9 @@
 (defvar editorconfig-secondary-ert-dir
   (concat default-directory "ert-tests/test_files_secondary/"))
 
+(defvar editorconfig-local-variables-ert-dir
+  (concat default-directory "ert-tests/local_variables/"))
+
 (ert-deftest test-editorconfig nil
   "Check if properties are applied."
   (editorconfig-mode 1)
@@ -105,6 +108,18 @@
     (read-only-mode 1)
     (should (not (memq 'delete-trailing-whitespace
                        write-file-functions))))
+  (editorconfig-mode -1))
+
+(ert-deftest test-local-variables nil
+  (editorconfig-mode 1)
+  (with-visit-file (concat editorconfig-local-variables-ert-dir "file_locals.sh")
+    (should (eq tab-width 5))
+    (should (eq sh-basic-offset 3))
+    (should (eq sh-indentation 3)))
+
+  (with-visit-file (concat editorconfig-local-variables-ert-dir "dir_locals.c")
+    (should (eq tab-width 5))
+    (should (eq c-basic-offset 3)))
   (editorconfig-mode -1))
 
 (ert-deftest test-file-type-emacs nil
