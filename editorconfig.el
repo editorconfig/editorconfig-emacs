@@ -401,10 +401,10 @@ number - `lisp-indent-offset' is not set only if indent_size is
 (define-error 'editorconfig-error
               "Error thrown from editorconfig lib")
 
-(defvar editorconfig-override-file-local-variables nil
-  "Non-nil means editorconfig will override values defined as file local variable values.")
+(defvar editorconfig-override-file-local-variables t
+  "Non-nil means editorconfig will override file local variable values.")
 
-(defvar editorconfig-override-dir-local-variables nil
+(defvar editorconfig-override-dir-local-variables t
   "Non-nil means editorconfig will override values defined in dir-locals.el .")
 
 (defun editorconfig-error (&rest args)
@@ -460,6 +460,11 @@ Make a message by passing ARGS to `format-message'."
 
 Optional arg SIZE is used when symbol is `lisp-indent-offset'.
 See `editorconfig-lisp-use-default-indent' for details."
+  (display-warning '(editorconfig editorconfig--should-set)
+                   (format "symbol: %S | size: %S"
+                           symbol
+                           size)
+                   :debug)
   (when (and (not editorconfig-override-file-local-variables)
              (assq symbol file-local-variables-alist))
     (cl-return-from editorconfig--should-set
