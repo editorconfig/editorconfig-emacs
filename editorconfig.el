@@ -398,14 +398,18 @@ number - `lisp-indent-offset' is not set only if indent_size is
          equal to this number.  For example, if this is set to 2,
          `lisp-indent-offset' will not be set only if indent_size is 2.")
 
+(defcustom editorconfig-override-file-local-variables t
+  "Non-nil means editorconfig will override file local variable values."
+  :type 'boolean
+  :group 'editorconfig)
+
+(defcustom editorconfig-override-dir-local-variables t
+  "Non-nil means editorconfig will override values defined in dir-locals.el ."
+  :type 'boolean
+  :group 'editorconfig)
+
 (define-error 'editorconfig-error
               "Error thrown from editorconfig lib")
-
-(defvar editorconfig-override-file-local-variables t
-  "Non-nil means editorconfig will override file local variable values.")
-
-(defvar editorconfig-override-dir-local-variables t
-  "Non-nil means editorconfig will override values defined in dir-locals.el .")
 
 (defun editorconfig-error (&rest args)
   "Signal an `editorconfig-error'.
