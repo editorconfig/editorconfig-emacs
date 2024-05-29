@@ -482,21 +482,34 @@ See `editorconfig-lisp-use-default-indent' for details."
 
 (defun editorconfig-set-indentation (style &optional size tab_width)
   "Set indentation type from STYLE, SIZE and TAB_WIDTH."
-  (if (editorconfig-string-integer-p size)
-      (setq size (string-to-number size))
-    (unless (equal size "tab") (setq size nil)))
-  (cond (tab_width
+  (setq size
+        (cond ((editorconfig-string-integer-p size)
+               (string-to-number size))
+              ((equal size "tab")
+               "tab")
+              (t
+               nil)))
+
+  (cond ((not (editorconfig--should-set 'tab-width))
+         nil)
+        (tab_width
          (setq tab-width (string-to-number tab_width)))
         ((numberp size)
          (setq tab-width size)))
+
   (when (equal size "tab")
     (setq size tab-width))
-  (cond ((equal style "space")
+
+  (cond ((not (editorconfig--should-set 'indent-tabs-mode))
+         nil)
+        ((equal style "space")
          (setq indent-tabs-mode nil))
         ((equal style "tab")
          (setq indent-tabs-mode t)))
+
   (when size
-    (when (featurep 'evil)
+    (when (and (featurep 'evil)
+               (editorconfig--should-set 'evil-shift-width))
       (setq-local evil-shift-width size))
     (let ((parent major-mode)
           entry)

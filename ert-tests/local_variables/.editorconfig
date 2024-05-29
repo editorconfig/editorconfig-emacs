@@ -1,0 +1,9 @@
+root = true
+
+[*.sh]
+tab_width = 4
+indent_size = 2
+
+[*.c]
+tab_width = 4
+indent_size = 2
