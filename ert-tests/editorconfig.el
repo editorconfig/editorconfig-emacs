@@ -113,12 +113,22 @@
 (ert-deftest test-local-variables nil
   (editorconfig-mode 1)
   (with-visit-file (concat editorconfig-local-variables-ert-dir "file_locals.rb")
-    (should (eq tab-width 5))
-    (should (eq ruby-indent-level 3)))
+    (should (eq tab-width 9))
+    (should (eq ruby-indent-level 7)))
 
   (with-visit-file (concat editorconfig-local-variables-ert-dir "dir_locals.c")
-    (should (eq tab-width 5))
-    (should (eq c-basic-offset 3)))
+    (should (eq tab-width 9))
+    (should (eq c-basic-offset 7)))
+
+  (let ((editorconfig-override-file-local-variables nil))
+    (with-visit-file (concat editorconfig-local-variables-ert-dir "file_locals.rb")
+      (should (eq tab-width 5))
+      (should (eq ruby-indent-level 3))))
+
+  (let ((editorconfig-override-dir-local-variables nil))
+    (with-visit-file (concat editorconfig-local-variables-ert-dir "dir_locals.c")
+      (should (eq tab-width 5))
+      (should (eq c-basic-offset 3))))
   (editorconfig-mode -1))
 
 (ert-deftest test-file-type-emacs nil
