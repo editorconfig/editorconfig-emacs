@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support new major-modes
+  - svelte-mode ([#333])
+  - magik-mode, magik-ts-mode ([#336])
+- Add switch not to override local variable values ([#338])
+
+
 ### Changed
 
 ### Deprecated
@@ -335,6 +341,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.2...v0.3
 [0.2]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.1...v0.2
 [0.1]: https://github.com/editorconfig/editorconfig-emacs/releases/tag/v0.1
+[#338]: https://github.com/editorconfig/editorconfig-emacs/issues/338
+[#336]: https://github.com/editorconfig/editorconfig-emacs/issues/336
+[#333]: https://github.com/editorconfig/editorconfig-emacs/issues/333
 [#330]: https://github.com/editorconfig/editorconfig-emacs/issues/330
 [#326]: https://github.com/editorconfig/editorconfig-emacs/issues/326
 [#325]: https://github.com/editorconfig/editorconfig-emacs/issues/325
