@@ -182,7 +182,7 @@ This hook will be run even when there are no matching sections in
   ;; For contributors: Sort modes in alphabetical order
   '((apache-mode apache-indent-level)
     (awk-mode c-basic-offset)
-    (bash-ts-mode sh-basic-offset 
+    (bash-ts-mode sh-basic-offset
                   sh-indentation)
     (bpftrace-mode c-basic-offset)
     (c++-mode c-basic-offset)
@@ -398,6 +398,16 @@ number - `lisp-indent-offset' is not set only if indent_size is
          equal to this number.  For example, if this is set to 2,
          `lisp-indent-offset' will not be set only if indent_size is 2.")
 
+(defcustom editorconfig-override-file-local-variables t
+  "Non-nil means editorconfig will override file local variable values."
+  :type 'boolean
+  :group 'editorconfig)
+
+(defcustom editorconfig-override-dir-local-variables t
+  "Non-nil means editorconfig will override values defined in dir-locals.el ."
+  :type 'boolean
+  :group 'editorconfig)
+
 (define-error 'editorconfig-error
               "Error thrown from editorconfig lib")
 
@@ -449,34 +459,66 @@ Make a message by passing ARGS to `format-message'."
   (when (boundp 'LaTeX-item-indent)
     (setq-local LaTeX-item-indent (- size))))
 
-(defun editorconfig--should-set (size symbol)
-  "Determines if editorconfig should set SYMBOL using SIZE."
-  (if (eq symbol 'lisp-indent-offset)
-      (cond
-       ((null editorconfig-lisp-use-default-indent)  t)
-       ((eql t editorconfig-lisp-use-default-indent) nil)
-       ((numberp editorconfig-lisp-use-default-indent)
-        (not (eql size editorconfig-lisp-use-default-indent)))
-       (t t))
-    t))
+(cl-defun editorconfig--should-set (symbol &optional size)
+  "Determine if editorconfig should set SYMBOL.
+
+Optional arg SIZE is used when symbol is `lisp-indent-offset'.
+See `editorconfig-lisp-use-default-indent' for details."
+  (display-warning '(editorconfig editorconfig--should-set)
+                   (format "symbol: %S | size: %S"
+                           symbol
+                           size)
+                   :debug)
+  (when (and (not editorconfig-override-file-local-variables)
+             (assq symbol file-local-variables-alist))
+    (cl-return-from editorconfig--should-set
+      nil))
+
+  (when (and (not editorconfig-override-dir-local-variables)
+             (assq symbol dir-local-variables-alist))
+    (cl-return-from editorconfig--should-set
+      nil))
+
+  (when (eq symbol 'lisp-indent-offset)
+    (cl-return-from editorconfig--should-set
+      (cond ((null editorconfig-lisp-use-default-indent)  t)
+            ((eql t editorconfig-lisp-use-default-indent) nil)
+            ((numberp editorconfig-lisp-use-default-indent)
+             (not (eql size editorconfig-lisp-use-default-indent)))
+            (t t))))
+
+  t)
 
 (defun editorconfig-set-indentation (style &optional size tab_width)
   "Set indentation type from STYLE, SIZE and TAB_WIDTH."
-  (if (editorconfig-string-integer-p size)
-      (setq size (string-to-number size))
-    (unless (equal size "tab") (setq size nil)))
-  (cond (tab_width
+  (setq size
+        (cond ((editorconfig-string-integer-p size)
+               (string-to-number size))
+              ((equal size "tab")
+               "tab")
+              (t
+               nil)))
+
+  (cond ((not (editorconfig--should-set 'tab-width))
+         nil)
+        (tab_width
          (setq tab-width (string-to-number tab_width)))
         ((numberp size)
          (setq tab-width size)))
+
   (when (equal size "tab")
     (setq size tab-width))
-  (cond ((equal style "space")
+
+  (cond ((not (editorconfig--should-set 'indent-tabs-mode))
+         nil)
+        ((equal style "space")
          (setq indent-tabs-mode nil))
         ((equal style "tab")
          (setq indent-tabs-mode t)))
+
   (when size
-    (when (featurep 'evil)
+    (when (and (featurep 'evil)
+               (editorconfig--should-set 'evil-shift-width))
       (setq-local evil-shift-width size))
     (let ((parent major-mode)
           entry)
@@ -490,10 +532,10 @@ Make a message by passing ARGS to `format-message'."
                 ((listp fn-or-list)
                  (dolist (elem fn-or-list)
                    (cond ((and (symbolp elem)
-                               (editorconfig--should-set size elem))
+                               (editorconfig--should-set elem size))
                           (set (make-local-variable elem) size))
                          ((and (consp elem)
-                               (editorconfig--should-set size (car elem)))
+                               (editorconfig--should-set (car elem) size))
                           (let ((spec (cdr elem)))
                             (set (make-local-variable (car elem))
                                  (cond ((functionp spec) (funcall spec size))
