@@ -784,8 +784,6 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
              (not (eq coding-system
                       'undecided)))
         (let ((coding-system-for-read coding-system))
-          (remhash (expand-file-name filename)
-                   editorconfig--filename-codingsystem-hash)
           (apply f filename args))
       (apply f filename args))))
 
@@ -814,6 +812,7 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                         :warning)))
 
     (setq ret (apply f filename args))
+    (clrhash editorconfig--filename-codingsystem-hash)
 
     (condition-case err
         (with-current-buffer ret
