@@ -803,16 +803,16 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
           (setq props (editorconfig-call-get-properties-function filename))
           (setq coding-system
                 (editorconfig-merge-coding-systems (gethash 'end_of_line props)
-                                                   (gethash 'charset props))))
+                                                   (gethash 'charset props)))
+          (puthash (expand-file-name filename)
+                   coding-system
+                   editorconfig--filename-codingsystem-hash))
       (error
        (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
                         (format "Failed to get properties, styles will not be applied: %S"
                                 err)
                         :warning)))
 
-    (puthash (expand-file-name filename)
-             coding-system
-             editorconfig--filename-codingsystem-hash)
     (setq ret (apply f filename args))
 
     (condition-case err
