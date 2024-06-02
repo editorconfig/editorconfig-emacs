@@ -113,13 +113,13 @@
 (ert-deftest test-charset nil
   (editorconfig-mode 1)
   (with-visit-file (concat editorconfig-ert-dir "latin1.txt")
+    (set-buffer-file-coding-system 'undecided-unix)
     (should (eq buffer-file-coding-system
-                (merge-coding-systems 'iso-latin-1
-                                      (default-value 'buffer-file-coding-system)))))
+                'iso-latin-1-unix)))
   (with-visit-file (concat editorconfig-ert-dir "utf-16be.txt")
+    (set-buffer-file-coding-system 'undecided-unix)
     (should (eq buffer-file-coding-system
-                (merge-coding-systems 'utf-16be-with-signature
-                                      (default-value 'buffer-file-coding-system)))))
+                'utf-16be-with-signature-unix)))
   (editorconfig-mode -1))
 
 
