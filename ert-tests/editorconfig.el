@@ -114,11 +114,14 @@
   (editorconfig-mode 1)
   (with-visit-file (concat editorconfig-ert-dir "latin1.txt")
     (should (eq buffer-file-coding-system
-                'iso-latin-1-unix)))
+                (merge-coding-systems 'iso-latin-1
+                                      (default-value 'buffer-file-coding-system)))))
   (with-visit-file (concat editorconfig-ert-dir "utf-16be.txt")
     (should (eq buffer-file-coding-system
-                'utf-16be-with-signature)))
+                (merge-coding-systems 'utf-16be-with-signature
+                                      (default-value 'buffer-file-coding-system)))))
   (editorconfig-mode -1))
+
 
 (ert-deftest test-local-variables nil
   (editorconfig-mode 1)
