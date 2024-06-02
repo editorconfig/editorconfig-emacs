@@ -757,11 +757,11 @@ This function also executes `editorconfig-after-apply-functions' functions."
                         (format "Error while running `editorconfig-after-apply-functions': %S"
                                 err))))))
 
-(defvar editorconfig--cons-filename-codingsystem nil
+(defvar editorconfig--filename-codingsystem-hash (make-hash-table :test 'equal)
   "Used interally.
 
-`editorconfig--advice-find-file-noselect' will set this variable, and
-`editorconfig--advice-insert-file-contents' will use this variable to set
+`editorconfig--advice-find-file-noselect' will put value to this hash, and
+`editorconfig--advice-insert-file-contents' will use the value to set
 `coding-system-for-read' value.")
 
 (defun editorconfig--advice-insert-file-contents (f filename &rest args)
@@ -769,26 +769,25 @@ This function also executes `editorconfig-after-apply-functions' functions."
 
 This function should be added as an advice function to `insert-file-contents'.
 F is that function, and FILENAME and ARGS are arguments passed to F."
-  ;; This function uses `editorconfig--cons-filename-codingsystem' to decide what coding-system
+  ;; This function uses `editorconfig--filename-codingsystem-hash' to decide what coding-system
   ;; should be used, which will be set by `editorconfig--advice-find-file-noselect'.
   (display-warning '(editorconfig editorconfig--advice-insert-file-contents)
                    (format "editorconfig--advice-insert-file-contents: filename: %S args: %S codingsystem: %S bufferfilename: %S"
                            filename args
-                           editorconfig--cons-filename-codingsystem
+                           editorconfig--filename-codingsystem-hash
                            buffer-file-name)
                    :debug)
-  (if (and (stringp filename)
-           (stringp (car editorconfig--cons-filename-codingsystem))
-           (string= (expand-file-name filename)
-                    (car editorconfig--cons-filename-codingsystem))
-           (cdr editorconfig--cons-filename-codingsystem)
-           (not (eq (cdr editorconfig--cons-filename-codingsystem)
-                    'undecided)))
-      (let ((coding-system-for-read (cdr editorconfig--cons-filename-codingsystem))
-            ;; (coding-system-for-read 'undecided)
-            )
-        (apply f filename args))
-    (apply f filename args)))
+  (let ((coding-system (and (stringp filename)
+                            (gethash (expand-file-name filename)
+                                     editorconfig--filename-codingsystem-hash))))
+    (if (and coding-system
+             (not (eq coding-system
+                      'undecided)))
+        (let ((coding-system-for-read coding-system))
+          (remhash (expand-file-name filename)
+                   editorconfig--filename-codingsystem-hash)
+          (apply f filename args))
+      (apply f filename args))))
 
 (defun editorconfig--advice-find-file-noselect (f filename &rest args)
   "Get EditorConfig properties and apply them to buffer to be visited.
@@ -811,29 +810,31 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                                 err)
                         :warning)))
 
-    (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
-                                                          coding-system)))
-      (setq ret (apply f filename args)))
+    (puthash (expand-file-name filename)
+             coding-system
+             editorconfig--filename-codingsystem-hash)
+    (setq ret (apply f filename args))
 
     (condition-case err
         (with-current-buffer ret
           (when (and props
                      ;; filename has already been checked
                      (not (editorconfig--disabled-for-majormode major-mode)))
+
+            ;; When file path indicates it is a remote file and it actually
+            ;; does not exists, `buffer-file-coding-system' will not be set.
+            ;; (Seems `insert-file-contents' will not be called)
+            ;; For this case, explicitly set this value so that saving will be done
+            ;; with expected coding system.
             (when (and (file-remote-p filename)
                        (not (local-variable-p 'buffer-file-coding-system))
                        (not (file-exists-p filename))
                        coding-system
                        (not (eq coding-system
                                 'undecided)))
-              ;; When file path indicates it is a remote file and it actually
-              ;; does not exists, `buffer-file-coding-system' will not be set.
-              ;; (Seems `insert-file-contents' will not be called)
-              ;; For that case, explicitly set this value so that saving will be done
-              ;; with expected coding system.
               (set-buffer-file-coding-system coding-system))
 
-            ;; NOTE: When using editorconfig-2-mode, hack-properties-functions cannot affect coding-system value,
+            ;; NOTE: hack-properties-functions cannot affect coding-system value,
             ;; because it has to be set before initializing buffers.
             (condition-case err
                 (run-hook-with-args 'editorconfig-hack-properties-functions props)
