@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support new major-modes
   - svelte-mode ([#333])
   - magik-mode, magik-ts-mode ([#336])
-- Add switch not to override local variable values ([#338])
+- Add switches not to override local variable values ([#338])
   - Set `editorconfig-override-file-local-variables` to nil to use file local
     variable values instead of values in .editorconfig
   - Set `editorconfig-override-dir-local-variables` to nil to use values defined in
