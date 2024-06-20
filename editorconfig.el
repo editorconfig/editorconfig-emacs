@@ -596,24 +596,23 @@ to non-nil when FINAL-NEWLINE is true."
      (setq-local require-final-newline      nil)
      (setq-local mode-require-final-newline nil))))
 
+(defun editorconfig--delete-trailing-whitespace ()
+  "Call `delete-trailing-whitespace' unless the buffer is read-only."
+  (unless buffer-read-only (delete-trailing-whitespace)))
+
 (defun editorconfig-set-trailing-ws (trim-trailing-ws)
-  "Set up trimming of trailing whitespace at end of lines by TRIM-TRAILING-WS."
-  (make-local-variable 'write-file-functions) ;; just current buffer
-  (when (and (equal trim-trailing-ws "true")
-             (not buffer-read-only))
-    ;; when true we push delete-trailing-whitespace (emacs > 21)
-    ;; to write-file-functions
-    (if editorconfig-trim-whitespaces-mode
-        (funcall editorconfig-trim-whitespaces-mode 1)
-      (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
-  (when (or (equal trim-trailing-ws "false")
-            buffer-read-only)
-    ;; when false we remove every delete-trailing-whitespace
-    ;; from write-file-functions
-    (when editorconfig-trim-whitespaces-mode
-      (funcall editorconfig-trim-whitespaces-mode 0))
-    (setq write-file-functions
-          (remove 'delete-trailing-whitespace write-file-functions))))
+  (pcase trim-trailing-ws
+    ("true"
+     (if editorconfig-trim-whitespaces-mode
+         (funcall editorconfig-trim-whitespaces-mode 1)
+       (add-hook 'before-save-hook
+                 #'editorconfig--delete-trailing-whitespace nil t)))
+    ("false"
+     (when editorconfig-trim-whitespaces-mode
+       (funcall editorconfig-trim-whitespaces-mode 0))
+     (remove-hook 'before-save-hook
+                  #'editorconfig--delete-trailing-whitespace t))))
+
 
 (defun editorconfig-set-line-length (length)
   "Set the max line length (`fill-column') to LENGTH."
@@ -851,7 +850,6 @@ To disable EditorConfig in some buffers, modify
   :lighter editorconfig-mode-lighter
   (let ((modehooks '(prog-mode-hook
                      text-mode-hook
-                     read-only-mode-hook
                      ;; Some modes call `kill-all-local-variables' in their init
                      ;; code, which clears some values set by editorconfig.
                      ;; For those modes, editorconfig-apply need to be called
