@@ -5,7 +5,7 @@
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.11.0
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
-;; Package-Requires: ((emacs "26.1") (nadvice "0.3"))
+;; Package-Requires: ((emacs "26.1"))
 ;; Keywords: convenience editorconfig
 
 ;; See
@@ -41,17 +41,12 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'pcase)
 
-(require 'nadvice)
-
-(eval-when-compile
-  (require 'rx)
-  (require 'subr-x)
-  (defvar tex-indent-basic)
-  (defvar tex-indent-item)
-  (defvar tex-indent-arg)
-  (defvar evil-shift-width))
+(eval-when-compile (require 'subr-x))
+(defvar tex-indent-basic)
+(defvar tex-indent-item)
+(defvar tex-indent-arg)
+(defvar evil-shift-width)
 
 (require 'editorconfig-core)
 
@@ -73,8 +68,7 @@ coding styles between different editors and IDEs."
   "Path to EditorConfig executable.
 
 Used by `editorconfig--execute-editorconfig-exec'."
-  :type 'string
-  :group 'editorconfig)
+  :type 'string)
 
 (define-obsolete-variable-alias
   'edconf-get-properties-function
@@ -107,13 +101,11 @@ Possible known values are:
     use `editorconfig-core-get-properties-hash'
 * `editorconfig-get-properties-from-exec'
   * Get properties by executing EditorConfig executable"
-  :type 'function
-  :group 'editorconfig)
+  :type 'function)
 
 (defcustom editorconfig-mode-lighter " EditorConfig"
   "Command `editorconfig-mode' lighter string."
-  :type 'string
-  :group 'editorconfig)
+  :type 'string)
 
 (define-obsolete-variable-alias
   'edconf-custom-hooks
@@ -143,8 +135,7 @@ show line numbers on the left:
 
 This hook will be run even when there are no matching sections in
 \".editorconfig\", or no \".editorconfig\" file was found at all."
-  :type 'hook
-  :group 'editorconfig)
+  :type 'hook)
 
 (defcustom editorconfig-hack-properties-functions ()
   "A list of function to alter property values before applying them.
@@ -166,8 +157,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
 
 This hook will be run even when there are no matching sections in
 \".editorconfig\", or no \".editorconfig\" file was found at all."
-  :type 'hook
-  :group 'editorconfig)
+  :type 'hook)
 (make-obsolete-variable 'editorconfig-hack-properties-functions
                         "Using `editorconfig-after-apply-functions' instead is recommended,
     because since 2021/08/30 (v0.9.0) this variable cannot support all properties:
@@ -349,21 +339,18 @@ following forms:
 
 NOTE: Only the **buffer local** value of VARIABLE will be set."
   :type '(alist :key-type symbol :value-type sexp)
-  :risky t
-  :group 'editorconfig)
+  :risky t)
 
 (defcustom editorconfig-exclude-modes ()
   "Modes in which `editorconfig-mode-apply' will not run."
-  :type '(repeat (symbol :tag "Major Mode"))
-  :group 'editorconfig)
+  :type '(repeat (symbol :tag "Major Mode")))
 
 (defcustom editorconfig-exclude-regexps ()
   "List of regexp for buffer filenames `editorconfig-mode-apply' will not run.
 
 When variable `buffer-file-name' matches any of the regexps, then
 `editorconfig-mode-apply' will not do its work."
-  :type '(repeat string)
-  :group 'editorconfig)
+  :type '(repeat string))
 (with-eval-after-load 'recentf
   (add-to-list 'editorconfig-exclude-regexps
                (rx-to-string '(seq string-start
@@ -375,8 +362,7 @@ When variable `buffer-file-name' matches any of the regexps, then
 
 If set, enable that mode when `trim_trailing_whitespace` is set to true.
 Otherwise, use `delete-trailing-whitespace'."
-  :type 'symbol
-  :group 'editorconfig)
+  :type 'symbol)
 
 (defvar editorconfig-properties-hash nil
   "Hash object of EditorConfig properties that was enabled for current buffer.
@@ -400,13 +386,11 @@ number - `lisp-indent-offset' is not set only if indent_size is
 
 (defcustom editorconfig-override-file-local-variables t
   "Non-nil means editorconfig will override file local variable values."
-  :type 'boolean
-  :group 'editorconfig)
+  :type 'boolean)
 
 (defcustom editorconfig-override-dir-local-variables t
   "Non-nil means editorconfig will override values defined in dir-locals.el ."
-  :type 'boolean
-  :group 'editorconfig)
+  :type 'boolean)
 
 (define-error 'editorconfig-error
               "Error thrown from editorconfig lib")
@@ -676,7 +660,7 @@ to non-nil when FINAL-NEWLINE is true."
       (let ((key-val (split-string prop " *= *")))
         (when (> (length key-val) 1)
           (let ((key (intern (car key-val)))
-                (val (mapconcat 'identity (cdr key-val) "")))
+                (val (mapconcat #'identity (cdr key-val) "")))
             (puthash key val properties)))))))
 
 (defun editorconfig-get-properties-from-exec (filename)
@@ -875,16 +859,16 @@ To disable EditorConfig in some buffers, modify
                      rpm-spec-mode-hook)))
     (if editorconfig-mode
         (progn
-          (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
-          (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
+          (advice-add 'find-file-noselect :around #'editorconfig--advice-find-file-noselect)
+          (advice-add 'insert-file-contents :around #'editorconfig--advice-insert-file-contents)
           (dolist (hook modehooks)
             (add-hook hook
-                      'editorconfig-major-mode-hook
+                      #'editorconfig-major-mode-hook
                       t)))
-      (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
-      (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
+      (advice-remove 'find-file-noselect #'editorconfig--advice-find-file-noselect)
+      (advice-remove 'insert-file-contents #'editorconfig--advice-insert-file-contents)
       (dolist (hook modehooks)
-        (remove-hook hook 'editorconfig-major-mode-hook)))))
+        (remove-hook hook #'editorconfig-major-mode-hook)))))
 
 
 ;; (defconst editorconfig--version
@@ -924,7 +908,3 @@ version in the echo area and the messages buffer."
 
 (provide 'editorconfig)
 ;;; editorconfig.el ends here
-
-;; Local Variables:
-;; sentence-end-double-space: t
-;; End:

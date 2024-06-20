@@ -115,7 +115,7 @@ any of regexps in `editorconfig-exclude-regexps'."
     nil))
 ;;;###autoload
 (defalias 'describe-editorconfig-properties
-  'editorconfig-display-current-properties)
+  #'editorconfig-display-current-properties)
 
 ;;;###autoload
 (defun editorconfig-format-buffer()

@@ -75,7 +75,7 @@
     (should (eq indent-tabs-mode nil)))
 
   (with-visit-file (concat editorconfig-ert-dir "4_space.py")
-    (should (eq python-indent-offset 4))
+    (should (eq (bound-and-true-p python-indent-offset) 4))
     (should (eq tab-width 8))
     (should (eq indent-tabs-mode nil)))
   (editorconfig-mode -1))
@@ -127,21 +127,21 @@
   (editorconfig-mode 1)
   (with-visit-file (concat editorconfig-local-variables-ert-dir "file_locals.rb")
     (should (eq tab-width 9))
-    (should (eq ruby-indent-level 7)))
+    (should (eq (bound-and-true-p ruby-indent-level) 7)))
 
   (with-visit-file (concat editorconfig-local-variables-ert-dir "dir_locals.c")
     (should (eq tab-width 9))
-    (should (eq c-basic-offset 7)))
+    (should (eq (bound-and-true-p c-basic-offset) 7)))
 
   (let ((editorconfig-override-file-local-variables nil))
     (with-visit-file (concat editorconfig-local-variables-ert-dir "file_locals.rb")
       (should (eq tab-width 5))
-      (should (eq ruby-indent-level 3))))
+      (should (eq (bound-and-true-p ruby-indent-level) 3))))
 
   (let ((editorconfig-override-dir-local-variables nil))
     (with-visit-file (concat editorconfig-local-variables-ert-dir "dir_locals.c")
       (should (eq tab-width 5))
-      (should (eq c-basic-offset 3))))
+      (should (eq (bound-and-true-p c-basic-offset) 3))))
   (editorconfig-mode -1))
 
 (ert-deftest test-file-type-emacs nil
@@ -168,7 +168,7 @@
             (lambda (props)
               (puthash 'indent_size "5" props)))
   (with-visit-file (concat editorconfig-ert-dir "4_space.py")
-    (should (eq python-indent-offset 5)))
+    (should (eq (bound-and-true-p python-indent-offset) 5)))
   (setq editorconfig-hack-properties-functions nil)
   (editorconfig-mode -1))
 
