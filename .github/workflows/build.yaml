@@ -31,16 +31,10 @@ jobs:
           - os: ubuntu-latest
             emacs-version: "26.3"
             experimental: false
-          - os: macos-11
-            emacs-version: "26.3"
-            experimental: false
           - os: windows-latest
             emacs-version: "26.3"
             experimental: false
           - os: ubuntu-latest
-            emacs-version: "27.2"
-            experimental: false
-          - os: macos-11
             emacs-version: "27.2"
             experimental: false
           - os: windows-latest
