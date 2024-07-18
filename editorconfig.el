@@ -170,7 +170,9 @@ This hook will be run even when there are no matching sections in
   "0.5")
 (defcustom editorconfig-indentation-alist
   ;; For contributors: Sort modes in alphabetical order
-  '((apache-mode apache-indent-level)
+  '((ada-mode ada-indent)
+    (ada-ts-mode ada-ts-mode-indent-offset)
+    (apache-mode apache-indent-level)
     (awk-mode c-basic-offset)
     (bash-ts-mode sh-basic-offset
                   sh-indentation)
@@ -212,6 +214,8 @@ This hook will be run even when there are no matching sections in
                  fsharp-indent-offset)
     (gdscript-mode gdscript-indent-offset)
     (go-ts-mode go-ts-mode-indent-offset)
+    (gpr-mode gpr-indent)
+    (gpr-ts-mode gpr-ts-mode-indent-offset)
     (graphql-mode graphql-indent-level)
     (groovy-mode groovy-indent-offset)
     (haskell-mode haskell-indent-spaces
