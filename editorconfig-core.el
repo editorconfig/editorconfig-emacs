@@ -112,7 +112,7 @@ look like (KEY . VALUE)."
     (maphash (lambda (key value)
                (add-to-list 'result (cons (symbol-name key) value)))
              hash)
-    result))
+    (sort result (lambda (x y) (string< (car x) (car y))))))
 
 (defun editorconfig-core--hash-merge (into update)
   "Merge two hashes INTO and UPDATE.

@@ -222,8 +222,10 @@ If CONF is not found return nil."
                                     (substring line 0 idx))))
                     (value (editorconfig-core-handle--string-trim
                             (substring line (1+ idx)))))
-                (when (and (< (length key) 51)
-                           (< (length value) 256))
+                ;; `spec.editorconfig.org' says minimum 1024 and 4096 resp.
+                ;; FIXME: Why do we impose limits?
+                (when (and (< (length key) 2048)
+                           (< (length value) 8192))
                   (if pattern
                       (when (< (length pattern) 4097)
                         (setq props
