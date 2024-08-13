@@ -349,7 +349,12 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   "Modes in which `editorconfig-mode-apply' will not run."
   :type '(repeat (symbol :tag "Major Mode")))
 
-(defcustom editorconfig-exclude-regexps ()
+(defcustom editorconfig-exclude-regexps
+  ;; With current implementation `editorconfig--disabled-for-majormode'
+  ;; cannot stop this lib from trying to configure buffer coding-systems
+  ;; because coding-system-for-read is set before deciding buffer major-mode.
+  ;; So exclude some archive files here.
+  '("\\.jar\\'" "\\.zip\\'")
   "List of regexp for buffer filenames `editorconfig-mode-apply' will not run.
 
 When variable `buffer-file-name' matches any of the regexps, then
