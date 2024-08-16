@@ -349,12 +349,7 @@ NOTE: Only the **buffer local** value of VARIABLE will be set."
   "Modes in which `editorconfig-mode-apply' will not run."
   :type '(repeat (symbol :tag "Major Mode")))
 
-(defcustom editorconfig-exclude-regexps
-  ;; With current implementation `editorconfig--disabled-for-majormode'
-  ;; cannot stop this lib from trying to configure buffer coding-systems
-  ;; because coding-system-for-read is set before deciding buffer major-mode.
-  ;; So exclude some archive files here.
-  '("\\.jar\\'" "\\.zip\\'")
+(defcustom editorconfig-exclude-regexps ()
   "List of regexp for buffer filenames `editorconfig-mode-apply' will not run.
 
 When variable `buffer-file-name' matches any of the regexps, then
@@ -543,16 +538,16 @@ Make a message by passing ARGS to `format-message'."
   (let ((eol (cond
               ((equal end-of-line "lf") 'undecided-unix)
               ((equal end-of-line "cr") 'undecided-mac)
-              ((equal end-of-line "crlf") 'undecided-dos)
-              (t 'undecided)))
+              ((equal end-of-line "crlf") 'undecided-dos)))
         (cs (cond
              ((equal charset "latin1") 'iso-latin-1)
              ((equal charset "utf-8") 'utf-8)
              ((equal charset "utf-8-bom") 'utf-8-with-signature)
              ((equal charset "utf-16be") 'utf-16be-with-signature)
-             ((equal charset "utf-16le") 'utf-16le-with-signature)
-             (t 'undecided))))
-    (merge-coding-systems cs eol)))
+             ((equal charset "utf-16le") 'utf-16le-with-signature))))
+    (if (and eol cs)
+        (merge-coding-systems cs eol)
+      (or eol cs))))
 
 (cl-defun editorconfig-set-coding-system-revert (end-of-line charset)
   "Set buffer coding system by END-OF-LINE and CHARSET.
@@ -568,7 +563,7 @@ This function will revert buffer when the coding-system has been changed."
                              coding-system
                              editorconfig--apply-coding-system-currently)
                      :debug)
-    (when (eq coding-system 'undecided)
+    (when (memq coding-system '(nil undecided))
       (cl-return-from editorconfig-set-coding-system-revert))
     (when (and buffer-file-coding-system
                (memq buffer-file-coding-system
@@ -580,7 +575,9 @@ This function will revert buffer when the coding-system has been changed."
       (cl-return-from editorconfig-set-coding-system-revert))
     (unless (memq coding-system
                   (coding-system-aliases editorconfig--apply-coding-system-currently))
-      ;; Revert functions might call editorconfig-apply again
+      ;; Revert functions might call `editorconfig-apply' again
+      ;; FIXME: I suspect `editorconfig--apply-coding-system-currently'
+      ;; gymnastics is not needed now that we hook into `find-auto-coding'.
       (unwind-protect
           (progn
             (setq editorconfig--apply-coding-system-currently coding-system)
@@ -746,35 +743,16 @@ This function also executes `editorconfig-after-apply-functions' functions."
                         (format "Error while running `editorconfig-after-apply-functions': %S"
                                 err))))))
 
-(defvar editorconfig--filename-codingsystem-hash (make-hash-table :test 'equal)
-  "Used interally.
+;; This is a new var in Emacs≥30.
+;; We dyn-bind it in our `editorconfig--advice-find-auto-coding' advice
+;; to mimic the Emacs-30 behavior.
+(defvar auto-coding-file-name)
 
-`editorconfig--advice-find-file-noselect' will put value to this hash, and
-`editorconfig--advice-insert-file-contents' will use the value to set
-`coding-system-for-read' value.")
-
-(defun editorconfig--advice-insert-file-contents (f filename &rest args)
-  "Set `coding-system-for-read'.
-
-This function should be added as an advice function to `insert-file-contents'.
-F is that function, and FILENAME and ARGS are arguments passed to F."
-  ;; This function uses `editorconfig--filename-codingsystem-hash' to decide what coding-system
-  ;; should be used, which will be set by `editorconfig--advice-find-file-noselect'.
-  (display-warning '(editorconfig editorconfig--advice-insert-file-contents)
-                   (format "editorconfig--advice-insert-file-contents: filename: %S args: %S codingsystem: %S bufferfilename: %S"
-                           filename args
-                           editorconfig--filename-codingsystem-hash
-                           buffer-file-name)
-                   :debug)
-  (let ((coding-system (and (stringp filename)
-                            (gethash (expand-file-name filename)
-                                     editorconfig--filename-codingsystem-hash))))
-    (if (and coding-system
-             (not (eq coding-system
-                      'undecided)))
-        (let ((coding-system-for-read coding-system))
-          (apply f filename args))
-      (apply f filename args))))
+(defun editorconfig--advice-find-auto-coding (filename &rest _args)
+  "Consult `charset' setting of EditorConfig."
+  (let ((cs (let ((auto-coding-file-name filename))
+              (editorconfig--get-coding-system))))
+    (when cs (cons cs 'EditorConfig))))
 
 (defun editorconfig--advice-find-file-noselect (f filename &rest args)
   "Get EditorConfig properties and apply them to buffer to be visited.
@@ -782,18 +760,10 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
 This function should be added as an advice function to `find-file-noselect'.
 F is that function, and FILENAME and ARGS are arguments passed to F."
   (let ((props nil)
-        (coding-system nil)
         (ret nil))
     (condition-case err
-        (when (and (stringp filename)
-                   (not (editorconfig--disabled-for-filename filename)))
-          (setq props (editorconfig-call-get-properties-function filename))
-          (setq coding-system
-                (editorconfig-merge-coding-systems (gethash 'end_of_line props)
-                                                   (gethash 'charset props)))
-          (puthash (expand-file-name filename)
-                   coding-system
-                   editorconfig--filename-codingsystem-hash))
+        (when (stringp filename)
+          (setq props (editorconfig-call-get-properties-function filename)))
       (error
        (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
                         (format "Failed to get properties, styles will not be applied: %S"
@@ -801,26 +771,10 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                         :warning)))
 
     (setq ret (apply f filename args))
-    (clrhash editorconfig--filename-codingsystem-hash)
 
     (condition-case err
         (with-current-buffer ret
-          (when (and props
-                     ;; filename has already been checked
-                     (not (editorconfig--disabled-for-majormode major-mode)))
-
-            ;; When file path indicates it is a remote file and it actually
-            ;; does not exists, `buffer-file-coding-system' will not be set.
-            ;; (Seems `insert-file-contents' will not be called)
-            ;; For this case, explicitly set this value so that saving will be done
-            ;; with expected coding system.
-            (when (and (file-remote-p filename)
-                       (not (local-variable-p 'buffer-file-coding-system))
-                       (not (file-exists-p filename))
-                       coding-system
-                       (not (eq coding-system
-                                'undecided)))
-              (set-buffer-file-coding-system coding-system))
+          (when props
 
             ;; NOTE: hack-properties-functions cannot affect coding-system value,
             ;; because it has to be set before initializing buffers.
@@ -848,6 +802,22 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                         (format "Error while setting variables from EditorConfig: %S" err))))
     ret))
 
+(defvar editorconfig--getting-coding-system nil)
+
+(defun editorconfig--get-coding-system (&optional _size)
+  "Return the coding system to use according to EditorConfig.
+Meant to be used on `auto-coding-functions'."
+  (when (and (stringp auto-coding-file-name)
+             (file-name-absolute-p auto-coding-file-name)
+	     ;; Don't recurse infinitely.
+	     (not (member auto-coding-file-name
+	                  editorconfig--getting-coding-system)))
+    (let* ((editorconfig--getting-coding-system
+            (cons auto-coding-file-name editorconfig--getting-coding-system))
+           (props (editorconfig-call-get-properties-function
+                   auto-coding-file-name)))
+      (editorconfig-merge-coding-systems (gethash 'end_of_line props)
+                                         (gethash 'charset props)))))
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
@@ -867,13 +837,15 @@ To disable EditorConfig in some buffers, modify
     (if editorconfig-mode
         (progn
           (advice-add 'find-file-noselect :around #'editorconfig--advice-find-file-noselect)
-          (advice-add 'insert-file-contents :around #'editorconfig--advice-insert-file-contents)
+          (advice-add 'find-auto-coding :after-until
+                      #'editorconfig--advice-find-auto-coding)
           (dolist (hook modehooks)
             (add-hook hook
                       #'editorconfig-major-mode-hook
                       t)))
       (advice-remove 'find-file-noselect #'editorconfig--advice-find-file-noselect)
-      (advice-remove 'insert-file-contents #'editorconfig--advice-insert-file-contents)
+      (advice-remove 'find-auto-coding
+                     #'editorconfig--advice-find-auto-coding)
       (dolist (hook modehooks)
         (remove-hook hook #'editorconfig-major-mode-hook)))))
 
@@ -885,9 +857,6 @@ To disable EditorConfig in some buffers, modify
 ;;     (lm-version))
 ;;   "EditorConfig version.")
 
-(declare-function find-library-name "find-func" (library))
-(declare-function lm-version "lisp-mnt" nil)
-
 ;;;###autoload
 (defun editorconfig-version (&optional show-version)
   "Get EditorConfig version as string.
@@ -895,20 +864,26 @@ To disable EditorConfig in some buffers, modify
 If called interactively or if SHOW-VERSION is non-nil, show the
 version in the echo area and the messages buffer."
   (interactive (list t))
-  (let* ((version (with-temp-buffer
-                    (require 'find-func)
-                    (insert-file-contents (find-library-name "editorconfig"))
-                    (require 'lisp-mnt)
-                    (lm-version)))
-         (pkg (and (eval-and-compile (require 'package nil t))
-                   (cadr (assq 'editorconfig
-                               package-alist))))
-         (pkg-version (and pkg
-                           (package-version-join (package-desc-version pkg))))
-         (version-full (if (and pkg-version
-                                (not (string= version pkg-version)))
-                           (concat version "-" pkg-version)
-                         version)))
+  (let ((version-full
+         (if (fboundp 'package-get-version) ;Emacs≥27
+             (package-get-version)
+           (let* ((version
+                   (with-temp-buffer
+                     (require 'find-func)
+                     (declare-function find-library-name "find-func" (library))
+                     (insert-file-contents (find-library-name "editorconfig"))
+                     (require 'lisp-mnt)
+                     (declare-function lm-version "lisp-mnt" nil)
+                     (lm-version)))
+                  (pkg (and (eval-and-compile (require 'package nil t))
+                            (cadr (assq 'editorconfig
+                                        package-alist))))
+                  (pkg-version (and pkg (package-version-join
+                                         (package-desc-version pkg)))))
+             (if (and pkg-version
+                      (not (string= version pkg-version)))
+                 (concat version "-" pkg-version)
+               version)))))
     (when show-version
       (message "EditorConfig Emacs v%s" version-full))
     version-full))
