@@ -73,6 +73,7 @@ Use `editorconfig-mode-apply' instead to make use of these variables."
                         (format "Error in editorconfig-apply, styles will not be applied: %S" err)
                         :error)))))
 
+;;;###autoload
 (defun editorconfig-mode-apply ()
   "Get and apply EditorConfig properties to current buffer.
 
