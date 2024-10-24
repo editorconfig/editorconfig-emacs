@@ -122,8 +122,12 @@
                 'iso-latin-1-unix)))
   (with-visit-file (concat editorconfig-ert-dir "utf-16be.txt")
     (set-buffer-file-coding-system 'undecided-unix)
-    (should (eq buffer-file-coding-system
-                'utf-16be-with-signature-unix)))
+    (unwind-protect
+        (progn
+          (save-buffer)
+          (should (eq buffer-file-coding-system
+                      'utf-16be-with-signature-unix)))
+      (delete-file (expand-file-name "utf-16be.txt" editorconfig-ert-dir))))
   (editorconfig-mode -1))
 
 
