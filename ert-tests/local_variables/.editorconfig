@@ -1,0 +1,9 @@
+root = true
+
+[*.rb]
+tab_width = 9
+indent_size = 7
+
+[*.c]
+tab_width = 9
+indent_size = 7

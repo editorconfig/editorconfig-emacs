@@ -5,9 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
 ## [Unreleased]
 
 ### Added
+
+- Support new major-modes
+  - svelte-mode ([#333])
+  - magik-mode, magik-ts-mode ([#336])
+- Add switches not to override local variable values ([#338])
+  - Set `editorconfig-override-file-local-variables` to nil to use file local
+    variable values instead of values in .editorconfig
+  - Set `editorconfig-override-dir-local-variables` to nil to use values defined in
+    .dir-locals.el instead of values in .editorconfig
+
 
 ### Changed
 
@@ -20,7 +31,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 
-## [0.10.1]
+## [0.11.0] - 2024-05-11
+
+### Added
+
+- Support new major-modes
+  - kotlin-ts-mode ([#310])
+  - hcl-mode ([#312])
+  - protobuf-mode ([#316])
+  - lua-ts-mode ([#317])
+  - php-ts-mode ([#318])
+  - elixir-ts-mode ([#319])
+  - jsonian-mode ([#320])
+  - swift-mode ([#321])
+  - graphql-mode ([#325])
+  - zig-mode ([#326])
+
+### Changed
+
+- Remove editorconfig-mode legacy version ([#304])
+  - Remove flag `editorconfig--legacy-version`, which was defined in [#263]
+- Separate some utility commands to new file ([#330])
+  - Following commands are now defined in `editoroconfig-tools.el`, not `editorconfig.el`
+    - editorconfig-apply
+    - editorconfig-mode-apply
+    - editorconfig-find-current-editorconfig
+    - editorconfig-display-current-properties (and its alias describe-editorconfig-properties)
+    - editorconfig-format-buffer
+  - These commands are configured to be autoloaded functions, except for `editorconfig-mode-apply`
+
+
+## [0.10.1] - 2023-05-19
 
 ### Fixed
 
@@ -272,7 +313,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 *Undocumented*
 
 
-[Unreleased]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.9.0...v0.9.1
@@ -303,6 +345,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.2...v0.3
 [0.2]: https://github.com/editorconfig/editorconfig-emacs/compare/v0.1...v0.2
 [0.1]: https://github.com/editorconfig/editorconfig-emacs/releases/tag/v0.1
+[#338]: https://github.com/editorconfig/editorconfig-emacs/issues/338
+[#336]: https://github.com/editorconfig/editorconfig-emacs/issues/336
+[#333]: https://github.com/editorconfig/editorconfig-emacs/issues/333
+[#330]: https://github.com/editorconfig/editorconfig-emacs/issues/330
+[#326]: https://github.com/editorconfig/editorconfig-emacs/issues/326
+[#325]: https://github.com/editorconfig/editorconfig-emacs/issues/325
+[#321]: https://github.com/editorconfig/editorconfig-emacs/issues/321
+[#320]: https://github.com/editorconfig/editorconfig-emacs/issues/320
+[#319]: https://github.com/editorconfig/editorconfig-emacs/issues/319
+[#318]: https://github.com/editorconfig/editorconfig-emacs/issues/318
+[#317]: https://github.com/editorconfig/editorconfig-emacs/issues/317
+[#316]: https://github.com/editorconfig/editorconfig-emacs/issues/316
+[#312]: https://github.com/editorconfig/editorconfig-emacs/issues/312
+[#310]: https://github.com/editorconfig/editorconfig-emacs/issues/310
+[#304]: https://github.com/editorconfig/editorconfig-emacs/issues/304
 [#306]: https://github.com/editorconfig/editorconfig-emacs/issues/306
 [#305]: https://github.com/editorconfig/editorconfig-emacs/issues/305
 [#302]: https://github.com/editorconfig/editorconfig-emacs/issues/302

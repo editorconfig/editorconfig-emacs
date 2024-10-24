@@ -1,11 +1,11 @@
 ;;; editorconfig.el --- EditorConfig Emacs Plugin  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2011-2023 EditorConfig Team
+;; Copyright (C) 2011-2024 EditorConfig Team
 
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
-;; Version: 0.10.1
+;; Version: 0.11.0
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
-;; Package-Requires: ((emacs "26.1") (nadvice "0.3"))
+;; Package-Requires: ((emacs "26.1"))
 ;; Keywords: convenience editorconfig
 
 ;; See
@@ -41,17 +41,12 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'pcase)
 
-(require 'nadvice)
-
-(eval-when-compile
-  (require 'rx)
-  (require 'subr-x)
-  (defvar tex-indent-basic)
-  (defvar tex-indent-item)
-  (defvar tex-indent-arg)
-  (defvar evil-shift-width))
+(eval-when-compile (require 'subr-x))
+(defvar tex-indent-basic)
+(defvar tex-indent-item)
+(defvar tex-indent-arg)
+(defvar evil-shift-width)
 
 (require 'editorconfig-core)
 
@@ -73,8 +68,7 @@ coding styles between different editors and IDEs."
   "Path to EditorConfig executable.
 
 Used by `editorconfig--execute-editorconfig-exec'."
-  :type 'string
-  :group 'editorconfig)
+  :type 'string)
 
 (define-obsolete-variable-alias
   'edconf-get-properties-function
@@ -107,13 +101,11 @@ Possible known values are:
     use `editorconfig-core-get-properties-hash'
 * `editorconfig-get-properties-from-exec'
   * Get properties by executing EditorConfig executable"
-  :type 'function
-  :group 'editorconfig)
+  :type 'function)
 
 (defcustom editorconfig-mode-lighter " EditorConfig"
   "Command `editorconfig-mode' lighter string."
-  :type 'string
-  :group 'editorconfig)
+  :type 'string)
 
 (define-obsolete-variable-alias
   'edconf-custom-hooks
@@ -143,8 +135,7 @@ show line numbers on the left:
 
 This hook will be run even when there are no matching sections in
 \".editorconfig\", or no \".editorconfig\" file was found at all."
-  :type 'hook
-  :group 'editorconfig)
+  :type 'hook)
 
 (defcustom editorconfig-hack-properties-functions ()
   "A list of function to alter property values before applying them.
@@ -166,8 +157,7 @@ overwrite \"indent_style\" property when current `major-mode' is a
 
 This hook will be run even when there are no matching sections in
 \".editorconfig\", or no \".editorconfig\" file was found at all."
-  :type 'hook
-  :group 'editorconfig)
+  :type 'hook)
 (make-obsolete-variable 'editorconfig-hack-properties-functions
                         "Using `editorconfig-after-apply-functions' instead is recommended,
     because since 2021/08/30 (v0.9.0) this variable cannot support all properties:
@@ -180,8 +170,12 @@ This hook will be run even when there are no matching sections in
   "0.5")
 (defcustom editorconfig-indentation-alist
   ;; For contributors: Sort modes in alphabetical order
-  '((apache-mode apache-indent-level)
+  '((ada-mode ada-indent)
+    (ada-ts-mode ada-ts-mode-indent-offset)
+    (apache-mode apache-indent-level)
     (awk-mode c-basic-offset)
+    (bash-ts-mode sh-basic-offset
+                  sh-indentation)
     (bpftrace-mode c-basic-offset)
     (c++-mode c-basic-offset)
     (c++-ts-mode c-basic-offset
@@ -202,7 +196,7 @@ This hook will be run even when there are no matching sections in
     (css-ts-mode css-indent-offset)
     (d-mode c-basic-offset)
     (elixir-ts-mode elixir-ts-indent-offset)
-    (emacs-lisp-mode lisp-indent-offset)
+    (emacs-lisp-mode . editorconfig-set-indentation-lisp-mode)
     (enh-ruby-mode enh-ruby-indent-level)
     (erlang-mode erlang-indent-level)
     (ess-mode ess-indent-offset)
@@ -219,9 +213,11 @@ This hook will be run even when there are no matching sections in
                  fsharp-indent-level
                  fsharp-indent-offset)
     (gdscript-mode gdscript-indent-offset)
+    (go-ts-mode go-ts-mode-indent-offset)
+    (gpr-mode gpr-indent)
+    (gpr-ts-mode gpr-ts-mode-indent-offset)
     (graphql-mode graphql-indent-level)
     (groovy-mode groovy-indent-offset)
-    (go-ts-mode go-ts-mode-indent-offset)
     (haskell-mode haskell-indent-spaces
                   haskell-indent-offset
                   haskell-indentation-layout-offset
@@ -251,10 +247,12 @@ This hook will be run even when there are no matching sections in
     (kotlin-mode kotlin-tab-width)
     (kotlin-ts-mode kotlin-ts-mode-indent-offset)
     (latex-mode . editorconfig-set-indentation-latex-mode)
-    (lisp-mode lisp-indent-offset)
+    (lisp-mode . editorconfig-set-indentation-lisp-mode)
     (livescript-mode livescript-tab-width)
     (lua-mode lua-indent-level)
     (lua-ts-mode lua-ts-indent-offset)
+    (magik-mode magik-indent-level)
+    (magik-ts-mode magik-indent-level)
     (matlab-mode matlab-indent-level)
     (meson-mode meson-indent-basic)
     (mips-mode mips-tab-width)
@@ -289,13 +287,13 @@ This hook will be run even when there are no matching sections in
     (scss-mode css-indent-offset)
     (sgml-mode sgml-basic-offset)
     (sh-mode sh-basic-offset sh-indentation)
-    (swift-mode swift-mode:basic-offset)
-    (bash-ts-mode sh-basic-offset sh-indentation)
     (slim-mode slim-indent-offset)
     (sml-mode sml-indent-level)
+    (svelte-mode svelte-basic-offset)
+    (swift-mode swift-mode:basic-offset)
+    (terra-mode terra-indent-level)
     (tcl-mode tcl-indent-level
               tcl-continued-indent-level)
-    (terra-mode terra-indent-level)
     (toml-ts-mode toml-ts-mode-indent-offset)
     (typescript-mode typescript-indent-level)
     (typescript-ts-base-mode typescript-ts-mode-indent-offset)
@@ -345,21 +343,23 @@ following forms:
 
 NOTE: Only the **buffer local** value of VARIABLE will be set."
   :type '(alist :key-type symbol :value-type sexp)
-  :risky t
-  :group 'editorconfig)
+  :risky t)
 
 (defcustom editorconfig-exclude-modes ()
   "Modes in which `editorconfig-mode-apply' will not run."
-  :type '(repeat (symbol :tag "Major Mode"))
-  :group 'editorconfig)
+  :type '(repeat (symbol :tag "Major Mode")))
 
-(defcustom editorconfig-exclude-regexps ()
+(defcustom editorconfig-exclude-regexps
+  ;; With current implementation `editorconfig--disabled-for-majormode'
+  ;; cannot stop this lib from trying to configure buffer coding-systems
+  ;; because coding-system-for-read is set before deciding buffer major-mode.
+  ;; So exclude some archive files here.
+  '("\\.jar\\'" "\\.zip\\'")
   "List of regexp for buffer filenames `editorconfig-mode-apply' will not run.
 
 When variable `buffer-file-name' matches any of the regexps, then
 `editorconfig-mode-apply' will not do its work."
-  :type '(repeat string)
-  :group 'editorconfig)
+  :type '(repeat string))
 (with-eval-after-load 'recentf
   (add-to-list 'editorconfig-exclude-regexps
                (rx-to-string '(seq string-start
@@ -371,8 +371,7 @@ When variable `buffer-file-name' matches any of the regexps, then
 
 If set, enable that mode when `trim_trailing_whitespace` is set to true.
 Otherwise, use `delete-trailing-whitespace'."
-  :type 'symbol
-  :group 'editorconfig)
+  :type 'symbol)
 
 (defvar editorconfig-properties-hash nil
   "Hash object of EditorConfig properties that was enabled for current buffer.
@@ -393,6 +392,14 @@ t   - `lisp-indent-offset' is never set normally
 number - `lisp-indent-offset' is not set only if indent_size is
          equal to this number.  For example, if this is set to 2,
          `lisp-indent-offset' will not be set only if indent_size is 2.")
+
+(defcustom editorconfig-override-file-local-variables t
+  "Non-nil means editorconfig will override file local variable values."
+  :type 'boolean)
+
+(defcustom editorconfig-override-dir-local-variables t
+  "Non-nil means editorconfig will override values defined in dir-locals.el ."
+  :type 'boolean)
 
 (define-error 'editorconfig-error
               "Error thrown from editorconfig lib")
@@ -445,34 +452,63 @@ Make a message by passing ARGS to `format-message'."
   (when (boundp 'LaTeX-item-indent)
     (setq-local LaTeX-item-indent (- size))))
 
-(defun editorconfig--should-set (size symbol)
-  "Determines if editorconfig should set SYMBOL using SIZE."
-  (if (eq symbol 'lisp-indent-offset)
-      (cond
-       ((null editorconfig-lisp-use-default-indent)  t)
-       ((eql t editorconfig-lisp-use-default-indent) nil)
-       ((numberp editorconfig-lisp-use-default-indent)
-        (not (eql size editorconfig-lisp-use-default-indent)))
-       (t t))
-    t))
+(defun editorconfig-set-indentation-lisp-mode (size)
+ "Set indent size to SIZE for Lisp mode(s)."
+ (when (cond ((null editorconfig-lisp-use-default-indent)  t)
+             ((eql t editorconfig-lisp-use-default-indent) nil)
+             ((numberp editorconfig-lisp-use-default-indent)
+              (not (eql size editorconfig-lisp-use-default-indent)))
+             (t t))
+   (setq-local lisp-indent-offset size)))
+
+(cl-defun editorconfig--should-set (symbol)
+  "Determine if editorconfig should set SYMBOL."
+  (display-warning '(editorconfig editorconfig--should-set)
+                   (format "symbol: %S"
+                           symbol)
+                   :debug)
+  (when (and (not editorconfig-override-file-local-variables)
+             (assq symbol file-local-variables-alist))
+    (cl-return-from editorconfig--should-set
+      nil))
+
+  (when (and (not editorconfig-override-dir-local-variables)
+             (assq symbol dir-local-variables-alist))
+    (cl-return-from editorconfig--should-set
+      nil))
+
+  t)
 
 (defun editorconfig-set-indentation (style &optional size tab_width)
   "Set indentation type from STYLE, SIZE and TAB_WIDTH."
-  (if (editorconfig-string-integer-p size)
-      (setq size (string-to-number size))
-    (unless (equal size "tab") (setq size nil)))
-  (cond (tab_width
+  (setq size
+        (cond ((editorconfig-string-integer-p size)
+               (string-to-number size))
+              ((equal size "tab")
+               "tab")
+              (t
+               nil)))
+
+  (cond ((not (editorconfig--should-set 'tab-width))
+         nil)
+        (tab_width
          (setq tab-width (string-to-number tab_width)))
         ((numberp size)
          (setq tab-width size)))
+
   (when (equal size "tab")
     (setq size tab-width))
-  (cond ((equal style "space")
+
+  (cond ((not (editorconfig--should-set 'indent-tabs-mode))
+         nil)
+        ((equal style "space")
          (setq indent-tabs-mode nil))
         ((equal style "tab")
          (setq indent-tabs-mode t)))
+
   (when size
-    (when (featurep 'evil)
+    (when (and (featurep 'evil)
+               (editorconfig--should-set 'evil-shift-width))
       (setq-local evil-shift-width size))
     (let ((parent major-mode)
           entry)
@@ -486,10 +522,10 @@ Make a message by passing ARGS to `format-message'."
                 ((listp fn-or-list)
                  (dolist (elem fn-or-list)
                    (cond ((and (symbolp elem)
-                               (editorconfig--should-set size elem))
+                               (editorconfig--should-set elem))
                           (set (make-local-variable elem) size))
                          ((and (consp elem)
-                               (editorconfig--should-set size (car elem)))
+                               (editorconfig--should-set (car elem)))
                           (let ((spec (cdr elem)))
                             (set (make-local-variable (car elem))
                                  (cond ((functionp spec) (funcall spec size))
@@ -569,24 +605,23 @@ to non-nil when FINAL-NEWLINE is true."
      (setq-local require-final-newline      nil)
      (setq-local mode-require-final-newline nil))))
 
+(defun editorconfig--delete-trailing-whitespace ()
+  "Call `delete-trailing-whitespace' unless the buffer is read-only."
+  (unless buffer-read-only (delete-trailing-whitespace)))
+
 (defun editorconfig-set-trailing-ws (trim-trailing-ws)
-  "Set up trimming of trailing whitespace at end of lines by TRIM-TRAILING-WS."
-  (make-local-variable 'write-file-functions) ;; just current buffer
-  (when (and (equal trim-trailing-ws "true")
-             (not buffer-read-only))
-    ;; when true we push delete-trailing-whitespace (emacs > 21)
-    ;; to write-file-functions
-    (if editorconfig-trim-whitespaces-mode
-        (funcall editorconfig-trim-whitespaces-mode 1)
-      (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
-  (when (or (equal trim-trailing-ws "false")
-            buffer-read-only)
-    ;; when false we remove every delete-trailing-whitespace
-    ;; from write-file-functions
-    (when editorconfig-trim-whitespaces-mode
-      (funcall editorconfig-trim-whitespaces-mode 0))
-    (setq write-file-functions
-          (remove 'delete-trailing-whitespace write-file-functions))))
+  (pcase trim-trailing-ws
+    ("true"
+     (if editorconfig-trim-whitespaces-mode
+         (funcall editorconfig-trim-whitespaces-mode 1)
+       (add-hook 'before-save-hook
+                 #'editorconfig--delete-trailing-whitespace nil t)))
+    ("false"
+     (when editorconfig-trim-whitespaces-mode
+       (funcall editorconfig-trim-whitespaces-mode 0))
+     (remove-hook 'before-save-hook
+                  #'editorconfig--delete-trailing-whitespace t))))
+
 
 (defun editorconfig-set-line-length (length)
   "Set the max line length (`fill-column') to LENGTH."
@@ -633,7 +668,7 @@ to non-nil when FINAL-NEWLINE is true."
       (let ((key-val (split-string prop " *= *")))
         (when (> (length key-val) 1)
           (let ((key (intern (car key-val)))
-                (val (mapconcat 'identity (cdr key-val) "")))
+                (val (mapconcat #'identity (cdr key-val) "")))
             (puthash key val properties)))))))
 
 (defun editorconfig-get-properties-from-exec (filename)
@@ -686,54 +721,6 @@ This function also removes `unset' properties and calls
   (editorconfig-set-trailing-ws (gethash 'trim_trailing_whitespace props))
   (editorconfig-set-line-length (gethash 'max_line_length props)))
 
-;;;###autoload
-(defun editorconfig-apply ()
-  "Get and apply EditorConfig properties to current buffer.
-
-This function does not respect the values of `editorconfig-exclude-modes' and
-`editorconfig-exclude-regexps' and always applies available properties.
-Use `editorconfig-mode-apply' instead to make use of these variables."
-  (interactive)
-  (when buffer-file-name
-    (condition-case err
-        (progn
-          (let ((props (editorconfig-call-get-properties-function buffer-file-name)))
-            (condition-case err
-                (run-hook-with-args 'editorconfig-hack-properties-functions props)
-              (error
-               (display-warning '(editorconfig editorconfig-hack-properties-functions)
-                                (format "Error while running editorconfig-hack-properties-functions, abort running hook: %S"
-                                        err)
-                                :warning)))
-            (setq editorconfig-properties-hash props)
-            (editorconfig-set-local-variables props)
-            (editorconfig-set-coding-system-revert
-             (gethash 'end_of_line props)
-             (gethash 'charset props))
-            (condition-case err
-                (run-hook-with-args 'editorconfig-after-apply-functions props)
-              (error
-               (display-warning '(editorconfig editorconfig-after-apply-functions)
-                                (format "Error while running editorconfig-after-apply-functions, abort running hook: %S"
-                                        err)
-                                :warning)))))
-      (error
-       (display-warning '(editorconfig editorconfig-apply)
-                        (format "Error in editorconfig-apply, styles will not be applied: %S" err)
-                        :error)))))
-
-(defun editorconfig-mode-apply ()
-  "Get and apply EditorConfig properties to current buffer.
-
-This function does nothing when the major mode is listed in
-`editorconfig-exclude-modes', or variable `buffer-file-name' matches
-any of regexps in `editorconfig-exclude-regexps'."
-  (interactive)
-  (when (and major-mode
-             (not (editorconfig--disabled-for-majormode major-mode))
-             buffer-file-name
-             (not (editorconfig--disabled-for-filename buffer-file-name)))
-    (editorconfig-apply)))
 
 (defun editorconfig-major-mode-hook ()
   "Function to run when `major-mode' has been changed.
@@ -759,11 +746,11 @@ This function also executes `editorconfig-after-apply-functions' functions."
                         (format "Error while running `editorconfig-after-apply-functions': %S"
                                 err))))))
 
-(defvar editorconfig--cons-filename-codingsystem nil
+(defvar editorconfig--filename-codingsystem-hash (make-hash-table :test 'equal)
   "Used interally.
 
-`editorconfig--advice-find-file-noselect' will set this variable, and
-`editorconfig--advice-insert-file-contents' will use this variable to set
+`editorconfig--advice-find-file-noselect' will put value to this hash, and
+`editorconfig--advice-insert-file-contents' will use the value to set
 `coding-system-for-read' value.")
 
 (defun editorconfig--advice-insert-file-contents (f filename &rest args)
@@ -771,26 +758,23 @@ This function also executes `editorconfig-after-apply-functions' functions."
 
 This function should be added as an advice function to `insert-file-contents'.
 F is that function, and FILENAME and ARGS are arguments passed to F."
-  ;; This function uses `editorconfig--cons-filename-codingsystem' to decide what coding-system
+  ;; This function uses `editorconfig--filename-codingsystem-hash' to decide what coding-system
   ;; should be used, which will be set by `editorconfig--advice-find-file-noselect'.
   (display-warning '(editorconfig editorconfig--advice-insert-file-contents)
                    (format "editorconfig--advice-insert-file-contents: filename: %S args: %S codingsystem: %S bufferfilename: %S"
                            filename args
-                           editorconfig--cons-filename-codingsystem
+                           editorconfig--filename-codingsystem-hash
                            buffer-file-name)
                    :debug)
-  (if (and (stringp filename)
-           (stringp (car editorconfig--cons-filename-codingsystem))
-           (string= (expand-file-name filename)
-                    (car editorconfig--cons-filename-codingsystem))
-           (cdr editorconfig--cons-filename-codingsystem)
-           (not (eq (cdr editorconfig--cons-filename-codingsystem)
-                    'undecided)))
-      (let ((coding-system-for-read (cdr editorconfig--cons-filename-codingsystem))
-            ;; (coding-system-for-read 'undecided)
-            )
-        (apply f filename args))
-    (apply f filename args)))
+  (let ((coding-system (and (stringp filename)
+                            (gethash (expand-file-name filename)
+                                     editorconfig--filename-codingsystem-hash))))
+    (if (and coding-system
+             (not (eq coding-system
+                      'undecided)))
+        (let ((coding-system-for-read coding-system))
+          (apply f filename args))
+      (apply f filename args))))
 
 (defun editorconfig--advice-find-file-noselect (f filename &rest args)
   "Get EditorConfig properties and apply them to buffer to be visited.
@@ -806,36 +790,39 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
           (setq props (editorconfig-call-get-properties-function filename))
           (setq coding-system
                 (editorconfig-merge-coding-systems (gethash 'end_of_line props)
-                                                   (gethash 'charset props))))
+                                                   (gethash 'charset props)))
+          (puthash (expand-file-name filename)
+                   coding-system
+                   editorconfig--filename-codingsystem-hash))
       (error
        (display-warning '(editorconfig editorconfig--advice-find-file-noselect)
                         (format "Failed to get properties, styles will not be applied: %S"
                                 err)
                         :warning)))
 
-    (let ((editorconfig--cons-filename-codingsystem (cons (expand-file-name filename)
-                                                          coding-system)))
-      (setq ret (apply f filename args)))
+    (setq ret (apply f filename args))
+    (clrhash editorconfig--filename-codingsystem-hash)
 
     (condition-case err
         (with-current-buffer ret
           (when (and props
                      ;; filename has already been checked
                      (not (editorconfig--disabled-for-majormode major-mode)))
+
+            ;; When file path indicates it is a remote file and it actually
+            ;; does not exists, `buffer-file-coding-system' will not be set.
+            ;; (Seems `insert-file-contents' will not be called)
+            ;; For this case, explicitly set this value so that saving will be done
+            ;; with expected coding system.
             (when (and (file-remote-p filename)
                        (not (local-variable-p 'buffer-file-coding-system))
                        (not (file-exists-p filename))
                        coding-system
                        (not (eq coding-system
                                 'undecided)))
-              ;; When file path indicates it is a remote file and it actually
-              ;; does not exists, `buffer-file-coding-system' will not be set.
-              ;; (Seems `insert-file-contents' will not be called)
-              ;; For that case, explicitly set this value so that saving will be done
-              ;; with expected coding system.
               (set-buffer-file-coding-system coding-system))
 
-            ;; NOTE: When using editorconfig-2-mode, hack-properties-functions cannot affect coding-system value,
+            ;; NOTE: hack-properties-functions cannot affect coding-system value,
             ;; because it has to be set before initializing buffers.
             (condition-case err
                 (run-hook-with-args 'editorconfig-hack-properties-functions props)
@@ -861,11 +848,6 @@ F is that function, and FILENAME and ARGS are arguments passed to F."
                         (format "Error while setting variables from EditorConfig: %S" err))))
     ret))
 
-(defvar editorconfig--legacy-version nil
-  "Use legacy version of editorconfig-mode.
-
-As of 2021/08/30, `editorconfig-mode' uses totally new implementation by
-default.  This flag disables this and go back to previous version.")
 
 ;;;###autoload
 (define-minor-mode editorconfig-mode
@@ -875,86 +857,25 @@ To disable EditorConfig in some buffers, modify
 `editorconfig-exclude-modes' or `editorconfig-exclude-regexps'."
   :global t
   :lighter editorconfig-mode-lighter
-  (if (not editorconfig--legacy-version)
-      (let ((modehooks '(prog-mode-hook
-                         text-mode-hook
-                         read-only-mode-hook
-                         ;; Some modes call `kill-all-local-variables' in their init
-                         ;; code, which clears some values set by editorconfig.
-                         ;; For those modes, editorconfig-apply need to be called
-                         ;; explicitly through their hooks.
-                         rpm-spec-mode-hook)))
-        (if editorconfig-mode
-            (progn
-              (advice-add 'find-file-noselect :around 'editorconfig--advice-find-file-noselect)
-              (advice-add 'insert-file-contents :around 'editorconfig--advice-insert-file-contents)
-              (dolist (hook modehooks)
-                (add-hook hook
-                          'editorconfig-major-mode-hook
-                          t)))
-          (advice-remove 'find-file-noselect 'editorconfig--advice-find-file-noselect)
-          (advice-remove 'insert-file-contents 'editorconfig--advice-insert-file-contents)
+  (let ((modehooks '(prog-mode-hook
+                     text-mode-hook
+                     ;; Some modes call `kill-all-local-variables' in their init
+                     ;; code, which clears some values set by editorconfig.
+                     ;; For those modes, editorconfig-apply need to be called
+                     ;; explicitly through their hooks.
+                     rpm-spec-mode-hook)))
+    (if editorconfig-mode
+        (progn
+          (advice-add 'find-file-noselect :around #'editorconfig--advice-find-file-noselect)
+          (advice-add 'insert-file-contents :around #'editorconfig--advice-insert-file-contents)
           (dolist (hook modehooks)
-            (remove-hook hook 'editorconfig-major-mode-hook))))
-
-    ;; editorconfig--legacy-version is enabled
-    ;; See https://github.com/editorconfig/editorconfig-emacs/issues/141 for why
-    ;; not `after-change-major-mode-hook'
-    (dolist (hook '(change-major-mode-after-body-hook
-                    read-only-mode-hook
-                    ;; Some modes call `kill-all-local-variables' in their init
-                    ;; code, which clears some values set by editorconfig.
-                    ;; For those modes, editorconfig-apply need to be called
-                    ;; explicitly through their hooks.
-                    rpm-spec-mode-hook))
-      (if editorconfig-mode
-          (add-hook hook 'editorconfig-mode-apply)
-        (remove-hook hook 'editorconfig-mode-apply)))))
-
-
-;; Tools
-;; Some useful commands for users, not required for EditorConfig to work
-
-;;;###autoload
-(defun editorconfig-find-current-editorconfig ()
-  "Find the closest .editorconfig file for current file."
-  (interactive)
-  (eval-and-compile (require 'editorconfig-core))
-  (when-let* ((file (editorconfig-core-get-nearest-editorconfig
-                    default-directory)))
-    (find-file file)))
-
-;;;###autoload
-(defun editorconfig-display-current-properties ()
-  "Display EditorConfig properties extracted for current buffer."
-  (interactive)
-  (if editorconfig-properties-hash
-      (let ((buf (get-buffer-create "*EditorConfig Properties*"))
-            (file buffer-file-name)
-            (props editorconfig-properties-hash))
-        (with-current-buffer buf
-          (erase-buffer)
-          (insert (format "# EditorConfig for %s\n" file))
-          (maphash (lambda (k v)
-                     (insert (format "%S = %s\n" k v)))
-                   props))
-        (display-buffer buf))
-    (message "Properties are not applied to current buffer yet.")
-    nil))
-;;;###autoload
-(defalias 'describe-editorconfig-properties
-  'editorconfig-display-current-properties)
-
-;;;###autoload
-(defun editorconfig-format-buffer()
-  "Format buffer according to .editorconfig indent_style and indent_width."
-  (interactive)
-  (when (string= (gethash 'indent_style editorconfig-properties-hash) "tab")
-    (tabify (point-min) (point-max)))
-  (when (string= (gethash 'indent_style editorconfig-properties-hash) "space")
-    (untabify (point-min) (point-max)))
-  (indent-region (point-min) (point-max)))
-
+            (add-hook hook
+                      #'editorconfig-major-mode-hook
+                      t)))
+      (advice-remove 'find-file-noselect #'editorconfig--advice-find-file-noselect)
+      (advice-remove 'insert-file-contents #'editorconfig--advice-insert-file-contents)
+      (dolist (hook modehooks)
+        (remove-hook hook #'editorconfig-major-mode-hook)))))
 
 
 ;; (defconst editorconfig--version
@@ -994,7 +915,3 @@ version in the echo area and the messages buffer."
 
 (provide 'editorconfig)
 ;;; editorconfig.el ends here
-
-;; Local Variables:
-;; sentence-end-double-space: t
-;; End:

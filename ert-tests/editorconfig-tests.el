@@ -63,6 +63,9 @@
 (defvar editorconfig-secondary-ert-dir
   (concat default-directory "ert-tests/test_files_secondary/"))
 
+(defvar editorconfig-local-variables-ert-dir
+  (concat default-directory "ert-tests/local_variables/"))
+
 (ert-deftest test-editorconfig nil
   "Check if properties are applied."
   (editorconfig-mode 1)
@@ -72,7 +75,7 @@
     (should (eq indent-tabs-mode nil)))
 
   (with-visit-file (concat editorconfig-ert-dir "4_space.py")
-    (should (eq python-indent-offset 4))
+    (should (eq (bound-and-true-p python-indent-offset) 4))
     (should (eq tab-width 8))
     (should (eq indent-tabs-mode nil)))
   (editorconfig-mode -1))
@@ -99,12 +102,50 @@
 (ert-deftest test-trim-trailing-ws nil
   (editorconfig-mode 1)
   (with-visit-file (concat editorconfig-ert-dir "trim.txt")
-    (should (memq 'delete-trailing-whitespace
-                  write-file-functions)))
-  (with-visit-file (concat editorconfig-ert-dir "trim.txt")
-    (read-only-mode 1)
-    (should (not (memq 'delete-trailing-whitespace
-                       write-file-functions))))
+    (should (memq #'editorconfig--delete-trailing-whitespace
+                  before-save-hook)))
+  ;; FIXME: We don't hook into `read-only-mode', so instead we should
+  ;; make a more thorough test that saves the file after making the buffer
+  ;; read-only and makes sure it does not trim the trailing-ws of the
+  ;; buffer/file.
+  ;;(with-visit-file (concat editorconfig-ert-dir "trim.txt")
+  ;;  (read-only-mode 1)
+  ;;  (should (not (memq #'editorconfig--delete-trailing-whitespace
+  ;;                     before-save-hook))))
+  (editorconfig-mode -1))
+
+(ert-deftest test-charset nil
+  (editorconfig-mode 1)
+  (with-visit-file (concat editorconfig-ert-dir "latin1.txt")
+    (set-buffer-file-coding-system 'undecided-unix)
+    (should (eq buffer-file-coding-system
+                'iso-latin-1-unix)))
+  (with-visit-file (concat editorconfig-ert-dir "utf-16be.txt")
+    (set-buffer-file-coding-system 'undecided-unix)
+    (should (eq buffer-file-coding-system
+                'utf-16be-with-signature-unix)))
+  (editorconfig-mode -1))
+
+
+(ert-deftest test-local-variables nil
+  (editorconfig-mode 1)
+  (with-visit-file (concat editorconfig-local-variables-ert-dir "file_locals.rb")
+    (should (eq tab-width 9))
+    (should (eq (bound-and-true-p ruby-indent-level) 7)))
+
+  (with-visit-file (concat editorconfig-local-variables-ert-dir "dir_locals.c")
+    (should (eq tab-width 9))
+    (should (eq (bound-and-true-p c-basic-offset) 7)))
+
+  (let ((editorconfig-override-file-local-variables nil))
+    (with-visit-file (concat editorconfig-local-variables-ert-dir "file_locals.rb")
+      (should (eq tab-width 5))
+      (should (eq (bound-and-true-p ruby-indent-level) 3))))
+
+  (let ((editorconfig-override-dir-local-variables nil))
+    (with-visit-file (concat editorconfig-local-variables-ert-dir "dir_locals.c")
+      (should (eq tab-width 5))
+      (should (eq (bound-and-true-p c-basic-offset) 3))))
   (editorconfig-mode -1))
 
 (ert-deftest test-file-type-emacs nil
@@ -131,7 +172,7 @@
             (lambda (props)
               (puthash 'indent_size "5" props)))
   (with-visit-file (concat editorconfig-ert-dir "4_space.py")
-    (should (eq python-indent-offset 5)))
+    (should (eq (bound-and-true-p python-indent-offset) 5)))
   (setq editorconfig-hack-properties-functions nil)
   (editorconfig-mode -1))
 
