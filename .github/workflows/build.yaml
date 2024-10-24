@@ -46,9 +46,6 @@ jobs:
           - os: macos-latest
             emacs-version: snapshot
             experimental: true
-        exclude:
-          # 2023/8/2 Recently this test always fails
-          # so remove this until it works
           - os: windows-latest
             emacs-version: snapshot
             experimental: true
