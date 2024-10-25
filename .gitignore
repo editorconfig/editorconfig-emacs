@@ -11,3 +11,8 @@ dist/
 # packaging
 *-autoloads.el
 *-pkg.el
+
+# Texinfo
+doc/*.info
+# install-info
+doc/dir
