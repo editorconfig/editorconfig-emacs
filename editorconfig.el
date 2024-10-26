@@ -586,6 +586,17 @@ This function will revert buffer when the coding-system has been changed."
               (revert-buffer-with-coding-system coding-system)))
         (setq editorconfig--apply-coding-system-currently nil)))))
 
+(defun editorconfig--delete-final-newline ()
+  "Ensure the buffer does not end with a newline.
+Does nothing if the buffer is read-only."
+  (unless buffer-read-only
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-max))
+        (while (looking-at-p "^$")
+          (delete-char -1))))))
+
 (defun editorconfig-set-trailing-nl (final-newline)
   "Set up requiring final newline by FINAL-NEWLINE.
 
@@ -595,12 +606,15 @@ to non-nil when FINAL-NEWLINE is true."
     ("true"
      ;; keep prefs around how/when the nl is added, if set - otherwise add on save
      (setq-local require-final-newline      (or require-final-newline t))
-     (setq-local mode-require-final-newline (or mode-require-final-newline t)))
+     (setq-local mode-require-final-newline (or mode-require-final-newline t))
+     (remove-hook 'before-save-hook
+                  #'editorconfig--delete-final-newline t))
+
     ("false"
-     ;; FIXME: Add functionality for actually REMOVING any trailing newlines here!
-     ;;        (rather than just making sure we don't automagically ADD a new one)
      (setq-local require-final-newline      nil)
-     (setq-local mode-require-final-newline nil))))
+     (setq-local mode-require-final-newline nil)
+     (add-hook 'before-save-hook
+               #'editorconfig--delete-final-newline nil t))))
 
 (defun editorconfig--delete-trailing-whitespace ()
   "Call `delete-trailing-whitespace' unless the buffer is read-only."

@@ -56,11 +56,7 @@ Current Emacs plugin coverage for EditorConfig's [properties][]:
 * `end_of_line`
 * `charset`
 * `trim_trailing_whitespace`
-* `insert_final_newline = true` is supported
-* ~~`insert_final_newline = false`~~ is not enforced
-  (as in trailing newlines actually being removed automagically),
-  we just buffer-locally override any preferences that would auto-add them
-  to files `.editorconfig` marks as trailing-newline-free
+* `insert_final_newline`
 * `max_line_length`
 * ~~`file_type_ext` (Experimental)~~ (See below)
 * ~~`file_type_emacs` (Experimental)~~ (See below)
