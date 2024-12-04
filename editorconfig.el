@@ -294,6 +294,7 @@ This hook will be run even when there are no matching sections in
     (terra-mode terra-indent-level)
     (tcl-mode tcl-indent-level
               tcl-continued-indent-level)
+    (templ-ts-mode go-ts-mode-indent-offset js-indent-level)
     (toml-ts-mode toml-ts-mode-indent-offset)
     (typescript-mode typescript-indent-level)
     (typescript-ts-base-mode typescript-ts-mode-indent-offset)
