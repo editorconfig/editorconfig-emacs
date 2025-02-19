@@ -67,7 +67,11 @@
     (should (equal (editorconfig-core-handle-get-properties handle
                                                             (concat editorconfig--fixtures
                                                                     "a.js"))
-                   '((("key" . "value"))))))
+                   '((("key" . "value")))))
+    (should (equal (editorconfig-core-handle-get-properties handle
+                                                            (concat editorconfig--fixtures
+                                                                    "b.py"))
+                   '((("key2" . "value2"))))))
 
   ;; For checking various normal whitespace (line breaks, horizontal space, vertical space, etc.)
   (let* ((conf (concat default-directory
