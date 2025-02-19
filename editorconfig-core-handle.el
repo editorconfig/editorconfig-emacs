@@ -33,6 +33,9 @@
 ;;; Code:
 
 (require 'cl-lib)
+(when (eval-when-compile (version< emacs-version "28.1"))
+  ;; For `string-trim'
+  (require 'subr-x))
 
 (require 'editorconfig-fnmatch)
 
@@ -187,8 +190,8 @@ If CONF is not found return nil."
               (setq props nil)
               (setq pattern newpattern)))
 
-           ((looking-at "\\([^=: \t]+\\)[ \t]*[=:][ \t]*\\(.*?\\)[ \t]*$")
-            (let ((key (downcase (match-string 1)))
+           ((looking-at "\\([^=: \t][^=:]*\\)[ \t]*[=:][ \t]*\\(.*?\\)[ \t]*$")
+            (let ((key (downcase (string-trim (match-string 1))))
                   (value (match-string 2)))
               (if pattern
                   (push `(,key . ,value)

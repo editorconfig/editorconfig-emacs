@@ -1,4 +1,4 @@
-![build](https://github.com/editorconfig/editorconfig-emacs/workflows/build/badge.svg)
+![build](https://github.com/editorconfig/editorconfig-emacs/actions/workflows/build.yaml/badge.svg?branch=master)
 [![MELPA](https://melpa.org/packages/editorconfig-badge.svg)](http://melpa.org/#/editorconfig)
 [![MELPA Stable](https://stable.melpa.org/packages/editorconfig-badge.svg)](https://stable.melpa.org/#/editorconfig)
 [![NonGNU ELPA](http://elpa.nongnu.org/nongnu/editorconfig.svg)](http://elpa.nongnu.org/nongnu/editorconfig.html)
