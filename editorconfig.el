@@ -5,7 +5,7 @@
 ;; Author: EditorConfig Team <editorconfig@googlegroups.com>
 ;; Version: 0.11.0
 ;; URL: https://github.com/editorconfig/editorconfig-emacs#readme
-;; Package-Requires: ((emacs "26.1"))
+;; Package-Requires: ((emacs "27.2"))
 ;; Keywords: convenience editorconfig
 
 ;; See
