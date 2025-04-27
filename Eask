@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "editorconfig"
          "0.11.0"
          "EditorConfig Emacs Plugin")
