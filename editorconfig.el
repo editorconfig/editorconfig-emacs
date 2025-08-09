@@ -236,6 +236,7 @@ This hook will be run even when there are no matching sections in
                   java-ts-mode-indent-offset)
     (js-mode js-indent-level)
     (js-ts-mode js-indent-level)
+    (js-json-mode js-indent-level)
     (js-jsx-mode js-indent-level sgml-basic-offset)
     (js2-mode js2-basic-offset)
     (js2-jsx-mode js2-basic-offset sgml-basic-offset)
