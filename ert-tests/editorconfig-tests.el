@@ -102,8 +102,10 @@
 (ert-deftest test-trim-trailing-ws nil
   (editorconfig-mode 1)
   (with-visit-file (concat editorconfig-ert-dir "trim.txt")
-    (should (memq #'editorconfig--delete-trailing-whitespace
-                  before-save-hook)))
+    (if editorconfig-trim-whitespaces-mode
+        (should (symbol-value editorconfig-trim-whitespaces-mode))
+      (should (memq #'editorconfig--delete-trailing-whitespace
+                    before-save-hook))))
   ;; FIXME: We don't hook into `read-only-mode', so instead we should
   ;; make a more thorough test that saves the file after making the buffer
   ;; read-only and makes sure it does not trim the trailing-ws of the

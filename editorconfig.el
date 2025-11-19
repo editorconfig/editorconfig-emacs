@@ -75,7 +75,7 @@ Used by `editorconfig--execute-editorconfig-exec'."
   'editorconfig-get-properties-function
   "0.5")
 (defcustom editorconfig-get-properties-function
-  'editorconfig-core-get-properties-hash
+  #'editorconfig-core-get-properties-hash
   "A function which gets EditorConfig properties for specified file.
 
 This function will be called with one argument, full path of the target file,
@@ -363,18 +363,17 @@ When variable `buffer-file-name' matches any of the regexps, then
                                    (eval (file-truename (expand-file-name recentf-save-file))))
                              t)))
 
-(defcustom editorconfig-trim-whitespaces-mode nil
+(defcustom editorconfig-trim-whitespaces-mode
+  (when (fboundp 'delete-trailing-whitespace-mode)
+    #'delete-trailing-whitespace-mode)
   "Buffer local minor-mode to use to trim trailing whitespaces.
 
 If set, enable that mode when `trim_trailing_whitespace` is set to true.
 Otherwise, use `delete-trailing-whitespace'."
-  :type 'symbol)
+  :type 'function)
 
-(defvar editorconfig-properties-hash nil
-  "Hash object of EditorConfig properties that was enabled for current buffer.
-Set by `editorconfig-apply' and nil if that is not invoked in
-current buffer yet.")
-(make-variable-buffer-local 'editorconfig-properties-hash)
+(defvar-local editorconfig-properties-hash nil
+  "Hash object of EditorConfig properties that was enabled for current buffer.")
 (put 'editorconfig-properties-hash
      'permanent-local
      t)
