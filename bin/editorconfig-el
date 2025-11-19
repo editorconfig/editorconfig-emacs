@@ -1,7 +1,7 @@
 #!/bin/sh
-:;#-*-Emacs-Lisp-*-
+:;#-*- mode: emacs-lisp; lexical-binding:t -*-
 :;test -n "$EMACS_BIN" || EMACS_BIN=emacs
-:;exec "$EMACS_BIN" -batch -Q --eval '(setq debug-on-error t)' -l "$0" -- "$@"
+:;exec "$EMACS_BIN" -batch -Q --eval '(setq debug-on-error t internal--get-default-lexical-binding-function `always)' -l "$0" -- "$@"
 
 ;; editorconfig-el --- EditorConfig Core executable in Emacs Lisp
 
