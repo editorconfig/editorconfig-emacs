@@ -1,7 +1,7 @@
 #!/bin/sh
 :;#-*- mode: emacs-lisp; lexical-binding:t -*-
 :;test -n "$EMACS_BIN" || EMACS_BIN=emacs
-:;exec "$EMACS_BIN" -batch -Q --eval '(setq debug-on-error t internal--get-default-lexical-binding-function `always)' -l "$0" -- "$@"
+:;exec "$EMACS_BIN" -Q --script "$0" -- "$@"
 
 ;; editorconfig-el --- EditorConfig Core executable in Emacs Lisp
 
@@ -35,6 +35,8 @@
 ;; used by users.
 
 ;;; Code:
+
+(setq debug-on-error t) ;; Not sure why we do that, but let's keep it.
 
 (when (getenv "EDITORCONFIG_CORE_LIBRARY_PATH")
   (setq load-path
@@ -99,29 +101,17 @@ with required output."
 (defun main (argv)
   ;; TODO: Read file list from stdin if - is given as FILENAME
   (let ((parsed (editorconfig-bin-parse-args argv)))
-    (cl-case (length (car parsed))
-      (0
-       nil)
-      (1
-       (dolist (p (editorconfig-core-get-properties (caar parsed)
-                                                    (nth 1 parsed)
-                                                    (nth 2 parsed)))
-         (princ (format "%s=%s\n"
-                        (car p)
-                        (cdr p)))))
-      (otherwise
-       (dolist (file (car parsed))
-         (princ (format "[%s]\n"
-                        file))
-         (dolist (p (editorconfig-core-get-properties file
-                                                      (nth 1 parsed)
-                                                      (nth 2 parsed)))
-           (princ (format "%s=%s\n"
-                          (car p)
-                          (cdr p))))))))
-  0)
+    (dolist (file (car parsed))
+      (unless (eq 1 (length (car parsed)))
+        (princ (format "[%s]\n"
+                       file)))
+      (dolist (p (editorconfig-core-get-properties file
+                                                   (nth 1 parsed)
+                                                   (nth 2 parsed)))
+        (princ (format "%s=%s\n"
+                       (car p)
+                       (cdr p)))))))
 
-;; car of command-line-args-left is "--"
-(kill-emacs (main (cdr command-line-args-left)))
+(kill-emacs (main (cdr (member "--" command-line-args-left))))
 
 ;;; editorconfig-el ends here
