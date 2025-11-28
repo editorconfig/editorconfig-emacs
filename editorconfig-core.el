@@ -38,7 +38,7 @@
 ;; If you always want to use this library, add following lines to your init.el:
 
 ;;     (setq editorconfig-get-properties-function
-;;           'editorconfig-core-get-properties-hash)
+;;           #'editorconfig-core-get-properties-hash)
 
 
 ;; Functions
@@ -55,7 +55,7 @@
 ;; (KEY . VALUE) .
 
 
-;; editorconfig-core-get-properties-hash (&optional file confname confversion)
+;; editorconfig-core-get-properties-hash (&optional file confname)
 
 ;; Get EditorConfig properties for FILE.
 
@@ -85,7 +85,7 @@ RESULT is used internally and normally should not be used."
         (parent (file-name-directory (directory-file-name dir))))
     (if (or (string= parent dir)
             (and handle (editorconfig-core-handle-root-p handle)))
-        (cl-remove-if-not 'identity (cons handle result))
+        (cl-remove-if-not #'identity (cons handle result))
       (editorconfig-core--get-handles parent
                                       confname
                                       (cons handle result)))))
@@ -98,22 +98,6 @@ RESULT is used internally and normally should not be used."
                                                            ".editorconfig")))))
     (editorconfig-core-handle-path handle)))
 
-;;;###autoload
-(defun editorconfig-core-get-properties (&optional file confname confversion)
-  "Get EditorConfig properties for FILE.
-If FILE is not given, use currently visiting file.
-Give CONFNAME for basename of config file other than .editorconfig.
-If need to specify config format version, give CONFVERSION.
-
-This function returns an alist of properties.  Each element will
-look like (KEY . VALUE)."
-  (let ((hash (editorconfig-core-get-properties-hash file confname confversion))
-        (result nil))
-    (maphash (lambda (key value)
-               (add-to-list 'result (cons (symbol-name key) value)))
-             hash)
-    (sort result (lambda (x y) (string< (car x) (car y))))))
-
 (defun editorconfig-core--hash-merge (into update)
   "Merge two hashes INTO and UPDATE.
 
@@ -122,8 +106,7 @@ When the same key exists in both two hashes, values of UPDATE takes precedence."
   (maphash (lambda (key value) (puthash key value into)) update)
   into)
 
-;;;###autoload
-(defun editorconfig-core-get-properties-hash (&optional file confname confversion)
+(defun editorconfig-core-get-properties-hash (&optional file confname)
   "Get EditorConfig properties for FILE.
 If FILE is not given, use currently visiting file.
 Give CONFNAME for basename of config file other than .editorconfig.
@@ -136,7 +119,6 @@ hash object instead."
                               buffer-file-name
                               (error "FILE is not given and `buffer-file-name' is nil"))))
   (setq confname (or confname ".editorconfig"))
-  (setq confversion (or confversion "0.12.0"))
   (let ((result (make-hash-table)))
     (dolist (handle (editorconfig-core--get-handles (file-name-directory file)
                                                     confname))
@@ -145,36 +127,11 @@ hash object instead."
                                                                                    file)))
 
     ;; Downcase known boolean values
+    ;; FIXME: Why not do that in `editorconfig-core-handle--parse-file'?
     (dolist (key '( end_of_line indent_style indent_size insert_final_newline
                     trim_trailing_whitespace charset))
       (when-let* ((val (gethash key result)))
         (puthash key (downcase val) result)))
-
-    ;; Add indent_size property
-    (let ((v-indent-size (gethash 'indent_size result))
-          (v-indent-style (gethash 'indent_style result)))
-      (when (and (not v-indent-size)
-                 (string= v-indent-style "tab")
-                 ;; If VERSION < 0.9.0, indent_size should have no default value
-                 (version<= "0.9.0"
-                            confversion))
-        (puthash 'indent_size
-                 "tab"
-                 result)))
-    ;; Add tab_width property
-    (let ((v-indent-size (gethash 'indent_size result))
-          (v-tab-width (gethash 'tab_width result)))
-      (when (and v-indent-size
-                 (not v-tab-width)
-                 (not (string= v-indent-size "tab")))
-        (puthash 'tab_width v-indent-size result)))
-    ;; Update indent-size property
-    (let ((v-indent-size (gethash 'indent_size result))
-          (v-tab-width (gethash 'tab_width result)))
-      (when (and v-indent-size
-                 v-tab-width
-                 (string= v-indent-size "tab"))
-        (puthash 'indent_size v-tab-width result)))
 
     result))
 
