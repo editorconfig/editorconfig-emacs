@@ -172,7 +172,6 @@ This hook will be run even when there are no matching sections in
   ;; For contributors: Sort modes in alphabetical order
   '((ada-mode ada-indent)
     (ada-ts-mode ada-ts-mode-indent-offset)
-    (apache-mode apache-indent-level)
     (awk-mode c-basic-offset)
     (bash-ts-mode sh-basic-offset
                   sh-indentation)
@@ -180,26 +179,19 @@ This hook will be run even when there are no matching sections in
     (c++-mode c-basic-offset)
     (c++-ts-mode c-basic-offset
                  c-ts-mode-indent-offset)
-    (c-mode c-basic-offset)
     (c-ts-mode c-basic-offset
                c-ts-mode-indent-offset)
     (cmake-mode cmake-tab-width)
     (cmake-ts-mode cmake-tab-width
                    cmake-ts-mode-indent-offset)
     (coffee-mode coffee-tab-width)
-    (cperl-mode cperl-indent-level)
-    (crystal-mode crystal-indent-level)
     (csharp-mode c-basic-offset)
     (csharp-ts-mode c-basic-offset
                     csharp-ts-mode-indent-offset)
-    (css-mode css-indent-offset)
     (css-ts-mode css-indent-offset)
     (d-mode c-basic-offset)
     (elixir-ts-mode elixir-ts-indent-offset)
-    (emacs-lisp-mode . editorconfig-set-indentation-lisp-mode)
-    (enh-ruby-mode enh-ruby-indent-level)
-    (erlang-mode erlang-indent-level)
-    (ess-mode ess-indent-offset)
+    (emacs-lisp-mode . editorconfig--get-indentation-lisp-mode)
     (f90-mode f90-associate-indent
               f90-continuation-indent
               f90-critical-indent
@@ -212,12 +204,9 @@ This hook will be run even when there are no matching sections in
     (fsharp-mode fsharp-continuation-offset
                  fsharp-indent-level
                  fsharp-indent-offset)
-    (gdscript-mode gdscript-indent-offset)
     (go-ts-mode go-ts-mode-indent-offset)
     (gpr-mode gpr-indent)
     (gpr-ts-mode gpr-ts-mode-indent-offset)
-    (graphql-mode graphql-indent-level)
-    (groovy-mode groovy-indent-offset)
     (haskell-mode haskell-indent-spaces
                   haskell-indent-offset
                   haskell-indentation-layout-offset
@@ -227,43 +216,31 @@ This hook will be run even when there are no matching sections in
                   haskell-indentation-where-pre-offset
                   shm-indent-spaces)
     (haxor-mode haxor-tab-width)
-    (hcl-mode hcl-indent-level)
     (html-ts-mode html-ts-mode-indent-offset)
     (idl-mode c-basic-offset)
     (jade-mode jade-tab-width)
     (java-mode c-basic-offset)
     (java-ts-mode c-basic-offset
                   java-ts-mode-indent-offset)
-    (js-mode js-indent-level)
     (js-ts-mode js-indent-level)
     (js-json-mode js-indent-level)
     (js-jsx-mode js-indent-level sgml-basic-offset)
-    (js2-mode js2-basic-offset)
     (js2-jsx-mode js2-basic-offset sgml-basic-offset)
-    (js3-mode js3-indent-level)
     (json-mode js-indent-level)
     (json-ts-mode json-ts-mode-indent-offset)
     (jsonian-mode jsonian-default-indentation)
-    (julia-mode julia-indent-offset)
     (kotlin-mode kotlin-tab-width)
     (kotlin-ts-mode kotlin-ts-mode-indent-offset)
-    (latex-mode . editorconfig-set-indentation-latex-mode)
-    (lisp-mode . editorconfig-set-indentation-lisp-mode)
+    (latex-mode . editorconfig--get-indentation-latex-mode)
+    (lisp-mode . editorconfig--get-indentation-lisp-mode)
     (livescript-mode livescript-tab-width)
-    (lua-mode lua-indent-level)
-    (lua-ts-mode lua-ts-indent-offset)
-    (magik-mode magik-indent-level)
     (magik-ts-mode magik-indent-level)
-    (matlab-mode matlab-indent-level)
     (meson-mode meson-indent-basic)
     (mips-mode mips-tab-width)
     (mustache-mode mustache-basic-offset)
-    (nasm-mode nasm-basic-offset)
-    (nginx-mode nginx-indent-level)
-    (nxml-mode nxml-child-indent (nxml-attribute-indent . 2))
+    (nxml-mode . editorconfig--get-indentation-nxml-mode)
     (objc-mode c-basic-offset)
     (octave-mode octave-block-offset)
-    (perl-mode perl-indent-level)
     ;; No need to change `php-mode-coding-style' value for php-mode
     ;; since we run editorconfig later than it resets `c-basic-offset'.
     ;; See https://github.com/editorconfig/editorconfig-emacs/issues/116
@@ -274,30 +251,20 @@ This hook will be run even when there are no matching sections in
     (protobuf-mode c-basic-offset)
     (ps-mode ps-mode-tab)
     (pug-mode pug-tab-width)
-    (puppet-mode puppet-indent-level)
-    (python-mode . editorconfig-set-indentation-python-mode)
-    (python-ts-mode . editorconfig-set-indentation-python-mode)
+    (python-mode . editorconfig--get-indentation-python-mode)
+    (python-ts-mode . editorconfig--get-indentation-python-mode)
     (rjsx-mode js-indent-level sgml-basic-offset)
-    (ruby-mode ruby-indent-level)
     (ruby-ts-mode ruby-indent-level)
-    (rust-mode rust-indent-offset)
     (rust-ts-mode rust-indent-offset
                   rust-ts-mode-indent-offset)
-    (rustic-mode rustic-indent-offset)
     (scala-mode scala-indent:step)
     (scss-mode css-indent-offset)
-    (sgml-mode sgml-basic-offset)
     (sh-mode sh-basic-offset sh-indentation)
-    (slim-mode slim-indent-offset)
-    (sml-mode sml-indent-level)
-    (svelte-mode svelte-basic-offset)
     (swift-mode swift-mode:basic-offset)
-    (terra-mode terra-indent-level)
     (tcl-mode tcl-indent-level
               tcl-continued-indent-level)
     (templ-ts-mode go-ts-mode-indent-offset js-indent-level)
     (toml-ts-mode toml-ts-mode-indent-offset)
-    (typescript-mode typescript-indent-level)
     (typescript-ts-base-mode typescript-ts-mode-indent-offset)
     (verilog-mode verilog-indent-level
                   verilog-indent-level-behavioral
@@ -305,43 +272,21 @@ This hook will be run even when there are no matching sections in
                   verilog-indent-level-module
                   verilog-cexp-indent
                   verilog-case-indent)
-    (web-mode (web-mode-indent-style . (lambda (size) 2))
-              web-mode-attr-indent-offset
-              web-mode-attr-value-indent-offset
-              web-mode-code-indent-offset
-              web-mode-css-indent-offset
-              web-mode-markup-indent-offset
-              web-mode-sql-indent-offset
-              web-mode-block-padding
-              web-mode-script-padding
-              web-mode-style-padding)
-    (yaml-mode yaml-indent-offset)
-    (yaml-ts-mode yaml-indent-offset)
-    (zig-mode zig-indent-offset))
+    (web-mode . editorconfig--get-indentation-web-mode)
+    (yaml-ts-mode yaml-indent-offset))
   "Alist of indentation setting methods by modes.
 
-Each element looks like (MODE . FUNCTION) or (MODE . INDENT-SPEC-LIST).
+This is a fallback used for those modes which don't set
+`editorconfig-indent-size-vars'.
 
-If FUNCTION is provided, it will be called when setting the
-indentation.  The indent size will be passed.
+Each element looks like (MODE . FUNCTION) or (MODE . VARLIST).
 
-If INDENT-SPEC-LIST is provided, each element of it must have one of the
-following forms:
+If FUNCTION is provided, it will be called with one argument (the indent size)
+when setting the indentation.  It should return the list of settings that need
+to be applied, where each setting has the form (VARIABLE . VALUE).
 
- 1. VARIABLE
-    It means (VARIABLE . 1).
-
- 2. (VARIABLE . SPEC)
-    Setting VARIABLE according to the type of SPEC:
-
-      - Integer
-        The value is (* SPEC INDENT-SIZE);
-
-      - Function
-        The value is (funcall SPEC INDENT-SIZE);
-
-      - Any other type.
-        The value is SPEC.
+If VARLIST is provided, each element of VARLIST should be the name of
+a variable that we should set to the indent size.
 
 NOTE: Only the **buffer local** value of VARIABLE will be set."
   :type '(alist :key-type symbol :value-type sexp)
@@ -427,35 +372,46 @@ Make a message by passing ARGS to `format-message'."
   (and (stringp string)
        (string-match-p "\\`[0-9]+\\'" string)))
 
-(defun editorconfig-set-indentation-python-mode (size)
-  "Set `python-mode' indent size to SIZE."
-  (when (boundp 'python-indent-offset)
-    (setq-local python-indent-offset size))
-  ;; For https://gitlab.com/python-mode-devs/python-mode
-  (when (boundp 'py-indent-offset)
-    (setq-local py-indent-offset size)))
+(defun editorconfig--get-indentation-web-mode (size)
+  `((web-mode-indent-style . 2)
+    (web-mode-attr-indent-offset       . ,size)
+    (web-mode-attr-value-indent-offset . ,size)
+    (web-mode-code-indent-offset       . ,size)
+    (web-mode-css-indent-offset        . ,size)
+    (web-mode-markup-indent-offset     . ,size)
+    (web-mode-sql-indent-offset        . ,size)
+    (web-mode-block-padding            . ,size)
+    (web-mode-script-padding           . ,size)
+    (web-mode-style-padding            . ,size)))
 
-(defun editorconfig-set-indentation-latex-mode (size)
-  "Set `latex-mode' indent size to SIZE."
-  (setq-local tex-indent-basic size)
-  (setq-local tex-indent-item size)
-  (setq-local tex-indent-arg (* 2 size))
-  ;; For AUCTeX
-  (when (boundp 'TeX-brace-indent-level)
-    (setq-local TeX-brace-indent-level size))
-  (when (boundp 'LaTeX-indent-level)
-    (setq-local LaTeX-indent-level size))
-  (when (boundp 'LaTeX-item-indent)
-    (setq-local LaTeX-item-indent (- size))))
+(defun editorconfig--get-indentation-python-mode (size)
+  "Vars to set `python-mode' indent size to SIZE."
+  `((python-indent-offset . ,size)      ;For python.el
+    (py-indent-offset . ,size)))        ;For python-mode.el
 
-(defun editorconfig-set-indentation-lisp-mode (size)
- "Set indent size to SIZE for Lisp mode(s)."
- (when (cond ((null editorconfig-lisp-use-default-indent)  t)
-             ((eql t editorconfig-lisp-use-default-indent) nil)
-             ((numberp editorconfig-lisp-use-default-indent)
-              (not (eql size editorconfig-lisp-use-default-indent)))
-             (t t))
-   (setq-local lisp-indent-offset size)))
+(defun editorconfig--get-indentation-latex-mode (size)
+  "Vars to set `latex-mode' indent size to SIZE."
+  `((tex-indent-basic . ,size)
+    (tex-indent-item . ,size)
+    (tex-indent-arg . ,(* 2 size))
+    ;; For AUCTeX
+    (TeX-brace-indent-level . ,size)
+    (LaTeX-indent-level . ,size)
+    (LaTeX-item-indent . ,(- size))))
+
+(defun editorconfig--get-indentation-nxml-mode (size)
+  "Vars to set `nxml-mode' indent size to SIZE."
+  `((nxml-child-indent . ,size)
+    (nxml-attribute-indent . ,(* 2 size))))
+
+(defun editorconfig--get-indentation-lisp-mode (size)
+  "Set indent size to SIZE for Lisp mode(s)."
+  (when (cond ((null editorconfig-lisp-use-default-indent)  t)
+              ((eql t editorconfig-lisp-use-default-indent) nil)
+              ((numberp editorconfig-lisp-use-default-indent)
+               (not (eql size editorconfig-lisp-use-default-indent)))
+              (t t))
+    `((lisp-indent-offset . ,size))))
 
 (cl-defun editorconfig--should-set (symbol)
   "Determine if editorconfig should set SYMBOL."
@@ -475,58 +431,117 @@ Make a message by passing ARGS to `format-message'."
 
   t)
 
-(defun editorconfig-set-indentation (style &optional size tab_width)
-  "Set indentation type from STYLE, SIZE and TAB_WIDTH."
+(defvar editorconfig-indent-size-vars
+  #'editorconfig--default-indent-size-function
+  "Rule to use to set a given `indent_size'.
+This should hold the list of variables that need to be set to SIZE
+to tell the indentation code of the current major mode to use a basic
+indentation step of size SIZE.
+It can also take the form of a function, in which case we call it with
+a single SIZE argument (an integer) and it should return a list
+of (VAR . VAL) pairs indicating the variables to set and the values to
+set them to.
+Major modes are expected to set this buffer-locally.")
+
+(defun editorconfig--default-indent-size-function (size)
+ "Guess which variables to set to for the indentation step to have size SIZE.
+This relies on `editorconfig-indentation-alist' supplemented with a crude
+heuristic for those modes not found there."
+  (let ((parents (if (fboundp 'derived-mode-all-parents) ;Emacs-30
+                     (derived-mode-all-parents major-mode)
+                   (let ((modes nil)
+                         (mode major-mode))
+                     (while mode
+                       (push mode modes)
+                       (setq mode (get mode 'derived-mode--parent)))
+                     (nreverse modes))))
+        entry)
+    (let ((parents parents))
+      (while (and parents (not entry))
+        (setq entry (assq (pop parents) editorconfig-indentation-alist))))
+    (or
+     (when entry
+       (let ((rule (cdr entry)))
+         ;; Filter out settings of unknown vars.
+         (delq nil
+               (mapcar
+                (lambda (elem)
+                  (let ((v (car elem)))
+                    (cond
+                     ((not (symbolp v))
+                      (message "Unsupported element in `editorconfig-indentation-alist': %S" elem))
+                     ((boundp v) elem))))
+                (if (functionp rule)
+                    (let ((result (funcall rule size)))
+                      (if (and (consp (car-safe result))
+                               (boundp (caar result)))
+                          result
+                        (message "Invalid return value for: %S"
+                                 rule)
+                        nil))
+                  (mapcar
+                   (lambda (elem)
+                     (cond
+                      ((symbolp elem) `(,elem . ,size))
+                      ((consp elem)
+                       (message "Old-style entry in editorconfig-indentation-alist: %S" elem)
+                       `(,(car elem)
+                         . ,(let ((spec (cdr elem)))
+                              (cond ((functionp spec) (funcall spec size))
+                                    ((integerp spec) (* spec size))
+                                    (t spec)))))))
+                   rule))))))
+     ;; Fallback, let's try and guess.
+     (let ((suffixes '("-indent-level" "-basic-offset" "-indent-offset"))
+           (guess ()))
+       (while (and parents (not guess))
+         (let* ((mode (pop parents))
+                (modename (symbol-name mode))
+                (name (substring modename 0
+                                 (string-match "-mode\\'" modename))))
+           (dolist (suffix suffixes)
+             (let ((sym (intern-soft (concat name suffix))))
+               (when (and sym (boundp sym))
+                 (setq guess sym))))))
+       (when guess `((,guess . ,size))))
+     (and (local-variable-p 'smie-rules-function)
+          `((smie-indent-basic . ,size))))))
+
+(defun editorconfig--get-indentation (style &optional size tab_width)
+  "Get indentation vars according to STYLE, SIZE, and TAB_WIDTH."
+  (if tab_width (setq tab_width (string-to-number tab_width)))
+
   (setq size
         (cond ((editorconfig-string-integer-p size)
                (string-to-number size))
               ((equal size "tab")
-               "tab")
+               (or tab_width tab-width))
               (t
                nil)))
 
-  (cond ((not (editorconfig--should-set 'tab-width))
-         nil)
-        (tab_width
-         (setq tab-width (string-to-number tab_width)))
-        ((numberp size)
-         (setq tab-width size)))
+  `(,@(cond (tab_width `((tab-width . ,tab_width)))
+            ((numberp size) `((tab-width . ,size))))
 
-  (when (equal size "tab")
-    (setq size tab-width))
+    ,@(pcase style
+        ("space" `((indent-tabs-mode . nil)))
+        ("tab" `((indent-tabs-mode . t))))
 
-  (cond ((not (editorconfig--should-set 'indent-tabs-mode))
-         nil)
-        ((equal style "space")
-         (setq indent-tabs-mode nil))
-        ((equal style "tab")
-         (setq indent-tabs-mode t)))
+    ,@(when (and size (featurep 'evil))
+        `((evil-shift-width . ,size)))
 
-  (when size
-    (when (and (featurep 'evil)
-               (editorconfig--should-set 'evil-shift-width))
-      (setq-local evil-shift-width size))
-    (let ((parent major-mode)
-          entry)
-      ;; Find the closet parent mode of `major-mode' in
-      ;; `editorconfig-indentation-alist'.
-      (while (and (not (setq entry (assoc parent editorconfig-indentation-alist)))
-                  (setq parent (get parent 'derived-mode-parent))))
-      (when entry
-        (let ((fn-or-list (cdr entry)))
-          (cond ((functionp fn-or-list) (funcall fn-or-list size))
-                ((listp fn-or-list)
-                 (dolist (elem fn-or-list)
-                   (cond ((and (symbolp elem)
-                               (editorconfig--should-set elem))
-                          (set (make-local-variable elem) size))
-                         ((and (consp elem)
-                               (editorconfig--should-set (car elem)))
-                          (let ((spec (cdr elem)))
-                            (set (make-local-variable (car elem))
-                                 (cond ((functionp spec) (funcall spec size))
-                                       ((integerp spec) (* spec size))
-                                       (t spec))))))))))))))
+    ,@(cond
+       ((null size) nil)
+       ((functionp editorconfig-indent-size-vars)
+        (funcall editorconfig-indent-size-vars size))
+       (t (mapcar (lambda (v) `(,v . ,size))
+                  editorconfig-indent-size-vars)))))
+
+
+(defun editorconfig-set-indentation (style &optional size tab_width)
+  "Set indentation type from STYLE, SIZE and TAB_WIDTH."
+  (dolist (setting (editorconfig--get-indentation style size tab_width))
+    (when (editorconfig--should-set (car setting))
+      (set (make-local-variable (car setting)) (cdr setting)))))
 
 (defvar-local editorconfig--apply-coding-system-currently nil
   "Used internally.")
