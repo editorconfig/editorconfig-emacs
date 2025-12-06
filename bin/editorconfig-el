@@ -98,6 +98,52 @@ with required output."
            version))
     ))
 
+(defun editorconfig-core-get-properties (&optional file confname confversion)
+  "Get EditorConfig properties for FILE.
+If FILE is not given, use currently visiting file.
+Give CONFNAME for basename of config file other than .editorconfig.
+If need to specify config format version, give CONFVERSION.
+
+This function returns an alist of properties.  Each element will
+look like (KEY . VALUE)."
+  (let* ((props (editorconfig-core-get-properties-hash file confname))
+         (result nil))
+
+    ;; Preserve the ugly and unnecessary part of the spec which
+    ;; special-cases `tab_width' and `indent_size'.
+
+    (setq confversion (or confversion "0.12.0"))
+    ;; Add indent_size property
+    (let ((v-indent-size (gethash 'indent_size props))
+          (v-indent-style (gethash 'indent_style props)))
+      (when (and (not v-indent-size)
+                 (string= v-indent-style "tab")
+                 ;; If VERSION < 0.9.0, indent_size should have no default value
+                 (version<= "0.9.0"
+                            confversion))
+        (puthash 'indent_size
+                 "tab"
+                 props)))
+    ;; Add tab_width property
+    (let ((v-indent-size (gethash 'indent_size props))
+          (v-tab-width (gethash 'tab_width props)))
+      (when (and v-indent-size
+                 (not v-tab-width)
+                 (not (string= v-indent-size "tab")))
+        (puthash 'tab_width v-indent-size props)))
+    ;; Update indent-size property
+    (let ((v-indent-size (gethash 'indent_size props))
+          (v-tab-width (gethash 'tab_width props)))
+      (when (and v-indent-size
+                 v-tab-width
+                 (string= v-indent-size "tab"))
+        (puthash 'indent_size v-tab-width props)))
+
+    (maphash (lambda (key value)
+               (push (cons (symbol-name key) value) result))
+             props)
+    (sort result (lambda (x y) (string< (car x) (car y))))))
+
 (defun main (argv)
   ;; TODO: Read file list from stdin if - is given as FILENAME
   (let ((parsed (editorconfig-bin-parse-args argv)))
