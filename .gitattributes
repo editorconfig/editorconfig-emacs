@@ -1,0 +1,2 @@
+# Ensure .editorconfig always uses LF line endings
+.editorconfig text eol=lf
