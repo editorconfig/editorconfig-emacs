@@ -9,6 +9,18 @@ This is an [EditorConfig][] plugin for [Emacs][].
 
 ## Getting Started
 
+If you're using Emacs≥30, then support for EditorConfig is bundled
+directly with Emacs and all you need to do is:
+
+```emacs-lisp
+(editorconfig-mode 1)
+```
+
+The code that comes with Emacs derives from the code in this separate
+package but has a few differences, mostly because it uses hooks that are new
+in Emacs-30.  In most cases it behaves in the same way, and the two codes
+are (still) in the process of being synchronized.
+
 ### package.el
 
 This package is available from [MELPA][], [MELPA Stable][] and [NonGNU ELPA][].
@@ -141,7 +153,12 @@ sorry to say, it cannot be perfect. Especially it is difficult to support
 brand-new major-modes.
 Please feel free to submit issue or pull-request for such major-mode!
 
-Supported major-modes and their indentation configs are defined in the variable
+In most cases it is better to modify the major mode itself
+either to use a "standard" indentation size variable name
+like `<MODE>-indent-offset` or to set `editorconfig-indent-size-vars`.
+
+Those major modes which cannot yet follow this convention need to have
+their indentation configs defined in the variable
 `editorconfig-indentation-alist`.
 
 ### Not work at all for FOO-mode!
