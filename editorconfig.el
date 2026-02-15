@@ -238,6 +238,7 @@ This hook will be run even when there are no matching sections in
     (meson-mode meson-indent-basic)
     (mips-mode mips-tab-width)
     (mustache-mode mustache-basic-offset)
+    (nix-ts-mode nix-ts-mode-indent-offset)
     (nxml-mode . editorconfig--get-indentation-nxml-mode)
     (objc-mode c-basic-offset)
     (octave-mode octave-block-offset)
@@ -272,6 +273,7 @@ This hook will be run even when there are no matching sections in
                   verilog-indent-level-module
                   verilog-cexp-indent
                   verilog-case-indent)
+    (vhdl-mode . editorconfig--get-indentation-vhdl-mode)
     (web-mode . editorconfig--get-indentation-web-mode)
     (yaml-ts-mode yaml-indent-offset))
   "Alist of indentation setting methods by modes.
@@ -305,7 +307,7 @@ When variable `buffer-file-name' matches any of the regexps, then
 (with-eval-after-load 'recentf
   (add-to-list 'editorconfig-exclude-regexps
                (rx-to-string '(seq string-start
-                                   (eval (file-truename (expand-file-name recentf-save-file))))
+                               (eval (file-truename (expand-file-name recentf-save-file))))
                              t)))
 
 (defcustom editorconfig-trim-whitespaces-mode
@@ -412,6 +414,11 @@ Make a message by passing ARGS to `format-message'."
                (not (eql size editorconfig-lisp-use-default-indent)))
               (t t))
     `((lisp-indent-offset . ,size))))
+
+(defun editorconfig--get-indentation-vhdl-mode (size)
+  "Set VHDL indentation to SIZE and handle its custom indent-tabs-mode."
+  `((vhdl-basic-offset . ,size)
+    (vhdl-indent-tabs-mode . ,indent-tabs-mode)))
 
 (cl-defun editorconfig--should-set (symbol)
   "Determine if editorconfig should set SYMBOL."
