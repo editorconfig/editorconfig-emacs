@@ -235,3 +235,7 @@ with this program.  If not, see <https://www.gnu.org/licenses/>.
 [CMake]: https://cmake.org
 [Eask]: https://github.com/emacs-eask/cli
 [lsp-mode]: https://github.com/emacs-lsp/lsp-mode
+
+### Issue #376
+- **Status:** Fix proposed in PR
+- **Description:** editorconfig-exclude-modes not respected
